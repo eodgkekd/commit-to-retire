@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { endingResult } from './engine/career'
-import { readSharedResult } from './engine/share'
+import { loadShortResult, readSharedResult } from './engine/share'
 import { Button, Screen, Title } from './ui'
 import { remainingEvents } from './engine'
 import { EndingScreen } from './screens/EndingScreen'
@@ -19,11 +19,27 @@ export default function App() {
   const reset = useGame((s) => s.reset)
   const [view, setView] = useState<View>('title')
   const [shared, setShared] = useState(() => readSharedResult(window.location.hash))
+  const [retry, setRetry] = useState(0)
   useEffect(() => {
-    const update = () => setShared(readSharedResult(window.location.hash))
+    let controller: AbortController | undefined
+    const update = () => {
+      controller?.abort()
+      const hash = window.location.hash
+      const result = readSharedResult(hash)
+      setShared(result)
+      if (result.status === 'loading') {
+        controller = new AbortController()
+        const requestController = controller
+        const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])
+        void loadShortResult(result.id, signal).then((loaded) => {
+          if (!requestController.signal.aborted && window.location.hash === hash) setShared(loaded)
+        })
+      }
+    }
+    update()
     window.addEventListener('hashchange', update)
-    return () => window.removeEventListener('hashchange', update)
-  }, [])
+    return () => { controller?.abort(); window.removeEventListener('hashchange', update) }
+  }, [retry])
 
   // 새 게임이 만들어지면 바로 게임 화면으로
   const current: View = view === 'setup' && game ? 'game' : view
@@ -46,7 +62,19 @@ export default function App() {
     setShared({ status: 'none' })
     setView('title')
   }
-  if (shared.status === 'valid') return <EndingScreen game={shared.result} shared onNew={closeShared} />
+  if (shared.status === 'valid') return <EndingScreen key={window.location.hash} game={shared.result} shared onNew={closeShared} />
+  if (shared.status === 'loading') return (
+    <Screen footer={<Button onClick={closeShared}>내 게임으로 돌아가기</Button>}>
+      <p role="status">공유된 결과를 불러오고 있어요…</p>
+    </Screen>
+  )
+  if (shared.status === 'unavailable') return (
+    <Screen footer={<Button onClick={closeShared}>내 게임으로 돌아가기</Button>}>
+      <Title>결과를 불러오지 못했어요</Title>
+      <p className="text-sm text-gray-500">네트워크를 확인해 주세요. 방금 만든 링크는 반영까지 잠시 걸릴 수 있어요.</p>
+      <Button onClick={() => setRetry((value) => value + 1)}>다시 불러오기</Button>
+    </Screen>
+  )
   if (shared.status === 'invalid') return (
     <Screen footer={<Button onClick={closeShared}>내 게임으로 돌아가기</Button>}>
       <Title>공유 링크를 확인해 주세요</Title>

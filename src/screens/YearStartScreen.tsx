@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { focuses } from '../data'
 import { staminaChange, type FocusId, type GameState } from '../engine'
 import { useGame } from '../store/game'
-import { Button, Choice, Screen, StatusHeader, Title } from '../ui'
+import { Button, Card, Choice, Screen, StatBars, StatusHeader, Title } from '../ui'
 
 export function YearStartScreen({ game }: { game: GameState }) {
   const startYear = useGame((s) => s.startYear)
@@ -19,6 +19,11 @@ export function YearStartScreen({ game }: { game: GameState }) {
       <StatusHeader game={game} />
 
       <Title eyebrow={`${game.careerYear}년차 · ${game.calendarYear}년`}>올해는 무엇에 집중할까요?</Title>
+
+      <Card>
+        <p className="mb-3 text-sm font-medium text-gray-600">현재 능력치</p>
+        <StatBars stats={game.stats} />
+      </Card>
 
       {game.stamina < 35 && (
         <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-600">체력이 바닥이에요. 이대로면 번아웃이 올 수 있어요.</p>

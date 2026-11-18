@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { achievements, companyTypeById, educationById, rankById } from '../data'
 import { careerPeriodLabel, endingShareText, type EndingResult } from '../engine/career'
-import { resultUrl } from '../engine/share'
+import { createShortResultUrl, readSharedResult } from '../engine/share'
 import { formatSalary, type FameGrade, type RetireReason } from '../engine'
 import { Button, Card, Screen, StatBars } from '../ui'
 
@@ -28,14 +28,32 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
   const [sharing, setSharing] = useState(false)
   const [shareMessage, setShareMessage] = useState('')
   const [manualCopy, setManualCopy] = useState('')
+  const [shortUrl, setShortUrl] = useState(() => {
+    const current = readSharedResult(window.location.hash)
+    return shared && current.status === 'loading' ? window.location.href : ''
+  })
+
+  async function prepareShare() {
+    if (sharing) return
+    setSharing(true)
+    setShareMessage('')
+    try {
+      setShortUrl(await createShortResultUrl(game, window.location.href))
+      setShareMessage('짧은 링크가 준비됐어요. 링크를 복사하거나 공유할 앱을 선택해 주세요.')
+    } catch (error) {
+      setShareMessage(error instanceof Error ? error.message : '공유 링크를 만들지 못했어요. 다시 시도해 주세요.')
+    } finally {
+      setSharing(false)
+    }
+  }
 
   async function share(copyOnly = false) {
-    if (sharing && !copyOnly) return
-    if (!copyOnly) setSharing(true)
+    if (sharing || !shortUrl) return
+    setSharing(true)
     setShareMessage('')
     setManualCopy('')
     try {
-      const url = resultUrl(game, window.location.href)
+      const url = shortUrl
       const text = endingShareText(game)
       if (!copyOnly && navigator.share) {
         try {
@@ -46,10 +64,10 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
           if (error instanceof Error && error.name === 'AbortError') return
         }
       }
-      const content = `${text}\n\n${url}`
+      const content = url
       try {
         await navigator.clipboard.writeText(content)
-        setShareMessage('결과와 커리어 요약을 복사했어요. 원하는 곳에 붙여넣어 주세요.')
+        setShareMessage('짧은 결과 링크를 복사했어요.')
       } catch {
         setManualCopy(content)
         setShareMessage('자동 복사를 사용할 수 없어요. 아래 내용을 선택해 복사해 주세요.')
@@ -57,7 +75,7 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
     } catch {
       setShareMessage('공유 링크를 만들지 못했어요. 다시 시도해 주세요.')
     } finally {
-      if (!copyOnly) setSharing(false)
+      setSharing(false)
     }
   }
 
@@ -75,10 +93,22 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
       </div>
 
       <div className="flex flex-col gap-2">
-        <Button variant="secondary" onClick={() => share()} disabled={sharing}>
-          {sharing ? '공유 중…' : '결과 공유하기'}
-        </Button>
-        <button type="button" onClick={() => share(true)} className="py-2 text-sm font-medium text-blue-600">결과 링크 복사</button>
+        {shortUrl ? (
+          <>
+            <input aria-label="공유 링크" readOnly value={shortUrl} onFocus={(e) => e.currentTarget.select()} className="w-full rounded-xl border border-gray-200 p-3 text-sm" />
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="secondary" onClick={() => share(true)} disabled={sharing}>링크 복사</Button>
+              <Button variant="secondary" onClick={() => share()} disabled={sharing}>공유 앱 선택</Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <Button variant="secondary" onClick={prepareShare} disabled={sharing}>
+              {sharing ? '공유 링크 만드는 중…' : '결과 공유하기'}
+            </Button>
+            <p className="text-xs text-gray-400">공유하면 이름과 커리어 결과가 저장되어 링크를 받은 사람이 볼 수 있어요.</p>
+          </>
+        )}
         <p role="status" className="text-sm text-gray-500">{shareMessage}</p>
         {manualCopy && <textarea aria-label="공유할 결과" readOnly value={manualCopy} onFocus={(e) => e.currentTarget.select()} rows={8} className="w-full rounded-xl border border-gray-200 p-3 text-sm" />}
       </div>

@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { randomGame } from './bot'
 import { endingResult } from './career'
 import { evaluateRetirement } from './ending'
-import { readSharedResult, resultUrl } from './share'
+import { createShortResultUrl, loadShortResult, readSharedResult, resultUrl } from './share'
+import worker from '../worker'
 import { finishYear, startYear } from './year'
 
 function result() {
@@ -54,5 +55,43 @@ describe('결과 공유 링크', () => {
       const encoded = btoa(Array.from(bytes, (b) => String.fromCharCode(b)).join('')).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '')
       expect(readSharedResult('#result=' + encoded)).toEqual({ status: 'invalid' })
     }
+  })
+})
+
+afterEach(() => vi.unstubAllGlobals())
+
+describe('짧은 링크 저장 및 다른 클라이언트 조회', () => {
+  it('서버에 저장한 결과를 16자리 ID만으로 다른 클라이언트가 복원한다', async () => {
+    const entries = new Map<string, string>()
+    const env = {
+      SHARED_RESULTS: { get: async (key: string) => entries.get(key) ?? null, put: async (key: string, value: string) => { entries.set(key, value) } },
+      SHARE_LIMITER: { limit: async () => ({ success: true }) },
+      ASSETS: { fetch: async () => new Response('app') },
+    }
+    vi.stubGlobal('fetch', (url: string, init?: RequestInit) => worker.fetch(new Request(new URL(url, 'https://example.com'), init), env))
+    const original = result()
+    const url = await createShortResultUrl(original, 'https://example.com/?old=1#result=old')
+    expect(url).toMatch(/^https:\/\/example.com\/#s=[A-Za-z0-9_-]{16}$/)
+    const state = readSharedResult(new URL(url).hash)
+    expect(state.status).toBe('loading')
+    if (state.status !== 'loading') throw new Error('짧은 링크 파싱 실패')
+    expect(await loadShortResult(state.id, new AbortController().signal)).toEqual({ status: 'valid', result: original })
+    expect(entries.size).toBe(1)
+  })
+
+  it('저장 실패 시 사용할 수 없는 링크를 반환하지 않는다', async () => {
+    vi.stubGlobal('fetch', async () => new Response('{}', { status: 503 }))
+    await expect(createShortResultUrl(result(), 'https://example.com')).rejects.toThrow('저장하지 못했어요')
+    vi.stubGlobal('fetch', async () => Response.json({ id: '../invalid' }))
+    await expect(createShortResultUrl(result(), 'https://example.com')).rejects.toThrow('응답')
+  })
+
+  it('조회 실패는 재시도할 수 있고 기존 긴 링크도 계속 지원한다', async () => {
+    vi.stubGlobal('fetch', async () => new Response('{}', { status: 404 }))
+    expect(await loadShortResult('abcdefghijklmnop', new AbortController().signal)).toEqual({ status: 'unavailable' })
+    vi.stubGlobal('fetch', async () => Response.json({ version: 1, result: result() }))
+    expect((await loadShortResult('abcdefghijklmnop', new AbortController().signal)).status).toBe('valid')
+    expect(readSharedResult('#s=bad')).toEqual({ status: 'invalid' })
+    expect(readSharedResult(new URL(resultUrl(result(), 'https://example.com')).hash).status).toBe('valid')
   })
 })
