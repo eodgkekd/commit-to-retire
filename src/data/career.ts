@@ -131,4 +131,5 @@ export const achievements: AchievementDef[] = [
   { id: 'parental_leave', title: '육아휴직 다녀왔어요', emoji: '🍼', description: '눈치 보지 않고 육아휴직을 썼어요.', fame: 3 },
   { id: 'chicken_shop', title: '개발자의 종착역', emoji: '🍗', description: '실직 후 치킨집을 차렸어요.', fame: 2 },
   { id: 'chicken_franchise', title: '치킨 프랜차이즈 대표', emoji: '🐔', description: '차린 치킨집이 전국 프랜차이즈가 됐어요.', fame: 12 },
+  { id: 'wellgram_route', title: '기룽이의 웰그램', emoji: '🌀', description: '히든 루트를 찾아 웰그램에서 커리어를 시작했어요.', fame: 5, hidden: true },
 ]

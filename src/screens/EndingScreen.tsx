@@ -33,6 +33,8 @@ const GRADE_STYLE: Record<FameGrade, string> = {
 export function EndingScreen({ game, onNew, shared = false }: { game: EndingResult; onNew: () => void; shared?: boolean }) {
   const r = game.retirement!
   const unlocked = new Set(game.achievements)
+  // 히든 업적은 달성했을 때만 보인다
+  const shownAchievements = achievements.filter((a) => !a.hidden || unlocked.has(a.id))
   const first = game.career[0]
   const career = game.career
   const [sharing, setSharing] = useState(false)
@@ -149,10 +151,10 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
 
       <section className="flex flex-col gap-2">
         <p className="text-sm font-medium text-gray-600">
-          업적 {unlocked.size} / {achievements.length}
+          업적 {unlocked.size} / {shownAchievements.length}
         </p>
         <div className="grid grid-cols-2 gap-2">
-          {achievements.map((a) => {
+          {shownAchievements.map((a) => {
             const on = unlocked.has(a.id)
             return (
               <div key={a.id} className={`rounded-2xl p-3 ${on ? 'bg-amber-50' : 'bg-gray-50 opacity-40'}`}>

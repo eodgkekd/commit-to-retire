@@ -4,7 +4,7 @@ import { acceptOffer, nextYear } from './hub'
 import { createRng } from './rng'
 import { createGame, firstJobOptions, startingStats } from './setup'
 import type { GameState, Profile } from './types'
-import { events, ranks } from '../data'
+import { events, publicCompanyTypes, ranks } from '../data'
 import { acknowledgeYear, checkFailMultiplier, chooseEventOption, currentEvent, finishYear, isEligible, overworkDrain, startYear } from './year'
 
 /** 선택지는 언제나 고를 수 있으니 첫 번째를 고른다 */
@@ -193,6 +193,46 @@ describe('40대 이후 권고사직', () => {
     expect(s.history.at(-1)!.triggers).toContain('layoff')
     expect(s.history.at(-1)!.triggers).not.toContain('promoted')
     expect(s.salary).toBe(salary)
+  })
+})
+
+describe('히든 루트: 웰그램', () => {
+  const kirung = { ...profile, name: '기룽이' }
+
+  it('이름이 기룽이일 때만 첫 회사로 웰그램이 나오고, 서류 없이 붙는다', () => {
+    expect(firstJobOptions(profile).some((o) => o.type === 'wellgram')).toBe(false)
+    expect(firstJobOptions(kirung).find((o) => o.type === 'wellgram')?.passed).toBe(true)
+    expect(firstJobOptions({ ...kirung, name: ' 기룽이 ' }).some((o) => o.type === 'wellgram')).toBe(true)
+  })
+
+  it('웰그램으로 시작하면 히든 업적이 생기고, 다른 이름으로는 입사할 수 없다', () => {
+    const g = createGame({ profile: kirung, companyType: 'wellgram', industry: 'b2c', seed: 1 })
+    expect(g.company.name).toBe('웰그램')
+    expect(g.achievements).toContain('wellgram_route')
+    expect(() => createGame({ profile, companyType: 'wellgram', industry: 'b2c', seed: 1 })).toThrow()
+  })
+
+  it('웰그램 전용 이벤트는 웰그램에서만 나온다', () => {
+    const wellgramEvents = events.filter((e) => e.conditions?.companyTypes?.includes('wellgram'))
+    expect(wellgramEvents.length).toBeGreaterThanOrEqual(3)
+    const inside = createGame({ profile: kirung, companyType: 'wellgram', industry: 'b2c', seed: 1 })
+    const outside = createGame({ profile: kirung, companyType: 'midsize', industry: 'b2c', seed: 1 })
+    for (const e of wellgramEvents) {
+      expect(isEligible(e, inside), e.id).toBe(true)
+      expect(isEligible(e, outside), e.id).toBe(false)
+    }
+  })
+
+  it('웰그램은 이직 시장에 나오지 않는다', () => {
+    expect(publicCompanyTypes.some((c) => c.id === 'wellgram')).toBe(false)
+  })
+
+  it('웰그램으로 시작한 판도 은퇴까지 간다', () => {
+    for (let seed = 1; seed <= 10; seed++) {
+      const end = playToEnd(createGame({ profile: kirung, companyType: 'wellgram', industry: 'b2c', seed }), 'random', seed)
+      expect(end.phase).toBe('retired')
+      expect(end.achievements).toContain('wellgram_route')
+    }
   })
 })
 

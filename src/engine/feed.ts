@@ -1,6 +1,6 @@
 // 연말 커뮤니티 반응 피드 생성
 
-import { companyTypes, feedTemplates, rankById } from '../data'
+import { feedTemplates, publicCompanyTypes, rankById } from '../data'
 import { createRng, type Rng } from './rng'
 import { formatSalary } from './rules'
 import { fillTemplate } from './text'
@@ -48,7 +48,7 @@ function authorPool(platform: FeedPlatform, s: GameState, rawText: string, r: Rn
   switch (platform) {
     case 'blinder': {
       const own = companyTag(s.company.name)
-      const others = companyTypes.flatMap((t) => t.names).map(companyTag).filter((n) => n !== own)
+      const others = publicCompanyTypes.flatMap((t) => t.names).map(companyTag).filter((n) => n !== own)
       const tag = rawText.includes('{company}') ? own : r.pick(others)
       return BLINDER_NICKS.map((nick) => `${tag} · ${nick}`)
     }

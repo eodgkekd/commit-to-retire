@@ -4,10 +4,10 @@ import {
   AGE_HIRING_PENALTY,
   CHICKEN,
   companyTypeById,
-  companyTypes,
   focusById,
   GAP_HIRING_PENALTY,
   industries,
+  publicCompanyTypes,
   ranks,
   rankById,
   RETIRE_AGE,
@@ -68,7 +68,7 @@ export function rollHeadhunterOffer(s: GameState, grade: Grade, focus: FocusId, 
   if (!rng.chance(headhunterChance(s, grade, focus))) return []
   // 헤드헌터는 내 이력으로 붙을 만한 회사를 가져온다
   for (let attempt = 0; attempt < 6; attempt++) {
-    const type = rng.pick(companyTypes).id
+    const type = rng.pick(publicCompanyTypes).id
     if (hiringScore(s.stats, s.profile.education, type) < companyTypeById[type].hiringBar) continue
     const industry = rng.pick(industries).id
     const name = pickCompanyName(rng, type, [s.company.name, ...closedCompanies(s)])
@@ -89,7 +89,7 @@ export function generatePostings(s: GameState, rng: Rng): JobPosting[] {
   const postings: JobPosting[] = []
   const used = new Set([s.company.name, ...closedCompanies(s)])
   for (let attempt = 0; attempt < 30 && postings.length < POSTINGS_PER_YEAR; attempt++) {
-    const type = rng.pick(companyTypes).id
+    const type = rng.pick(publicCompanyTypes).id
     const name = pickCompanyName(rng, type, [...used])
     if (!name) continue
     used.add(name)

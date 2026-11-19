@@ -1,6 +1,7 @@
 // 캐릭터 생성 → 첫 회사 입사까지
 
 import {
+  companyTypeById,
   companyTypes,
   educationById,
   playStyleById,
@@ -34,10 +35,13 @@ export interface CompanyAvailability {
   score: number
 }
 
-/** 첫 회사 서류 결과. 탈락한 회사도 함께 돌려줘서 "서류 탈락" 연출에 쓴다 */
+/**
+ * 첫 회사 서류 결과. 탈락한 회사도 함께 돌려줘서 "서류 탈락" 연출에 쓴다.
+ * 히든 루트 회사는 캐릭터 이름이 맞을 때만 나온다
+ */
 export function firstJobOptions(profile: Profile): CompanyAvailability[] {
   const stats = startingStats(profile)
-  return companyTypes.map((c) => {
+  return companyTypes.filter((c) => !c.hiddenFor || c.hiddenFor === profile.name.trim()).map((c) => {
     const score = hiringScore(stats, profile.education, c.id)
     return { type: c.id, passed: score >= c.hiringBar, score: Math.round(score) }
   })
@@ -58,6 +62,7 @@ export function createGame({ profile, companyType, industry, seed }: NewGameInpu
   const stats = startingStats(profile)
   const salary = marketSalary(companyType, industry, 'newbie', 1)
   const company = { name: pickCompanyName(rng, companyType)!, type: companyType, industry }
+  const hiddenRoute = !!companyTypeById[companyType].hiddenFor
 
   return {
     version: 1,
@@ -88,7 +93,7 @@ export function createGame({ profile, companyType, industry, seed }: NewGameInpu
     offers: [],
     flags: [],
     counters: { incidents: 0, refactors: 0, jobChanges: 0, burnouts: 0, startupFailures: 0, exits: 0 },
-    achievements: [],
+    achievements: hiddenRoute ? ['wellgram_route'] : [],
     seenEvents: [],
     history: [],
     retirement: null,

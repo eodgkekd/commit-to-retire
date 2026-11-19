@@ -216,7 +216,7 @@ export function SetupScreen({ onBack }: { onBack: () => void }) {
                       <p className="font-semibold">
                         {c.emoji} {c.label}
                       </p>
-                      {o.passed ? <Badge tone="green">서류 합격</Badge> : <Badge>서류 탈락</Badge>}
+                      {c.hiddenFor ? <Badge tone="amber">🤫 히든 루트</Badge> : o.passed ? <Badge tone="green">서류 합격</Badge> : <Badge>서류 탈락</Badge>}
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
                       초봉 {formatSalary(c.baseSalary)}

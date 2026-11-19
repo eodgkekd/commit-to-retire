@@ -77,11 +77,12 @@ export const SAVINGS_RATE = 0.2
 
 // ─── 회사 사건 ─────────────────────────────────────────
 
-type StartupType = Extract<CompanyTypeId, 'seed' | 'series_b' | 'unicorn'>
-/** 회사 사건이 났을 때 폐업 대신 엑싯일 확률 */
-export const EXIT_CHANCE: Record<StartupType, number> = { seed: 0.25, series_b: 0.35, unicorn: 0.5 }
+export type StartupType = Extract<CompanyTypeId, 'seed' | 'series_b' | 'unicorn' | 'wellgram'>
+export const STARTUP_TYPES: StartupType[] = ['seed', 'series_b', 'unicorn', 'wellgram']
+/** 회사 사건이 났을 때 폐업 대신 엑싯일 확률. 웰그램(히든)은 거의 망하지만 터지면 크게 터진다 */
+export const EXIT_CHANCE: Record<StartupType, number> = { seed: 0.25, series_b: 0.35, unicorn: 0.5, wellgram: 0.05 }
 /** 엑싯 때 받는 돈 = 연봉 × 배수 × 운 */
-export const EXIT_MULTIPLIER: Record<StartupType, number> = { seed: 10, series_b: 5, unicorn: 3 }
+export const EXIT_MULTIPLIER: Record<StartupType, number> = { seed: 10, series_b: 5, unicorn: 3, wellgram: 30 }
 export const EXIT_LUCK: [number, number] = [0.3, 1.5]
 /** 엑싯 대상이 되려면 다녀야 하는 햇수 */
 export const EXIT_MIN_YEARS = 2

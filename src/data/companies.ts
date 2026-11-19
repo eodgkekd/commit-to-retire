@@ -145,7 +145,25 @@ export const companyTypes: CompanyTypeDef[] = [
     hiringBar: 55,
     names: ['국밍은행', '신한은행권', '한국정보화공단', '코레일테크', '두나은행', '너희은행', '한국전류공사', '국민연금정보원', '까까오뱅크', '토스트뱅크'],
   },
+  // 히든 루트: 이름을 '기룽이'로 지으면 서류 없이 입사할 수 있다. 꿈은 크지만 망해 가는 스타트업
+  {
+    id: 'wellgram',
+    label: '웰그램',
+    emoji: '🌀',
+    baseSalary: 2600,
+    stockOption: true,
+    growth: 1.3,
+    overtime: 4,
+    risk: 0.4,
+    promotionSpeed: 1.8,
+    hiringBar: 0,
+    names: ['웰그램'],
+    hiddenFor: '기룽이',
+  },
 ]
+
+/** 이직 시장(공고·헤드헌터)에 나오는 회사 유형. 히든 루트 회사는 뺀다 */
+export const publicCompanyTypes = companyTypes.filter((c) => !c.hiddenFor)
 
 export const industries: IndustryDef[] = [
   {

@@ -21,6 +21,7 @@ export type PlayStyleId = 'builder' | 'architect' | 'communicator' | 'domain_exp
 export type CompanyTypeId =
   | 'chaebol' | 'chaebol_si' | 'bigtech' | 'foreign' | 'midsize' | 'sme_si'
   | 'agency' | 'seed' | 'series_b' | 'unicorn' | 'finance_public'
+  | 'wellgram'
 
 export type IndustryId =
   | 'si_sm' | 'b2b_saas' | 'b2c' | 'commerce' | 'fintech' | 'game' | 'ai' | 'public'
@@ -102,6 +103,8 @@ export interface CompanyTypeDef {
   hiringBar: number
   /** 회사 이름 후보 (패러디 또는 가상) */
   names: string[]
+  /** 히든 루트: 캐릭터 이름이 이 값일 때만 첫 회사로 고를 수 있고, 이직 시장에는 나오지 않는다 */
+  hiddenFor?: string
 }
 
 export interface IndustryDef {
@@ -153,6 +156,8 @@ export interface AchievementDef {
   description: string
   /** 엔딩 명성 점수에 더해지는 점수 */
   fame: number
+  /** 히든 업적: 달성하기 전에는 업적 목록에 보이지 않는다 */
+  hidden?: boolean
 }
 
 // ─── 이벤트 ────────────────────────────────────────────

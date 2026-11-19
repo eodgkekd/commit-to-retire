@@ -3,6 +3,7 @@ import {
   achievementById,
   achievements,
   companyTypes,
+  publicCompanyTypes,
   events,
   feedTemplates,
   focuses,
@@ -51,9 +52,9 @@ describe('데이터 무결성', () => {
     }
   })
 
-  it('회사 이름은 유형마다 10개 이상이고 전체에서 겹치지 않는다', () => {
+  it('회사 이름은 유형마다 10개 이상이고 전체에서 겹치지 않는다 (히든 루트 회사는 하나)', () => {
     const all = companyTypes.flatMap((c) => c.names)
-    for (const c of companyTypes) expect(c.names.length, c.id).toBeGreaterThanOrEqual(10)
+    for (const c of publicCompanyTypes) expect(c.names.length, c.id).toBeGreaterThanOrEqual(10)
     expect(new Set(all).size, `중복 회사 이름: ${all.filter((n, i) => all.indexOf(n) !== i)}`).toBe(all.length)
   })
 

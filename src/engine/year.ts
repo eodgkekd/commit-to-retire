@@ -37,6 +37,8 @@ import {
   SAVINGS_RATE,
   SEVERITY_FAIL_MULTIPLIER,
   SPECIALTY_FIT_MULTIPLIER,
+  STARTUP_TYPES,
+  type StartupType,
   specialtyById,
   STAMINA_RECOVERY,
   UPPER_SEAT_MULTIPLIER,
@@ -389,9 +391,10 @@ function rollCompanyRisk(s: GameState, rng: Rng): FeedTrigger | null {
   const type = s.company.type
   if (!rng.chance(companyTypeById[type].risk)) return null
 
-  if (type === 'seed' || type === 'series_b' || type === 'unicorn') {
-    if (s.yearsAtCompany >= EXIT_MIN_YEARS && rng.chance(EXIT_CHANCE[type])) {
-      s.assets += Math.round(s.salary * EXIT_MULTIPLIER[type] * rng.range(EXIT_LUCK[0], EXIT_LUCK[1]))
+  if ((STARTUP_TYPES as string[]).includes(type)) {
+    const startup = type as StartupType
+    if (s.yearsAtCompany >= EXIT_MIN_YEARS && rng.chance(EXIT_CHANCE[startup])) {
+      s.assets += Math.round(s.salary * EXIT_MULTIPLIER[startup] * rng.range(EXIT_LUCK[0], EXIT_LUCK[1]))
       s.counters.exits += 1
       unlock(s, 'stock_lottery')
       if (type !== 'unicorn') s.company = { ...s.company, name: `${s.company.name} (인수됨)`, type: 'bigtech' }

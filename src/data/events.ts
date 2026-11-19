@@ -1978,6 +1978,123 @@ export const events: GameEvent[] = [
     ],
   },
 
+  // ─── 히든 루트: 웰그램 ────────────────────────────────
+  // 이름을 '기룽이'로 지으면 고를 수 있는 히든 회사 전용 (src/data/companies.ts)
+  {
+    id: 'wellgram_vision',
+    category: '회사',
+    emoji: '🌀',
+    title: '새벽 {hour}시의 비전 공유',
+    text: '웰그램 대표님이 새벽 {hour}시에 전사 채널에 긴 글을 올렸어요. "{vision}" 아침 9시까지 다들 의견을 달래요.',
+    weight: 14,
+    conditions: { companyTypes: ['wellgram'] },
+    vars: {
+      hour: { min: 1, max: 4 },
+      vision: [
+        '우리는 앱이 아니라 문화를 만듭니다',
+        '경쟁사는 없습니다. 우리가 시장입니다',
+        '내년엔 글로벌로 갑니다. 영어 공부 시작하세요',
+        '돈은 따라옵니다. 지금은 몰입할 때입니다',
+      ],
+    },
+    choices: [
+      {
+        label: '감동받았다고 댓글을 단다',
+        outcomes: [
+          { chance: 1, text: '대표님이 내 댓글에 🔥를 눌렀어요. 다음 날 프로젝트가 하나 더 생겼어요.', effects: { gradeBonus: 8, stamina: -10 } },
+        ],
+      },
+      {
+        label: '현실적인 질문을 남긴다',
+        check: { communication: 45 },
+        outcomes: [
+          { chance: 0.5, text: '"좋은 질문이에요"라며 다음 주 전사 회의 안건이 됐어요. 동료들이 몰래 고맙대요.', tone: 'skill', effects: { stats: { communication: 2, reputation: 1 } } },
+          { chance: 0.5, text: '"부정적인 에너지는 웰그램과 맞지 않아요"라는 DM을 받았어요.', tone: 'unlucky', effects: { gradeBonus: -12 } },
+        ],
+      },
+      {
+        label: '알림을 끄고 잔다',
+        outcomes: [
+          { chance: 1, text: '푹 잤어요. 아침에 보니 댓글이 200개 달려 있어요.', effects: { stamina: 8, gradeBonus: -3 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'wellgram_payday',
+    category: '회사',
+    emoji: '💸',
+    title: '이번 달 월급이 늦어요',
+    text: '월급날인데 통장이 조용해요. 대표님이 "{excuse}. {days}일만 기다려 주세요"라고 공지했어요.',
+    weight: 12,
+    conditions: { companyTypes: ['wellgram'] },
+    severity: true,
+    vars: {
+      excuse: ['투자 클로징이 조금 늦어지고 있어요', '은행 전산 문제예요', '정부 지원금이 곧 들어와요', '대형 계약이 마무리 단계예요'],
+      days: { bySeverity: [{ min: 3, max: 5 }, { min: 10, max: 15 }, { min: 30, max: 60 }] },
+    },
+    variants: [
+      {
+        title: '법인카드가 정지됐어요',
+        text: '점심값을 결제하는데 법인카드가 정지됐대요. 대표님은 "{excuse}. {days}일이면 풀려요"라고 해요.',
+      },
+    ],
+    choices: [
+      {
+        label: '믿고 기다린다',
+        outcomes: [
+          { chance: 0.5, text: '{days}일 만에 정말로 들어왔어요. 대표님이 피자를 쐈어요.', tone: 'lucky', effects: { gradeBonus: 5, stats: { reputation: 1 } } },
+          { chance: 0.5, text: '{days}일이 지나도 소식이 없어요. 카드 할부를 돌렸어요.', tone: 'unlucky', effects: { assets: -500, stamina: -12 } },
+        ],
+      },
+      {
+        label: '동료들과 노동청 상담을 받는다',
+        check: { communication: 40 },
+        outcomes: [
+          { chance: 0.7, text: '밀린 월급을 다 받았어요. 사무실 분위기는 얼어붙었어요.', tone: 'skill', effects: { gradeBonus: -10, stats: { domain: 1 } } },
+          { chance: 0.3, text: '상담은 받았지만 회사 통장에 돈이 없대요. 체불 확인서만 받았어요.', tone: 'unlucky', effects: { assets: -300, stamina: -8 } },
+        ],
+      },
+      {
+        label: '조용히 이력서를 쓴다',
+        outcomes: [
+          { chance: 1, text: '퇴근 후 이력서를 고쳤어요. 웰그램 경력을 어떻게 써야 할지 고민돼요.', effects: { offerBonus: 2, stamina: -3 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'wellgram_pivot',
+    category: '회사',
+    emoji: '🔄',
+    title: '웰그램 {nth} 번째 피벗',
+    text: '대표님이 서비스를 {target}(으)로 바꾼대요. 지금까지 만든 코드는 {fate}.',
+    weight: 12,
+    conditions: { companyTypes: ['wellgram'] },
+    vars: {
+      nth: ['세', '네', '다섯', '일곱'],
+      target: ['AI 비서', '블록체인 커뮤니티', '반려동물 SNS', '메타버스 오피스', '시니어 데이팅 앱'],
+      fate: ['"레퍼런스로 남겨 두자"고 해요', '전부 버린대요', '새 서비스에 "재활용"한대요'],
+    },
+    choices: [
+      {
+        label: '밤새 새 서비스를 만든다',
+        outcomes: [
+          { chance: 0.25, text: '{target}(이)가 의외로 반응이 좋아요! 투자 미팅이 잡혔어요.', tone: 'lucky', effects: { stamina: -18, stats: { coding: 3, reputation: 2 }, gradeBonus: 10 } },
+          { chance: 0.75, text: '오픈 첫날 가입자가 37명이에요. 그중 12명이 직원 가족이에요.', tone: 'unlucky', effects: { stamina: -18, stats: { coding: 3 } } },
+        ],
+      },
+      {
+        label: '"이번엔 진짜 될까요?"라고 묻는다',
+        check: { communication: 50, domain: 40 },
+        outcomes: [
+          { chance: 0.5, text: '시장 조사 자료를 보여 줬더니 대표님이 피벗을 한 달 미뤘어요. 잠깐의 평화예요.', tone: 'skill', effects: { stats: { domain: 2 }, stamina: 5 } },
+          { chance: 0.5, text: '"{name} 님은 웰그램의 꿈을 안 믿어요?"라는 말을 들었어요.', tone: 'unlucky', effects: { gradeBonus: -10 } },
+        ],
+      },
+    ],
+  },
+
   // ─── 생활 ──────────────────────────────────────────────
   {
     id: 'marriage',
