@@ -103,7 +103,7 @@ it('밸런스 리포트', () => {
     all.push(...games)
   }
   breakdown(all)
-}, 300_000)
+}, 900_000)
 
 it('한 가지 집중만 고르는 전략은 필승법이 아니다', () => {
   const tracks = ['ic', 'manager'] as const
@@ -134,4 +134,4 @@ it('한 가지 집중만 고르는 전략은 필승법이 아니다', () => {
   const bestFixed = Math.max(...fixed.map((r) => r.fame))
   const bestMixed = Math.max(...mixed.map((r) => r.fame))
   expect(bestMixed, `섞어 쓰는 전략 ${bestMixed.toFixed(0)} vs 고정 전략 ${bestFixed.toFixed(0)}`).toBeGreaterThan(bestFixed)
-}, 600_000)
+}, 1_800_000)

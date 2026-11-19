@@ -13,6 +13,7 @@ import {
   finishYear,
   nextYear,
   negotiateOffer,
+  openChickenShop,
   remainingEvents,
   retireNow,
   spendGapYear,
@@ -46,6 +47,7 @@ interface Store {
   /** 지원 결과 연출 (저장하지 않는다) */
   lastApplication: ApplicationResult | null
   spendGapYear: () => void
+  openChickenShop: () => void
   nextYear: () => void
   retire: () => void
   reset: () => void
@@ -96,6 +98,7 @@ export const useGame = create<Store>()(
         },
         dismissApplication: () => set({ lastApplication: null }),
         spendGapYear: () => update(spendGapYear),
+        openChickenShop: () => update(openChickenShop),
         nextYear: () => update(nextYear),
         retire: () => update(retireNow),
         reset: () => set({ game: null, lastOutcome: null, lastApplication: null }),

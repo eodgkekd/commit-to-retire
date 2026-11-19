@@ -43,6 +43,7 @@ export function applyEffects(state: GameState, effects: Effects): void {
     state.counters[key as keyof GameState['counters']] += delta
   }
   if (effects.achievement) unlock(state, effects.achievement)
+  if (effects.jobLoss) state.unemployed = true
 }
 
 export function unlock(state: GameState, achievementId: string): void {

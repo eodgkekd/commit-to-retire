@@ -43,6 +43,11 @@ export const STAMINA_RECOVERY = { young: 20, old: 15, oldAge: 40 }
 export const BURNOUT_RESET_STAMINA = 50
 /** 이만큼 번아웃이 쌓이면 은퇴한다 */
 export const BURNOUTS_TO_RETIRE = 3
+/**
+ * 허브의 '야근 경고': 이 집중을 골랐을 때 1년 체력 변화가 기준 이하면 경고한다.
+ * 20대 기준 야근 🔥4 회사(중소 SI·에이전시)와 40세 이후 🔥3 회사가 걸린다
+ */
+export const OVERWORK_WARNING: { focus: FocusId; stamina: number } = { focus: 'study', stamina: -10 }
 
 // ─── 고과·승진 ─────────────────────────────────────────
 
@@ -80,6 +85,41 @@ export const EXIT_MULTIPLIER: Record<StartupType, number> = { seed: 10, series_b
 export const EXIT_LUCK: [number, number] = [0.3, 1.5]
 /** 엑싯 대상이 되려면 다녀야 하는 햇수 */
 export const EXIT_MIN_YEARS = 2
+
+/**
+ * 40대부터 회사 사건과 별개로 매년 굴리는 권고사직 확률 (나이 이상 → 확률).
+ * 60세 정년까지 한 회사에서 버티기 어렵게 한다. 공기업·금융은 정년이 보장돼서 덜 잘린다
+ */
+export const AGE_LAYOFF_CHANCE: [age: number, chance: number][] = [[55, 0.18], [50, 0.12], [45, 0.07], [40, 0.03]]
+export const AGE_LAYOFF_COMPANY_MULTIPLIER: Partial<Record<CompanyTypeId, number>> = { finance_public: 0.3 }
+
+// ─── 재취업 ────────────────────────────────────────────
+
+/** 이 나이부터 서류·기술 면접·임원 면접 통과 확률이 해마다 깎인다 (코딩테스트는 그대로) */
+export const AGE_HIRING_PENALTY = { from: 40, perYear: 0.02, max: 0.35 }
+/**
+ * 실직 뒤 취업 준비로 보낸 해가 이어질수록 서류 통과 확률이 깎인다 (1년마다).
+ * 공백기는 '이직 준비'로 기록돼 +0.1을 받으므로 첫해는 거의 상쇄되고 둘째 해부터 아프다
+ */
+export const GAP_HIRING_PENALTY = 0.15
+
+// ─── 치킨집 ────────────────────────────────────────────
+
+/**
+ * 실직한 40세 이상은 허브에서 치킨집을 차리고 은퇴할 수 있다.
+ * 창업비는 자산에서 빠지고, 결과는 확률로 정한다 (소통이 높을수록 장사가 잘된다)
+ */
+export const CHICKEN = {
+  minAge: 40,
+  cost: 10000,
+  /** 기본 확률. 소통 50을 기준으로 1점마다 프랜차이즈 +0.3%p, 폐업 −0.5%p */
+  chances: { franchise: 0.12, local: 0.38, closed: 0.5 },
+  communicationPivot: 50,
+  /** 동네 맛집은 정년까지 해마다 이만큼 번다 (만 원) */
+  localYearlyProfit: 3000,
+  /** 프랜차이즈 대박의 가맹 사업 수익 (만 원) */
+  franchiseProfit: 60000,
+}
 
 // ─── 이벤트 ────────────────────────────────────────────
 

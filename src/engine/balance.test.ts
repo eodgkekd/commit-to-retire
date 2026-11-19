@@ -124,7 +124,7 @@ describe('전략 봇', () => {
 
   it('쉬기만 하면 신입에서 거의 벗어나지 못한다', () => {
     const best = Array.from({ length: 20 }, (_, i) => playToEnd(randomGame(i + 1), fixedPolicy('rest', 'ic'), i + 1)).map((s) => rankById[s.bestRank].fameScore)
-    // 실직 후 승진 포지션으로 재취업하는 경우가 있어 주니어까지는 허용
+    // 예전에는 실직 후 승진 포지션으로 재취업하는 구멍이 있었다. 지금은 막혔지만 여유를 두고 주니어까지 허용
     expect(Math.max(...best)).toBeLessThanOrEqual(rankById.junior.fameScore)
   })
 })

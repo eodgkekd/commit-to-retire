@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
-import { companyTypeById, industryById, rankById, statLabels } from '../data'
+import { CHICKEN, companyTypeById, industryById, rankById, statLabels } from '../data'
 import {
+  agePenalty,
   canChooseTrack,
+  canOpenChickenShop,
   canSpendGapYear,
   formatSalary,
   HIRING_STAGES,
   nextPromotion,
   NEGOTIATION_RAISES,
+  overworkDrain,
   STAGE_LABELS,
   type ApplicationResult,
   type GameState,
@@ -21,7 +24,7 @@ import { Badge, Button, Card, Screen, StatBars, StatusHeader, Title } from '../u
 import { JOB_LOSS_TRIGGERS, majorEvents } from './majorEvents'
 
 export function HubScreen({ game }: { game: GameState }) {
-  const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, lastApplication, dismissApplication } = useGame()
+  const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, openChickenShop, lastApplication, dismissApplication } = useGame()
   const [confirmRetire, setConfirmRetire] = useState(false)
   const postings = game.postings ?? []
   const appsLeft = game.applicationsLeft ?? 0
@@ -62,6 +65,8 @@ export function HubScreen({ game }: { game: GameState }) {
         </Card>
       )}
 
+      {canOpenChickenShop(game) && <ChickenCard game={game} onOpen={openChickenShop} />}
+
       {canChooseTrack(game) && (
         <Card className="flex flex-col gap-3">
           <div>
@@ -80,6 +85,8 @@ export function HubScreen({ game }: { game: GameState }) {
           </div>
         </Card>
       )}
+
+      <OverworkCard game={game} />
 
       {!game.unemployed && <PromotionCard game={game} />}
 
@@ -151,6 +158,50 @@ export function HubScreen({ game }: { game: GameState }) {
 
       {lastApplication && <ApplicationSheet result={lastApplication} onClose={dismissApplication} />}
     </Screen>
+  )
+}
+
+/** 실직한 40대 이상: 재취업 대신 치킨집을 차리고 은퇴할 수 있다 */
+function ChickenCard({ game, onOpen }: { game: GameState; onOpen: () => void }) {
+  const [confirm, setConfirm] = useState(false)
+  const penalty = Math.round(agePenalty(game, 'resume') * 100)
+  return (
+    <Card className="flex flex-col gap-2 bg-amber-50">
+      <p className="font-semibold text-amber-800">🍗 치킨집을 차릴까요?</p>
+      <p className="text-sm text-amber-700">
+        {game.age}세라 서류와 면접 통과가 {penalty}%p씩 어려워졌어요. 재취업 대신 모은 돈으로 치킨집을 차리고 개발자 인생을 마칠 수도 있어요.
+        창업비 {formatSalary(CHICKEN.cost)}이 자산에서 빠지고, 장사가 잘될지는 운과 소통 실력에 달렸어요.
+      </p>
+      {confirm ? (
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="secondary" onClick={() => setConfirm(false)}>
+            조금 더 지원해 볼게요
+          </Button>
+          <Button onClick={onOpen}>치킨집 차리기</Button>
+        </div>
+      ) : (
+        <button type="button" onClick={() => setConfirm(true)} className="py-1 text-sm font-medium text-amber-700 underline">
+          치킨집 창업하고 은퇴하기
+        </button>
+      )}
+      {confirm && <p className="text-center text-xs text-amber-600">치킨집을 차리면 게임이 끝나요. 되돌릴 수 없어요.</p>}
+    </Card>
+  )
+}
+
+/** 쉬지 않고는 버티기 힘든 회사라면 옮길 때가 됐다는 신호 */
+function OverworkCard({ game }: { game: GameState }) {
+  const drain = overworkDrain(game)
+  if (drain === null) return null
+  const years = Math.max(1, Math.floor(game.stamina / -drain))
+  return (
+    <Card className="bg-orange-50">
+      <p className="font-semibold text-orange-700">🔥 야근이 버거운 회사예요</p>
+      <p className="text-sm text-orange-600">
+        여기서는 공부만 해도 1년에 체력이 {-drain}씩 줄어요. 지금 체력이면 {years}년쯤 버틸 수 있고, 그 뒤엔 '쉬어가기'를 골라야 해서 승진이
+        늦어져요. 야근 🔥가 적은 회사로 옮기는 것도 방법이에요.
+      </p>
+    </Card>
   )
 }
 

@@ -199,6 +199,7 @@ export function EffectChips({ effects }: { effects: Effects }) {
   if (effects.salaryPct) add(`연봉 ${signed(Math.round(effects.salaryPct * 100))}%`, effects.salaryPct > 0)
   if (effects.assets) add(`자산 ${effects.assets > 0 ? '+' : '−'}${formatSalary(Math.abs(effects.assets))}`, effects.assets > 0)
   if (effects.offerBonus) chips.push({ text: '헤드헌터 연락 ↑', tone: 'blue' })
+  if (effects.jobLoss) chips.push({ text: '회사를 떠나요', tone: 'red' })
   const achievement = effects.achievement ? achievementById[effects.achievement] : undefined
   if (achievement) chips.push({ text: `🏆 ${achievement.title}`, tone: 'amber' })
 

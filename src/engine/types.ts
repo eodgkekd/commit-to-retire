@@ -173,6 +173,8 @@ export interface Effects {
   clearFlags?: Flag[]
   counters?: Partial<Record<CounterKey, number>>
   achievement?: string
+  /** 회사를 떠나게 된다 (권고사직·희망퇴직). 연말에 실직 상태로 허브에 간다 */
+  jobLoss?: boolean
 }
 
 export interface EventOutcome {
@@ -388,13 +390,18 @@ export type Phase =
   | 'hub'         // 확인할 일 (이직 제안 등)
   | 'retired'
 
-export type RetireReason = 'age' | 'voluntary' | 'burnout' | 'startup_quit'
+export type RetireReason = 'age' | 'voluntary' | 'burnout' | 'startup_quit' | 'chicken'
+
+/** 치킨집 창업 결과: 프랜차이즈 대박 · 동네 맛집 · 폐업 */
+export type ChickenOutcome = 'franchise' | 'local' | 'closed'
 
 export interface Retirement {
   reason: RetireReason
   fameScore: number
   fameGrade: FameGrade
   title: string
+  /** reason이 'chicken'일 때만 */
+  chicken?: ChickenOutcome
 }
 
 export interface GameState {

@@ -1,6 +1,8 @@
 // 1년 진행: 연초 집중 선택 → 이벤트 → 연말 계산
 
 import {
+  AGE_LAYOFF_CHANCE,
+  AGE_LAYOFF_COMPANY_MULTIPLIER,
   AI_CODING_GROWTH_PENALTY,
   BASE_GROWTH,
   BURNOUT_RESET_STAMINA,
@@ -25,6 +27,7 @@ import {
   MANAGER_GROWTH_SHIFT,
   NO_PROMOTION_FOCUS,
   OVERTIME_COST,
+  OVERWORK_WARNING,
   PROMOTION_CHANCE,
   RANK_EXPECTATION,
   rankById,
@@ -193,6 +196,8 @@ export function finishYear(state: GameState): GameState {
   const triggers: FeedTrigger[] = [...(s.pendingFeedTriggers ?? [])]
   delete s.pendingFeedTriggers
   const rankBefore = s.rank
+  // 올해 이벤트로 회사를 떠났다 (희망퇴직·권고사직)
+  const leftMidYear = s.unemployed
 
   if (s.yearEvents.some((e) => eventById[e.eventId]?.category === '장애')) triggers.push('incident')
 
@@ -204,16 +209,16 @@ export function finishYear(state: GameState): GameState {
 
   // 고과와 연봉
   const grade: Grade = burnedOut ? 'D' : gradeFor(s, rng)
-  let raise = gradeThresholds.find((g) => g.grade === grade)!.raise
+  let raise = leftMidYear ? 0 : gradeThresholds.find((g) => g.grade === grade)!.raise
   // 시장 연봉보다 많이 받고 있으면 인상 폭이 줄어든다
   if (s.salary > currentMarket(s) * SALARY_CAP.overMarket) raise *= SALARY_CAP.raiseMultiplier
   s.salary = Math.round(s.salary * (1 + raise))
 
   // 승진
-  if (!burnedOut && tryPromotion(s, grade, rng)) triggers.push('promoted')
+  if (!burnedOut && !leftMidYear && tryPromotion(s, grade, rng)) triggers.push('promoted')
 
-  // 회사 사건 (폐업·구조조정·엑싯)
-  const companyEvent = rollCompanyRisk(s, rng)
+  // 회사 사건 (폐업·구조조정·엑싯), 40대부터는 나이 때문인 권고사직
+  const companyEvent = leftMidYear ? 'layoff' : (rollCompanyRisk(s, rng) ?? rollAgeLayoff(s, rng))
   if (companyEvent) triggers.push(companyEvent)
 
   // 저축
@@ -309,6 +314,16 @@ export function staminaChange(s: GameState, focus: FocusId): number {
   return recovery + focusById[focus].stamina - OVERTIME_COST[overtime]
 }
 
+/**
+ * 쉬지 않고는 버티기 힘든 회사인지. 공부만 해도 체력이 기준 이상 깎이면 그 1년 변화량을, 아니면 null.
+ * 허브에서 '야근이 적은 회사로 옮기라'는 신호를 보여 줄 때 쓴다
+ */
+export function overworkDrain(s: GameState): number | null {
+  if (s.unemployed) return null
+  const change = staminaChange(s, OVERWORK_WARNING.focus)
+  return change <= OVERWORK_WARNING.stamina ? change : null
+}
+
 /** 체력 갱신. 번아웃이면 true */
 function updateStamina(s: GameState): boolean {
   const next = s.stamina + staminaChange(s, s.focus!)
@@ -359,6 +374,15 @@ function tryPromotion(s: GameState, grade: Grade, rng: Rng): boolean {
   s.salary = Math.round(s.salary * (1 + next.salaryBump))
   if (rankById[next.id].fameScore > rankById[s.bestRank].fameScore) s.bestRank = next.id
   return true
+}
+
+/** 40대부터 해마다 굴리는 권고사직. 나이가 많을수록 잘 잘린다 */
+function rollAgeLayoff(s: GameState, rng: Rng): FeedTrigger | null {
+  const step = AGE_LAYOFF_CHANCE.find(([age]) => s.age >= age)
+  if (!step) return null
+  if (!rng.chance(step[1] * (AGE_LAYOFF_COMPANY_MULTIPLIER[s.company.type] ?? 1))) return null
+  s.unemployed = true
+  return 'layoff'
 }
 
 function rollCompanyRisk(s: GameState, rng: Rng): FeedTrigger | null {

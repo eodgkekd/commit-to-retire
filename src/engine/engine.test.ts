@@ -4,8 +4,8 @@ import { acceptOffer, nextYear } from './hub'
 import { createRng } from './rng'
 import { createGame, firstJobOptions, startingStats } from './setup'
 import type { GameState, Profile } from './types'
-import { events } from '../data'
-import { acknowledgeYear, checkFailMultiplier, chooseEventOption, currentEvent, finishYear, isEligible, startYear } from './year'
+import { events, ranks } from '../data'
+import { acknowledgeYear, checkFailMultiplier, chooseEventOption, currentEvent, finishYear, isEligible, overworkDrain, startYear } from './year'
 
 /** 선택지는 언제나 고를 수 있으니 첫 번째를 고른다 */
 const freeChoice = (_s: GameState) => 0
@@ -130,6 +130,69 @@ describe('이벤트 조건', () => {
     const moved = { ...base(), counters: { ...base().counters, jobChanges: 1 } }
     expect(isEligible(onboarding, moved)).toBe(true)
     expect(isEligible(onboarding, { ...moved, yearsAtCompany: 1 })).toBe(false)
+  })
+})
+
+describe('직급별 이벤트', () => {
+  it('모든 직급에 그 직급에서만 나오는 이벤트가 있다', () => {
+    for (const rank of ranks) {
+      expect(events.some((e) => e.conditions?.ranks?.includes(rank.id)), rank.id).toBe(true)
+    }
+  })
+})
+
+describe('야근 경고', () => {
+  const at = (companyType: 'sme_si' | 'midsize' | 'chaebol_si', age = 26) => ({
+    ...createGame({ profile, companyType, industry: 'si_sm', seed: 1 }),
+    age,
+  })
+
+  it('야근이 가장 심한 회사에서는 공부만 해도 체력이 깎인다고 알려 준다', () => {
+    expect(overworkDrain(at('sme_si'))).toBeLessThanOrEqual(-10)
+  })
+
+  it('야근이 보통인 회사에서는 경고하지 않는다', () => {
+    expect(overworkDrain(at('midsize'))).toBeNull()
+    expect(overworkDrain(at('chaebol_si'))).toBeNull()
+  })
+
+  it('40세가 넘으면 회복이 줄어서 야근 🔥3 회사도 경고한다', () => {
+    expect(overworkDrain(at('chaebol_si', 41))).not.toBeNull()
+  })
+
+  it('실직 중에는 경고하지 않는다', () => {
+    expect(overworkDrain({ ...at('sme_si'), unemployed: true })).toBeNull()
+  })
+})
+
+describe('40대 이후 권고사직', () => {
+  const at = (age: number, seed = 1) => ({ ...createGame({ profile, companyType: 'midsize', industry: 'b2b_saas', seed }), age })
+  const playYear = (g: GameState) => {
+    let s = startYear(g, 'study')
+    while (currentEvent(s)) s = chooseEventOption(s, 0).state
+    return finishYear(s)
+  }
+  const layoffRate = (age: number) => {
+    let n = 0
+    for (let seed = 1; seed <= 300; seed++) if (playYear(at(age, seed)).history.at(-1)!.triggers.includes('layoff')) n++
+    return n / 300
+  }
+
+  it('50대 중반은 30대보다 훨씬 자주 잘린다', () => {
+    expect(layoffRate(56)).toBeGreaterThan(layoffRate(30) + 0.08)
+  })
+
+  it('희망퇴직을 신청하면 연말에 실직 상태가 되고 승진도 연봉 인상도 없다', () => {
+    let s = startYear(at(47), 'all_in')
+    s = { ...s, pendingEvents: ['voluntary_retirement'] }
+    s = chooseEventOption(s, 0).state
+    expect(s.unemployed).toBe(true)
+    const salary = s.salary
+    s = finishYear(s)
+    expect(s.unemployed).toBe(true)
+    expect(s.history.at(-1)!.triggers).toContain('layoff')
+    expect(s.history.at(-1)!.triggers).not.toContain('promoted')
+    expect(s.salary).toBe(salary)
   })
 })
 

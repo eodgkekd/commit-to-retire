@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { applicationLimit, applyToPosting, canSpendGapYear, generatePostings, headhunterChance, makeOffer, negotiateOffer, rollHeadhunterOffer, spendGapYear, stagePassChance } from './jobs'
+import { applicationLimit, applyToPosting, canOpenChickenShop, canSpendGapYear, chickenChances, generatePostings, headhunterChance, makeOffer, negotiateOffer, openChickenShop, rollHeadhunterOffer, spendGapYear, stagePassChance } from './jobs'
 import { acceptOffer } from './hub'
 import { createRng } from './rng'
-import { rankById } from '../data'
+import { CHICKEN, rankById } from '../data'
 import { createGame } from './setup'
 import type { GameState, Profile } from './types'
 
@@ -179,5 +179,64 @@ describe('연봉 협상', () => {
     const after = negotiateOffer(hub({ offers: [offer] }), 0, 5)
     const loaded = JSON.parse(JSON.stringify(after)) as GameState
     expect(() => negotiateOffer(loaded, 0, 10)).toThrow()
+  })
+})
+
+describe('40대 재취업', () => {
+  const gapRecord = (g: GameState) => ({ ...g.history.at(-1)!, gap: true })
+
+  it('40세부터 서류·면접 통과 확률이 나이만큼 깎이고 코딩테스트는 그대로다', () => {
+    const young = hub({ age: 35 })
+    const old = hub({ age: 50 })
+    expect(stagePassChance(old, 'midsize', 'resume', false)).toBeLessThan(stagePassChance(young, 'midsize', 'resume', false))
+    expect(stagePassChance(old, 'midsize', 'finalInterview', false)).toBeLessThan(stagePassChance(young, 'midsize', 'finalInterview', false))
+    expect(stagePassChance(old, 'midsize', 'codingTest', false)).toBe(stagePassChance(young, 'midsize', 'codingTest', false))
+  })
+
+  it('취업 준비로 보낸 해가 이어질수록 서류가 더 어려워진다', () => {
+    const g = hub({ age: 45, unemployed: true })
+    const record = { calendarYear: 2030, age: 44, company: g.company, rank: g.rank, focus: 'job_hunt' as const, grade: 'D' as const,
+      salaryBefore: g.salary, salaryAfter: g.salary, statsBefore: g.stats, statsAfter: g.stats, events: [], triggers: [], feed: [] }
+    const oneGap = { ...g, history: [gapRecord({ ...g, history: [record] })] }
+    const twoGaps = { ...g, history: [oneGap.history[0], oneGap.history[0]] }
+    expect(stagePassChance(oneGap, 'midsize', 'resume', false)).toBeLessThan(stagePassChance(g, 'midsize', 'resume', false))
+    expect(stagePassChance(twoGaps, 'midsize', 'resume', false)).toBeLessThan(stagePassChance(oneGap, 'midsize', 'resume', false))
+  })
+})
+
+describe('치킨집 창업', () => {
+  it('실직한 40세 이상만 차릴 수 있다', () => {
+    expect(canOpenChickenShop(hub({ age: 45, unemployed: true }))).toBe(true)
+    expect(canOpenChickenShop(hub({ age: 39, unemployed: true }))).toBe(false)
+    expect(canOpenChickenShop(hub({ age: 45, unemployed: false }))).toBe(false)
+  })
+
+  it('차리면 창업비가 빠지고 치킨집 엔딩으로 은퇴한다', () => {
+    const g = hub({ age: 48, unemployed: true, assets: 20000 })
+    const s = openChickenShop(g)
+    expect(s.phase).toBe('retired')
+    expect(s.retirement?.reason).toBe('chicken')
+    expect(['franchise', 'local', 'closed']).toContain(s.retirement?.chicken)
+    if (s.retirement?.chicken === 'closed') expect(s.assets).toBe(20000 - CHICKEN.cost)
+    expect(s.achievements.some((id) => id === 'chicken_shop' || id === 'chicken_franchise')).toBe(true)
+  })
+
+  it('같은 시드면 같은 결과가 나온다', () => {
+    const g = hub({ age: 48, unemployed: true })
+    expect(openChickenShop(g).retirement).toEqual(openChickenShop(g).retirement)
+  })
+
+  it('결과 확률의 합은 1이고 소통이 높을수록 덜 망한다', () => {
+    const low = chickenChances(hub({ stats: { ...hub().stats, communication: 20 } }))
+    const high = chickenChances(hub({ stats: { ...hub().stats, communication: 90 } }))
+    for (const c of [low, high]) expect(c.franchise + c.local + c.closed).toBeCloseTo(1, 5)
+    expect(high.closed).toBeLessThan(low.closed)
+    expect(high.franchise).toBeGreaterThan(low.franchise)
+  })
+
+  it('여러 판을 돌리면 세 가지 결과가 모두 나온다', () => {
+    const seen = new Set<string>()
+    for (let seed = 1; seed <= 200; seed++) seen.add(openChickenShop(hub({ age: 48, unemployed: true, rngState: seed })).retirement!.chicken!)
+    expect(seen).toEqual(new Set(['franchise', 'local', 'closed']))
   })
 })

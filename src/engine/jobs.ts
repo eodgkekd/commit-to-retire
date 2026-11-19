@@ -1,11 +1,23 @@
 // 이직 시장: 헤드헌터 제안, 채용 공고, 지원 전형, 취준 공백기
 
-import { companyTypeById, companyTypes, focusById, industries, ranks, rankById, RETIRE_AGE } from '../data'
+import {
+  AGE_HIRING_PENALTY,
+  CHICKEN,
+  companyTypeById,
+  companyTypes,
+  focusById,
+  GAP_HIRING_PENALTY,
+  industries,
+  ranks,
+  rankById,
+  RETIRE_AGE,
+} from '../data'
 import { evaluateRetirement } from './ending'
 import { createRng, type Rng } from './rng'
-import { clamp, hiringScore, marketSalary, meetsStats, pickCompanyName } from './rules'
+import { clamp, hiringScore, marketSalary, meetsStats, pickCompanyName, unlock } from './rules'
 import type {
   ApplicationResult,
+  ChickenOutcome,
   Company,
   CompanyTypeId,
   FocusId,
@@ -88,7 +100,8 @@ export function generatePostings(s: GameState, rng: Rng): JobPosting[] {
 /** 선택한 트랙 안에서 경력·역량을 갖추면 한 단계 위 포지션도 제안한다. */
 function postingRank(s: GameState, rng: Rng): RankId {
   // 쉬어간 해에는 승진 포지션을 제안하지 않는다. 이직 준비는 승진 이직이 가능하다.
-  if ((s.focus ?? s.history.at(-1)?.focus) === 'rest') return s.rank
+  // 실직 중에는 같은 직급으로만 재취업한다.
+  if (s.unemployed || (s.focus ?? s.history.at(-1)?.focus) === 'rest') return s.rank
   const up = ranks.find(
     (r) => r.from === s.rank && (r.track === 'common' || r.track === s.preferredTrack || r.track === rankById[s.rank].track) &&
       s.careerYear >= r.minYears && s.yearsAtRank >= 2 && meetsStats(s.stats, r.minStats),
@@ -155,7 +168,22 @@ export function stagePassChance(s: GameState, type: CompanyTypeId, stage: Hiring
     }
   })()
   const jobHuntBonus = s.history[s.history.length - 1]?.focus === 'job_hunt' ? 0.1 : 0
-  return clamp(0.5 + (value - target) / 40 + jobHuntBonus, 0.05, 0.95)
+  return clamp(0.5 + (value - target) / 40 + jobHuntBonus - agePenalty(s, stage) - gapPenalty(s, stage), 0.05, 0.95)
+}
+
+/** 40대부터 서류와 면접에서 나이가 걸린다. 코딩테스트는 점수로만 본다 */
+export function agePenalty(s: GameState, stage: HiringStage): number {
+  if (stage === 'codingTest') return 0
+  const { from, perYear, max } = AGE_HIRING_PENALTY
+  return Math.min(max, Math.max(0, s.age - from + 1) * perYear)
+}
+
+/** 취업 준비로 보낸 해가 이어질수록 서류에서 "공백기가 기네요"를 듣는다 */
+export function gapPenalty(s: GameState, stage: HiringStage): number {
+  if (stage !== 'resume') return 0
+  let years = 0
+  for (let i = s.history.length - 1; i >= 0 && s.history[i].gap; i--) years++
+  return years * GAP_HIRING_PENALTY
 }
 
 export function applyToPosting(state: GameState, index: number): { state: GameState; result: ApplicationResult } {
@@ -232,3 +260,36 @@ export function spendGapYear(state: GameState): GameState {
   return s
 }
 
+
+// ─── 실직한 40대: 치킨집 창업 ───────────────────────────
+
+export function canOpenChickenShop(s: GameState): boolean {
+  return s.phase === 'hub' && s.unemployed && s.age >= CHICKEN.minAge
+}
+
+/** 치킨집 결과 확률. 소통이 높을수록 단골이 생긴다 */
+export function chickenChances(s: GameState): Record<ChickenOutcome, number> {
+  const d = s.stats.communication - CHICKEN.communicationPivot
+  const franchise = clamp(CHICKEN.chances.franchise + d * 0.003, 0.03, 0.3)
+  const closed = clamp(CHICKEN.chances.closed - d * 0.005, 0.25, 0.75)
+  return { franchise, closed, local: 1 - franchise - closed }
+}
+
+/** 퇴직금과 모은 돈으로 치킨집을 차리고 은퇴한다 */
+export function openChickenShop(state: GameState): GameState {
+  if (!canOpenChickenShop(state)) throw new Error('지금은 치킨집을 차릴 수 없어요')
+  const s = structuredClone(state)
+  const rng = createRng(s.rngState)
+  const chances = chickenChances(s)
+  const outcome = rng.weighted<ChickenOutcome>(['franchise', 'local', 'closed'], (o) => chances[o])!
+
+  s.assets -= CHICKEN.cost
+  if (outcome === 'local') s.assets += CHICKEN.localYearlyProfit * Math.max(1, RETIRE_AGE - s.age)
+  if (outcome === 'franchise') s.assets += CHICKEN.franchiseProfit
+  unlock(s, outcome === 'franchise' ? 'chicken_franchise' : 'chicken_shop')
+
+  s.retirement = { ...evaluateRetirement(s, 'chicken'), chicken: outcome }
+  s.phase = 'retired'
+  s.rngState = rng.state
+  return s
+}

@@ -2,14 +2,24 @@ import { useState } from 'react'
 import { achievements, companyTypeById, educationById, rankById } from '../data'
 import { careerPeriodLabel, endingShareText, type EndingResult } from '../engine/career'
 import { createShortResultUrl, readSharedResult } from '../engine/share'
-import { formatSalary, type FameGrade, type RetireReason } from '../engine'
+import { formatSalary, type ChickenOutcome, type FameGrade, type RetireReason, type Retirement } from '../engine'
 import { Button, Card, Screen, StatBars } from '../ui'
 
-const REASON: Record<RetireReason, string> = {
+const REASON: Record<Exclude<RetireReason, 'chicken'>, string> = {
   age: '60세, 정년을 채우고 은퇴했어요',
   voluntary: '스스로 키보드를 내려놓았어요',
   burnout: '세 번째 번아웃 끝에 업계를 떠났어요',
   startup_quit: '창업 실패 후 다른 길을 찾았어요',
+}
+
+const CHICKEN: Record<ChickenOutcome, string> = {
+  franchise: '퇴직금으로 차린 치킨집이 전국 프랜차이즈가 됐어요 🐔',
+  local: '키보드 대신 튀김 바구니를 잡았어요. 동네 맛집 사장님이에요 🍗',
+  closed: '치킨집을 차렸지만 2년 만에 문을 닫았어요 🍗',
+}
+
+function reasonText(r: Retirement): string {
+  return r.reason === 'chicken' ? CHICKEN[r.chicken ?? 'local'] : REASON[r.reason]
 }
 
 const GRADE_STYLE: Record<FameGrade, string> = {
@@ -84,7 +94,7 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
       {shared && <p className="text-center text-sm text-blue-600">공유받은 커리어 결과예요</p>}
       <div className="flex flex-col items-center gap-3 pt-4 text-center">
         <span className="text-6xl">{game.profile.emoji}</span>
-        <p className="text-sm text-gray-500">{REASON[r.reason]}</p>
+        <p className="text-sm text-gray-500">{reasonText(r)}</p>
         <div className={`flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br text-5xl font-black text-white shadow-lg ${GRADE_STYLE[r.fameGrade]}`}>
           {r.fameGrade}
         </div>

@@ -12,8 +12,9 @@ export function validResult(value: unknown): value is EndingResult {
   if (!object(value)) return false
   const { profile, retirement, stats, career, achievements } = value
   if (!object(profile) || !text(profile.name, 100) || !text(profile.emoji, 32) || !known(profile.education, educationById)) return false
-  if (!object(retirement) || !['age', 'voluntary', 'burnout', 'startup_quit'].includes(String(retirement.reason)) ||
+  if (!object(retirement) || !['age', 'voluntary', 'burnout', 'startup_quit', 'chicken'].includes(String(retirement.reason)) ||
     !['S', 'A', 'B', 'C', 'D'].includes(String(retirement.fameGrade)) || !text(retirement.title, 100) || !number(retirement.fameScore, 0, 10000)) return false
+  if (retirement.chicken !== undefined && (retirement.reason !== 'chicken' || !['franchise', 'local', 'closed'].includes(String(retirement.chicken)))) return false
   if (!known(value.bestRank, rankById) || !number(value.salary, 0, 1e9) || !number(value.assets, -1e9, 1e12) ||
     !number(value.jobChanges, 0, 100) || !number(value.years, 0, 100)) return false
   if (!object(stats) || !Object.keys(statLabels).every((key) => number(stats[key], 0, 100))) return false
