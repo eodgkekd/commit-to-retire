@@ -13,7 +13,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.01,
     promotionSpeed: 0.8,
     hiringBar: 58,
-    names: ['삼선전자', '엘쥐전자', '에쓰케이텔레콤', '현다이자동차'],
+    names: ['삼선전자', '엘쥐전자', '에쓰케이텔레콤', '현다이자동차', '롯대쇼핑', '한와솔루션', '씨재이제일제당', '포스꼬', '두손에너빌리티', '신세게', '케이띠'],
   },
   {
     id: 'chaebol_si',
@@ -26,7 +26,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.03,
     promotionSpeed: 0.8,
     hiringBar: 48,
-    names: ['삼선에스디에쓰', '엘쥐씨엔에스', '에쓰케이씨앤씨', '현다이오토에버'],
+    names: ['삼선에스디에쓰', '엘쥐씨엔에스', '에쓰케이씨앤씨', '현다이오토에버', '롯대이노베이트', '한와시스템', '씨재이올리브네트웍스', '포스꼬디엑스', '신세게아이앤씨', '케이띠디에스'],
   },
   {
     id: 'bigtech',
@@ -39,7 +39,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.03,
     promotionSpeed: 1.0,
     hiringBar: 63,
-    names: ['네모버', '까까오', '쿠팽', '토스트', '배달의민속', '양파마켓'],
+    names: ['네모버', '까까오', '쿠팽', '토스트', '배달의민속', '양파마켓', '라인업', '넥선', '엔씨솦트', '크래프통'],
   },
   {
     id: 'foreign',
@@ -52,7 +52,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.08,
     promotionSpeed: 1.0,
     hiringBar: 66,
-    names: ['구글리 코리아', '아마존강 코리아', '마이크로하드 코리아', '메타버스 코리아'],
+    names: ['구글리 코리아', '아마존강 코리아', '마이크로하드 코리아', '메타버스 코리아', '애풀 코리아', '오라클리 코리아', '세일즈포스터 코리아', '엔비디어 코리아', '넷플릭수 코리아', '에스에이피이 코리아'],
   },
   {
     id: 'midsize',
@@ -65,7 +65,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.03,
     promotionSpeed: 1.0,
     hiringBar: 35,
-    names: ['한결정보', '대명시스템', '우성테크', '신화네트웍스'],
+    names: ['한결정보', '대명시스템', '우성테크', '신화네트웍스', '동양시스템즈', '한솔정보', '태양정보통신', '세방테크', '미래엔시스', '동화네트', '성원정보', '우리아이티'],
   },
   {
     id: 'sme_si',
@@ -78,7 +78,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.08,
     promotionSpeed: 1.2,
     hiringBar: 15,
-    names: ['(주)솔루션원', '다온아이티', '미래정보기술', '한빛소프트웨어'],
+    names: ['(주)솔루션원', '다온아이티', '미래정보기술', '한빛소프트웨어', '(주)코드원', '에이스정보', '한국전산개발', '다올시스템', '유니온아이티', '(주)넥스트솔루션', '정보나라', '하나로시스템'],
   },
   {
     id: 'agency',
@@ -91,7 +91,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.15,
     promotionSpeed: 1.2,
     hiringBar: 10,
-    names: ['픽셀앤코드', '스튜디오 런치', '웹공방', '앱팩토리'],
+    names: ['픽셀앤코드', '스튜디오 런치', '웹공방', '앱팩토리', '디지털공방', '크리에이티브 랩스', '모바일팩토리', '웹앤앱스튜디오', '브릿지코드', '코딩하우스'],
   },
   {
     id: 'seed',
@@ -104,7 +104,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.25,
     promotionSpeed: 1.5,
     hiringBar: 25,
-    names: ['주식회사 무언가', '블루밍랩스', '퀵스타트', '포텐셜'],
+    names: ['주식회사 무언가', '블루밍랩스', '퀵스타트', '포텐셜', '헬로월드랩', '언더독스', '첫걸음', '스타트포인트', '린캔버스', '피봇', '미닛츠', '오늘의실험'],
   },
   {
     id: 'series_b',
@@ -117,7 +117,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.15,
     promotionSpeed: 1.2,
     hiringBar: 40,
-    names: ['그로스핏', '데일리업', '스케일웨이', '넥스트스텝'],
+    names: ['그로스핏', '데일리업', '스케일웨이', '넥스트스텝', '스텝업', '리프트오프', '플랜비', '하이퍼그로스', '온보드', '브릭스', '모멘텀', '데이투'],
   },
   {
     id: 'unicorn',
@@ -130,7 +130,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.08,
     promotionSpeed: 1.0,
     hiringBar: 55,
-    names: ['무신상', '야높자', '마켓쿨리', '직반'],
+    names: ['무신상', '야높자', '마켓쿨리', '직반', '어제의집', '세나무', '천둥장터', '타카', '거기어때', '당근머니'],
   },
   {
     id: 'finance_public',
@@ -143,7 +143,7 @@ export const companyTypes: CompanyTypeDef[] = [
     risk: 0.01,
     promotionSpeed: 0.9,
     hiringBar: 55,
-    names: ['국밍은행', '신한은행권', '한국정보화공단', '코레일테크'],
+    names: ['국밍은행', '신한은행권', '한국정보화공단', '코레일테크', '두나은행', '너희은행', '한국전류공사', '국민연금정보원', '까까오뱅크', '토스트뱅크'],
   },
 ]
 

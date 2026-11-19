@@ -57,7 +57,7 @@ export function createGame({ profile, companyType, industry, seed }: NewGameInpu
   const rng = createRng(seed)
   const stats = startingStats(profile)
   const salary = marketSalary(companyType, industry, 'newbie', 1)
-  const company = { name: pickCompanyName(rng, companyType), type: companyType, industry }
+  const company = { name: pickCompanyName(rng, companyType)!, type: companyType, industry }
 
   return {
     version: 1,

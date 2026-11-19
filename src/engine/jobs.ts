@@ -71,8 +71,8 @@ export function rollHeadhunterOffer(s: GameState, grade: Grade, focus: FocusId, 
     const type = rng.pick(companyTypes).id
     if (hiringScore(s.stats, s.profile.education, type) < companyTypeById[type].hiringBar) continue
     const industry = rng.pick(industries).id
-    const name = pickCompanyName(rng, type, s.company.name)
-    if (name === s.company.name) continue
+    const name = pickCompanyName(rng, type, [s.company.name, ...closedCompanies(s)])
+    if (!name) continue
     const offer = makeOffer(s, { name, type, industry }, postingRank(s, rng), rng)
     if (!worthMoving(s, offer)) continue
     return [{ ...offer, source: 'headhunter' }]
@@ -80,13 +80,18 @@ export function rollHeadhunterOffer(s: GameState, grade: Grade, focus: FocusId, 
   return []
 }
 
+/** 다니다가 폐업한 회사들. 공고와 헤드헌터 제안에 다시 나오지 않는다 */
+export function closedCompanies(s: GameState): string[] {
+  return s.history.filter((r) => r.triggers.includes('companyClosed')).map((r) => r.company.name)
+}
+
 export function generatePostings(s: GameState, rng: Rng): JobPosting[] {
   const postings: JobPosting[] = []
-  const used = new Set([s.company.name])
+  const used = new Set([s.company.name, ...closedCompanies(s)])
   for (let attempt = 0; attempt < 30 && postings.length < POSTINGS_PER_YEAR; attempt++) {
     const type = rng.pick(companyTypes).id
-    const name = pickCompanyName(rng, type)
-    if (used.has(name)) continue
+    const name = pickCompanyName(rng, type, [...used])
+    if (!name) continue
     used.add(name)
     const company: Company = { name, type, industry: rng.pick(industries).id }
     const rank = postingRank(s, rng)

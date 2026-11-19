@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applicationLimit, applyToPosting, canOpenChickenShop, canSpendGapYear, chickenChances, generatePostings, headhunterChance, makeOffer, negotiateOffer, openChickenShop, rollHeadhunterOffer, spendGapYear, stagePassChance } from './jobs'
+import { applicationLimit, applyToPosting, canOpenChickenShop, canSpendGapYear, chickenChances, closedCompanies, generatePostings, headhunterChance, makeOffer, negotiateOffer, openChickenShop, rollHeadhunterOffer, spendGapYear, stagePassChance } from './jobs'
 import { acceptOffer } from './hub'
 import { createRng } from './rng'
 import { CHICKEN, rankById } from '../data'
@@ -238,5 +238,21 @@ describe('치킨집 창업', () => {
     const seen = new Set<string>()
     for (let seed = 1; seed <= 200; seed++) seen.add(openChickenShop(hub({ age: 48, unemployed: true, rngState: seed })).retirement!.chicken!)
     expect(seen).toEqual(new Set(['franchise', 'local', 'closed']))
+  })
+})
+
+describe('폐업한 회사', () => {
+  it('다니다 폐업한 회사는 채용 공고와 헤드헌터 제안에 다시 나오지 않는다', () => {
+    const g = hub({ unemployed: true })
+    const closed = { ...g.history.at(-1), calendarYear: 2030, age: 30, company: { name: '주식회사 무언가', type: 'seed' as const, industry: 'b2c' as const },
+      rank: g.rank, focus: 'study' as const, grade: 'B' as const, salaryBefore: g.salary, salaryAfter: g.salary, statsBefore: g.stats, statsAfter: g.stats,
+      events: [], triggers: ['companyClosed' as const], feed: [] }
+    const s = { ...g, history: [closed] }
+    expect(closedCompanies(s)).toEqual(['주식회사 무언가'])
+    for (let seed = 1; seed <= 200; seed++) {
+      const rng = createRng(seed)
+      const names = [...generatePostings(s, rng).map((p) => p.company.name), ...rollHeadhunterOffer(s, 'S', 'networking', rng).map((o) => o.company.name)]
+      expect(names).not.toContain('주식회사 무언가')
+    }
   })
 })

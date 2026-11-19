@@ -106,9 +106,10 @@ export function rankLadderIndex(rank: RankId): number {
   return i
 }
 
-export function pickCompanyName(rng: Rng, type: CompanyTypeId, exclude?: string): string {
-  const names = companyTypeById[type].names.filter((n) => n !== exclude)
-  return rng.pick(names.length > 0 ? names : companyTypeById[type].names)
+/** 회사 이름을 하나 고른다. 뺄 이름을 빼고 남는 게 없으면 null */
+export function pickCompanyName(rng: Rng, type: CompanyTypeId, exclude: string[] = []): string | null {
+  const names = companyTypeById[type].names.filter((n) => !exclude.includes(n))
+  return names.length > 0 ? rng.pick(names) : null
 }
 
 export function formatSalary(manwon: number): string {
