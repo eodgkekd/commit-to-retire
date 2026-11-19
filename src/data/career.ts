@@ -109,7 +109,7 @@ export const gradeThresholds: { grade: Grade; minScore: number; raise: number }[
 
 /** 명성 점수 → 엔딩 등급 */
 export const fameGrades: { grade: FameGrade; minScore: number; title: string }[] = [
-  { grade: 'S', minScore: 140, title: '한국 IT의 전설' },
+  { grade: 'S', minScore: 125, title: '한국 IT의 전설' },
   { grade: 'A', minScore: 112, title: '업계가 아는 이름' },
   { grade: 'B', minScore: 85, title: '믿고 맡기는 시니어' },
   { grade: 'C', minScore: 50, title: '무난한 월급쟁이' },
@@ -123,7 +123,7 @@ export const achievements: AchievementDef[] = [
   { id: 'one_company', title: '한 우물', emoji: '🪣', description: '한 회사에서 20년을 버텼어요.', fame: 10 },
   { id: 'stock_lottery', title: '스톡옵션 로또', emoji: '💰', description: '회사가 엑싯에 성공했어요.', fame: 12 },
   { id: 'stock_tissue', title: '스톡옵션 휴지', emoji: '🧻', description: '다니던 회사가 세 번 망했어요.', fame: 5 },
-  { id: 'three_am', title: '새벽 3시의 수호자', emoji: '🌙', description: '장애 대응을 열 번 했어요.', fame: 8 },
+  { id: 'three_am', title: '새벽 3시의 수호자', emoji: '🌙', description: '장애 대응을 여덟 번 했어요.', fame: 8 },
   { id: 'non_major_cto', title: '비전공 CTO', emoji: '👑', description: '비전공으로 시작해 CTO가 됐어요.', fame: 20 },
   { id: 'open_source_star', title: '오픈소스 스타', emoji: '⭐', description: '평판 90을 넘겼어요.', fame: 15 },
   { id: 'no_burnout', title: '무사고 퇴직', emoji: '🕊️', description: '번아웃 없이 60세까지 일했어요.', fame: 10 },

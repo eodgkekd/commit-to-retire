@@ -2207,4 +2207,233 @@ export const events: GameEvent[] = [
       },
     ],
   },
+
+  // ─── 업종별: AI · B2B SaaS · 공공 ───────────────────────
+  {
+    id: 'ai_demo_day',
+    category: '업계',
+    emoji: '🤖',
+    title: '데모는 내일, 모델은 {state}',
+    text: '내일 투자자 데모인데 모델이 {state}. 대표님은 "데모만 되면 된다"고 해요.',
+    weight: 8,
+    conditions: { industries: ['ai'] },
+    vars: {
+      state: ['아직 학습 중이에요', '자꾸 엉뚱한 답을 해요', '어제부터 30초씩 걸려요'],
+    },
+    choices: [
+      {
+        label: '데모용 답변을 미리 박아 둔다',
+        outcomes: [
+          { chance: 0.7, text: '데모는 완벽했어요. 투자자가 "진짜 똑똑하네요"라고 했어요. 양심이 조금 아파요.', effects: { gradeBonus: 8, stamina: -5 } },
+          { chance: 0.3, text: '투자자가 대본에 없는 질문을 했어요. 정적이 길었어요.', tone: 'unlucky', effects: { gradeBonus: -8, stats: { reputation: -1 } } },
+        ],
+      },
+      {
+        label: '밤새 진짜로 고친다',
+        check: { coding: 60 },
+        outcomes: [
+          { chance: 0.6, text: '새벽 5시에 잡았어요. 데모에서 진짜로 잘 돌아갔어요.', tone: 'skill', effects: { stamina: -15, gradeBonus: 10, stats: { coding: 2 } } },
+          { chance: 0.4, text: '못 고쳤어요. 데모는 "네트워크 문제"로 끝났어요.', tone: 'unlucky', effects: { stamina: -15, gradeBonus: -5 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ai_gpu_bill',
+    category: '회사',
+    emoji: '🔥',
+    title: 'GPU 청구서 {amount}억',
+    text: '이번 달 GPU 청구서가 {amount}억 원 나왔어요. 누가 학습을 안 끄고 퇴근했대요.',
+    weight: 6,
+    conditions: { industries: ['ai'] },
+    vars: { amount: { min: 2, max: 9 } },
+    choices: [
+      {
+        label: '비용 줄이는 작업을 맡는다',
+        check: { design: 55 },
+        outcomes: [
+          { chance: 0.65, text: '스팟 인스턴스와 캐시로 비용을 절반으로 줄였어요. CFO가 이름을 기억해요.', tone: 'skill', effects: { gradeBonus: 10, stats: { design: 2 } } },
+          { chance: 0.35, text: '줄이다가 학습이 두 번 날아갔어요. 연구팀이 째려봐요.', tone: 'unlucky', effects: { gradeBonus: -6, stats: { communication: -1 } } },
+        ],
+      },
+      {
+        label: '범인이 내가 아니길 빈다',
+        outcomes: [
+          { chance: 0.8, text: '범인은 옆 팀이었어요. 휴.', effects: {} },
+          { chance: 0.2, text: '로그를 보니… 나였어요. 지난주 금요일의 나.', tone: 'unlucky', effects: { gradeBonus: -10, stamina: -5 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ai_paper_hype',
+    category: '업계',
+    emoji: '📄',
+    title: '새 논문이 나왔어요',
+    text: '{lab}에서 새 논문이 나왔어요. 우리가 반년 동안 만든 걸 {days}일 만에 넘어섰대요.',
+    weight: 6,
+    conditions: { industries: ['ai'], minCareerYear: 1 },
+    vars: {
+      lab: ['오픈에어아이', '딥마인더', '구글리 리서치', '메타버스 연구소'],
+      days: { min: 3, max: 14 },
+    },
+    choices: [
+      {
+        label: '주말에 논문을 재현해 본다',
+        outcomes: [
+          { chance: 1, text: '재현은 반쯤 됐어요. 그래도 회의에서 할 말이 생겼어요.', effects: { stamina: -10, stats: { coding: 2, reputation: 1 } } },
+        ],
+      },
+      {
+        label: '"우리 데이터가 진짜 경쟁력"이라고 정리한다',
+        check: { communication: 50 },
+        outcomes: [
+          { chance: 0.6, text: '대표님이 그 말을 투자 자료에 그대로 넣었어요.', tone: 'skill', effects: { gradeBonus: 6, stats: { communication: 1 } } },
+          { chance: 0.4, text: '"그 데이터, 저쪽도 있던데요?" 신입의 한마디에 회의가 끝났어요.', tone: 'unlucky', effects: { gradeBonus: -4 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'saas_big_customer',
+    category: '회사',
+    emoji: '🤝',
+    title: '{customer}의 맞춤 요청',
+    text: '매출의 {share}%를 차지하는 {customer}에서 자기들만 쓸 기능을 만들어 달래요. 영업팀은 이미 "된다"고 했어요.',
+    weight: 8,
+    conditions: { industries: ['b2b_saas'] },
+    vars: {
+      customer: ['큰손물산', '대한제일상사', '글로벌코퍼레이션', '한빛그룹'],
+      share: { min: 20, max: 45 },
+    },
+    choices: [
+      {
+        label: '설정으로 켜고 끄게 일반화해서 만든다',
+        check: { design: 55 },
+        outcomes: [
+          { chance: 0.6, text: '다른 고객사도 그 기능을 쓰기 시작했어요. 이번 분기 효자 기능이에요.', tone: 'skill', effects: { gradeBonus: 10, stats: { design: 2 } } },
+          { chance: 0.4, text: '일반화하다가 납기를 넘겼어요. 영업팀장이 직접 찾아왔어요.', tone: 'unlucky', effects: { gradeBonus: -8, stamina: -8 } },
+        ],
+      },
+      {
+        label: 'if 문으로 빠르게 넣는다',
+        outcomes: [
+          { chance: 1, text: '코드에 "{customer}일 때만" 분기가 하나 늘었어요. 벌써 일곱 번째예요.', effects: { gradeBonus: 4, stats: { domain: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'saas_churn',
+    category: '회사',
+    emoji: '📉',
+    title: '해지 메일',
+    text: '{years}년 쓴 고객사가 해지 메일을 보냈어요. 이유는 "{reason}"래요.',
+    weight: 6,
+    conditions: { industries: ['b2b_saas'], minCareerYear: 1 },
+    vars: {
+      years: { min: 2, max: 6 },
+      reason: ['더 싼 곳을 찾았어요', '새로 온 임원이 다른 걸 써 봤대요', '로딩이 너무 느려요'],
+    },
+    choices: [
+      {
+        label: '고객사 담당자와 직접 통화한다',
+        check: { communication: 55 },
+        outcomes: [
+          { chance: 0.55, text: '한 시간 통화 끝에 1년 연장을 받아 냈어요. CS팀이 커피를 쐈어요.', tone: 'skill', effects: { gradeBonus: 8, stats: { communication: 2, domain: 1 } } },
+          { chance: 0.45, text: '"이미 계약했어요"라는 말만 들었어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+      {
+        label: '해지 사유를 정리해 회의에 올린다',
+        outcomes: [
+          { chance: 1, text: '회의에서 다들 고개를 끄덕였어요. 그리고 아무 일도 일어나지 않았어요.', effects: { stats: { domain: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'public_year_end_budget',
+    category: '일정',
+    emoji: '🗓️',
+    title: '연말 예산 소진',
+    text: '{month}월인데 올해 예산이 남았대요. 연말까지 "뭐라도" 만들어서 써야 한대요.',
+    weight: 8,
+    conditions: { industries: ['public'] },
+    vars: { month: ['10', '11', '12'] },
+    choices: [
+      {
+        label: '진짜 필요한 걸 찾아서 제안한다',
+        check: { domain: 50 },
+        outcomes: [
+          { chance: 0.6, text: '민원 처리 시간을 줄이는 기능을 넣었어요. 내년 예산에도 반영됐어요.', tone: 'skill', effects: { gradeBonus: 8, stats: { domain: 2 } } },
+          { chance: 0.4, text: '"그건 내년 사업으로 하죠." 결국 대시보드를 하나 더 만들었어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+      {
+        label: '시키는 대시보드를 만든다',
+        outcomes: [
+          { chance: 1, text: '아무도 안 보는 대시보드가 하나 더 생겼어요. 그래도 칼퇴했어요.', effects: { stamina: 5 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'public_audit',
+    category: '회사',
+    emoji: '🧾',
+    title: '국정감사 자료 요청',
+    text: '국정감사 자료 요청이 왔어요. 지난 {years}년 치 시스템 로그를 {hours}시간 안에 뽑아 달래요.',
+    weight: 6,
+    conditions: { industries: ['public'], minCareerYear: 1 },
+    vars: {
+      years: { min: 3, max: 10 },
+      hours: ['12', '24', '48'],
+    },
+    choices: [
+      {
+        label: '스크립트로 한 번에 뽑는다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.65, text: '두 시간 만에 끝냈어요. 과장님이 "역시 IT"라며 어깨를 두드렸어요.', tone: 'skill', effects: { gradeBonus: 8, stats: { coding: 1 } } },
+          { chance: 0.35, text: '로그 형식이 해마다 달랐어요. 결국 밤새 엑셀로 맞췄어요.', tone: 'unlucky', effects: { stamina: -12 } },
+        ],
+      },
+      {
+        label: '팀원들과 나눠서 손으로 정리한다',
+        outcomes: [
+          { chance: 1, text: '셋이서 밤새 엑셀을 맞췄어요. 전우애가 생겼어요.', effects: { stamina: -8, stats: { communication: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'public_old_browser',
+    category: '레거시',
+    emoji: '🧭',
+    title: '{browser} 지원 요청',
+    text: '{place}에서 아직 {browser}(을)를 쓴대요. 새 시스템이 거기서도 돌아가야 한대요.',
+    weight: 6,
+    conditions: { industries: ['public', 'si_sm'] },
+    vars: {
+      browser: ['인터넷 익스플로러 11', '액티브엑스 플러그인', '10년 된 전용 브라우저'],
+      place: ['읍사무소 세 곳', '본청 민원실', '산하기관 전산실'],
+    },
+    choices: [
+      {
+        label: '호환 모드를 따로 만든다',
+        outcomes: [
+          { chance: 1, text: '코드가 두 벌이 됐어요. 대신 민원은 안 들어와요.', effects: { stamina: -8, stats: { domain: 2 }, gradeBonus: 4 } },
+        ],
+      },
+      {
+        label: '브라우저 교체를 공문으로 요청한다',
+        check: { communication: 50 },
+        outcomes: [
+          { chance: 0.5, text: '공문이 통했어요. 다음 달부터 새 브라우저를 깐대요.', tone: 'skill', effects: { gradeBonus: 6, stats: { communication: 2 } } },
+          { chance: 0.5, text: '"예산이 없어요." 공문이 그대로 돌아왔어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+    ],
+  },
 ]
