@@ -4,6 +4,7 @@ import { careerPeriodLabel, endingShareText, type EndingResult } from '../engine
 import { createShortResultUrl, readSharedResult } from '../engine/share'
 import { formatSalary, type ChickenOutcome, type FameGrade, type RetireReason, type Retirement } from '../engine'
 import { Button, Card, Screen, StatBars } from '../ui'
+import { drawResultImage } from '../ui/resultImage'
 
 const REASON: Record<Exclude<RetireReason, 'chicken'>, string> = {
   age: '60세, 정년을 채우고 은퇴했어요',
@@ -52,6 +53,37 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
       setShareMessage('짧은 링크가 준비됐어요. 링크를 복사하거나 공유할 앱을 선택해 주세요.')
     } catch (error) {
       setShareMessage(error instanceof Error ? error.message : '공유 링크를 만들지 못했어요. 다시 시도해 주세요.')
+    } finally {
+      setSharing(false)
+    }
+  }
+
+  async function saveImage() {
+    if (sharing) return
+    setSharing(true)
+    setShareMessage('')
+    try {
+      const blob = await drawResultImage(game, reasonText(r), window.location.origin)
+      const file = new File([blob], `커밋에서은퇴까지-${game.profile.name}.png`, { type: 'image/png' })
+      // 모바일은 공유 시트로 바로 인스타·카톡에 올리고, 안 되면 파일로 내려받는다
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: '커밋에서 은퇴까지' })
+          setShareMessage('이미지를 공유했어요.')
+          return
+        } catch (error) {
+          if (error instanceof Error && error.name === 'AbortError') return
+        }
+      }
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = file.name
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      setShareMessage('결과 이미지를 저장했어요.')
+    } catch {
+      setShareMessage('이미지를 만들지 못했어요. 다시 시도해 주세요.')
     } finally {
       setSharing(false)
     }
@@ -119,6 +151,7 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
             <p className="text-xs text-gray-400">공유하면 이름과 커리어 결과가 저장되어 링크를 받은 사람이 볼 수 있어요.</p>
           </>
         )}
+        <Button variant="secondary" onClick={saveImage} disabled={sharing}>🖼️ 결과 카드 이미지로 저장</Button>
         <p role="status" className="text-sm text-gray-500">{shareMessage}</p>
         {manualCopy && <textarea aria-label="공유할 결과" readOnly value={manualCopy} onFocus={(e) => e.currentTarget.select()} rows={8} className="w-full rounded-xl border border-gray-200 p-3 text-sm" />}
       </div>

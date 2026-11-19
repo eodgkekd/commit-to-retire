@@ -10,7 +10,7 @@ export function checkAchievements(state: GameState, retiring: RetireReason | nul
   if (c.jobChanges >= 5) unlock(state, 'job_hopper')
   if (state.yearsAtCompany >= 20) unlock(state, 'one_company')
   if (c.startupFailures >= 3) unlock(state, 'stock_tissue')
-  if (c.incidents >= 10) unlock(state, 'three_am')
+  if (c.incidents >= 8) unlock(state, 'three_am')
   if (c.refactors >= 3) unlock(state, 'legacy_archaeologist')
   if (state.stats.reputation >= 90) unlock(state, 'open_source_star')
   if (state.rank === 'cto' && state.profile.education === 'non_major') unlock(state, 'non_major_cto')
