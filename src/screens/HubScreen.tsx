@@ -29,6 +29,9 @@ export function HubScreen({ game }: { game: GameState }) {
   const postings = game.postings ?? []
   const appsLeft = game.applicationsLeft ?? 0
   const gapYear = canSpendGapYear(game)
+  // 결과 팝업이 단계별로 보여주는 동안은 방금 합격한 회사의 제안을 목록에서 숨긴다 (결과가 뒤에서 먼저 보이지 않게)
+  const pendingReveal = lastApplication?.posting.company.name
+  const visibleOffers = game.offers.map((offer, index) => ({ offer, index })).filter(({ offer }) => offer.company.name !== pendingReveal)
   // 왜 실직했는지 (작년 연말 기록 기준, 공백기를 보낸 뒤에는 표시하지 않음)
   const lastRecord = game.history.at(-1)
   const jobLoss = lastRecord ? majorEvents(lastRecord, game).find((m) => JOB_LOSS_TRIGGERS.includes(m.trigger)) : undefined
@@ -90,10 +93,10 @@ export function HubScreen({ game }: { game: GameState }) {
 
       {!game.unemployed && <PromotionCard game={game} />}
 
-      {game.offers.length > 0 && (
+      {visibleOffers.length > 0 && (
         <section className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-gray-600">📨 받은 제안 {game.offers.length}건</p>
-          {game.offers.map((o, i) => (
+          <p className="text-sm font-medium text-gray-600">📨 받은 제안 {visibleOffers.length}건</p>
+          {visibleOffers.map(({ offer: o, index: i }) => (
             <OfferCard key={o.company.name} offer={o} game={game} onAccept={() => acceptOffer(i)} onNegotiate={(percent) => negotiateOffer(i, percent)} />
           ))}
           {!game.unemployed && (
@@ -128,7 +131,7 @@ export function HubScreen({ game }: { game: GameState }) {
         </section>
       )}
 
-      {postings.length === 0 && game.offers.length === 0 && !game.unemployed && (
+      {postings.length === 0 && visibleOffers.length === 0 && !game.unemployed && (
         <p className="rounded-2xl bg-gray-50 p-3 text-sm text-gray-500">지금 확인할 채용 공고가 없어요. 재직 중에는 연봉이 오르거나 더 높은 직급인 공고를 찾아드려요.</p>
       )}
 
