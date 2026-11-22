@@ -51,3 +51,17 @@ describe('공백기 뒤 이벤트', () => {
     expect(gapEvents.some((e) => isEligible(e, base))).toBe(false)
   })
 })
+
+describe('엔딩 모음', () => {
+  it('엔딩 key는 겹치지 않고, 은퇴 결과마다 모음에 있는 엔딩으로 이어진다', async () => {
+    const { endingCatalog, endingFor } = await import('./endings')
+    const keys = endingCatalog.map((e) => e.key)
+    expect(new Set(keys).size).toBe(keys.length)
+    const s = takeCareerExit(hub(), 'civil_servant')
+    expect(keys).toContain(endingFor(s.retirement!).key)
+    for (const reason of ['age', 'voluntary', 'burnout'] as const) {
+      expect(keys).toContain(endingFor({ reason, fameScore: 0, fameGrade: 'D', title: '' }).key)
+    }
+    expect(keys).toContain(endingFor({ reason: 'chicken', chicken: 'franchise', fameScore: 0, fameGrade: 'D', title: '' }).key)
+  })
+})

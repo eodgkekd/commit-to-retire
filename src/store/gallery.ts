@@ -4,10 +4,13 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { achievementById } from '../data'
 import type { FameGrade, GameState } from '../engine'
+import { endingFor } from '../engine/endings'
 
 interface GalleryStore {
   /** 업적 id → 딴 횟수 */
   unlocked: Record<string, number>
+  /** 엔딩 key → 본 횟수. 예전 기록에는 없을 수 있다 */
+  endings?: Record<string, number>
   /** 끝까지 마친 판 수 */
   plays: number
   /** 가장 좋았던 엔딩 등급 */
@@ -20,7 +23,7 @@ const GRADE_ORDER: FameGrade[] = ['S', 'A', 'B', 'C', 'D']
 
 export const useGallery = create<GalleryStore>()(
   persist(
-    (): GalleryStore => ({ unlocked: {}, plays: 0, bestGrade: null, recordedSeeds: [] }),
+    (): GalleryStore => ({ unlocked: {}, endings: {}, plays: 0, bestGrade: null, recordedSeeds: [] }),
     { name: 'commit-to-retire-gallery-v1', storage: createJSONStorage(() => localStorage), version: 1 },
   ),
 )
@@ -31,7 +34,9 @@ export function recordInGallery(game: GameState) {
   if (!game.retirement || g.recordedSeeds.includes(game.seed)) return
   const unlocked = { ...g.unlocked }
   for (const id of game.achievements) if (achievementById[id]) unlocked[id] = (unlocked[id] ?? 0) + 1
+  const endingKey = endingFor(game.retirement).key
+  const endings = { ...g.endings, [endingKey]: (g.endings?.[endingKey] ?? 0) + 1 }
   const grade = game.retirement.fameGrade
   const bestGrade = g.bestGrade && GRADE_ORDER.indexOf(g.bestGrade) <= GRADE_ORDER.indexOf(grade) ? g.bestGrade : grade
-  useGallery.setState({ unlocked, plays: g.plays + 1, bestGrade, recordedSeeds: [...g.recordedSeeds, game.seed].slice(-200) })
+  useGallery.setState({ unlocked, endings, plays: g.plays + 1, bestGrade, recordedSeeds: [...g.recordedSeeds, game.seed].slice(-200) })
 }

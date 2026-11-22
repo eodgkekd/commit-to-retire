@@ -187,3 +187,14 @@ describe('데이터 무결성', () => {
     for (const t of feedTemplates) expect(t.texts.length, t.id).toBeGreaterThan(0)
   })
 })
+
+describe('Windows 10에서 깨지는 이모지', () => {
+  // 유니코드 13 이후 이모지(🫠 🪦 🪣 등)는 Windows 10 기본 글꼴에 없어 네모로 보인다
+  const NEW_EMOJI = /[\u{1FA74}\u{1FA7B}-\u{1FA7F}\u{1FA83}-\u{1FA8F}\u{1FA96}-\u{1FAFF}\u{1F972}\u{1F977}\u{1F978}\u{1F979}\u{1F6D6}-\u{1F6DF}\u{1F90C}\u{1F9A3}\u{1F9A4}\u{1F9AB}-\u{1F9AD}\u{1F9CB}\u{1F9CC}\u{1F7F0}]/u
+  it('소스 코드에 쓰지 않는다', () => {
+    const files = import.meta.glob('../**/*.{ts,tsx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>
+    expect(Object.keys(files).length).toBeGreaterThan(20)
+    const offenders = Object.entries(files).filter(([path, text]) => !path.endsWith('data.test.ts') && NEW_EMOJI.test(text)).map(([path]) => path)
+    expect(offenders).toEqual([])
+  })
+})

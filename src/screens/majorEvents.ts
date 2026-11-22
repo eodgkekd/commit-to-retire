@@ -29,7 +29,7 @@ export function majorEvents(record: YearRecord, game: GameState): MajorEventInfo
   if (record.triggers.includes('companyClosed')) {
     out.push({
       trigger: 'companyClosed',
-      emoji: '🪦',
+      emoji: '⚰️',
       title: '회사가 문을 닫았어요',
       body: `${fillTemplate('{company}(이)가 폐업했어요.', { company: name })} 받아둔 스톡옵션도 휴지가 됐고, 지금은 소속이 없어요. ${NEXT_STEP}${chickenNote}`,
       tone: 'bad',
@@ -96,7 +96,7 @@ export function majorEvents(record: YearRecord, game: GameState): MajorEventInfo
   if (record.triggers.includes('burnout')) {
     out.push({
       trigger: 'burnout',
-      emoji: '🫠',
+      emoji: '😵',
       title: `번아웃이 왔어요 (${game.counters.burnouts}/${BURNOUTS_TO_RETIRE})`,
       body: `올해 고과는 D로 처리됐고 체력은 ${BURNOUT_RESET_STAMINA}에서 다시 시작해요. ${BURNOUTS_TO_RETIRE}번째 번아웃이면 은퇴해요.`,
       tone: 'bad',

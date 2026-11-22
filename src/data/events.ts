@@ -278,7 +278,7 @@ export const events: GameEvent[] = [
   {
     id: 'onboarding_reality',
     category: '레거시',
-    emoji: '🫥',
+    emoji: '😶',
     title: '온보딩 끝, 현실 시작',
     text: '일주일 온보딩이 끝나고 레포를 열었어요. {tests}, 배포는 {deploy}, 문서는 {docs}(이)가 전부예요. 면접 때 들은 이야기와 많이 달라요.',
     // 신입 첫 회사에서는 비교 대상이 없어서 안 나온다. 이직한 첫해에만, 자주 나온다

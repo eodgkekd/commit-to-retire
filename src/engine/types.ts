@@ -421,6 +421,8 @@ export type CareerExitId = 'freelancer' | 'creator' | 'civil_servant'
 
 export interface CareerExitOutcomeDef {
   id: string
+  /** 엔딩 모음에 보이는 짧은 이름 */
+  title: string
   chance: number
   /** 엔딩 화면 첫 줄 */
   ending: string

@@ -1,6 +1,6 @@
 import { currentEvent, remainingEvents, type GameState } from '../engine'
 import { useGame } from '../store/game'
-import { Badge, Button, Choice, EffectChips, Screen, StatusHeader } from '../ui'
+import { Badge, Button, Choice, EffectChips, FirstTimeTip, Screen, StatusHeader } from '../ui'
 
 /** 심각도는 보여준다 (확률은 숨기되, 일이 얼마나 큰지는 알고 고르게) */
 const SEVERITY_LABEL = {
@@ -65,6 +65,12 @@ export function EventScreen({ game }: { game: GameState }) {
         <h1 className="text-2xl font-bold">{event.title}</h1>
         <p className="leading-relaxed text-gray-700">{event.text}</p>
       </div>
+
+      {game.history.length === 0 && game.yearEvents.length === 0 && (
+        <FirstTimeTip title="정답은 정해져 있지 않아요">
+          선택지마다 보이지 않는 능력치 판정과 운이 있어요. 관련 능력치가 높을수록 좋은 결과가 잘 나오고, 결과에 따라 체력·고과·능력치가 바뀌어요.
+        </FirstTimeTip>
+      )}
 
       <div className="flex flex-col gap-2">
         {event.choices.map((c, i) => (

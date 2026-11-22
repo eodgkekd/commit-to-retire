@@ -141,7 +141,7 @@ export const achievements: AchievementDef[] = [
   { id: 'weekend_rollback', title: '주말 롤백', emoji: '🔙', description: '금요일 배포로 주말을 반납했어요.', fame: 3 },
   { id: 'legacy_archaeologist', title: '레거시 고고학자', emoji: '🦴', description: '10년 넘은 코드를 세 번 리팩토링했어요.', fame: 8 },
   { id: 'job_hopper', title: '이직의 신', emoji: '🦘', description: '다섯 번 이상 이직했어요.', fame: 5 },
-  { id: 'one_company', title: '한 우물', emoji: '🪣', description: '한 회사에서 20년을 버텼어요.', fame: 10 },
+  { id: 'one_company', title: '한 우물', emoji: '⛲', description: '한 회사에서 20년을 버텼어요.', fame: 10 },
   { id: 'stock_lottery', title: '스톡옵션 로또', emoji: '💰', description: '회사가 엑싯에 성공했어요.', fame: 12 },
   { id: 'stock_tissue', title: '스톡옵션 휴지', emoji: '🧻', description: '다니던 회사가 세 번 망했어요.', fame: 5 },
   { id: 'three_am', title: '새벽 3시의 수호자', emoji: '🌙', description: '장애 대응을 여덟 번 했어요.', fame: 8 },

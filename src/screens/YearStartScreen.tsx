@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { focuses } from '../data'
 import { staminaChange, type FocusId, type GameState } from '../engine'
 import { useGame } from '../store/game'
-import { Button, Card, Choice, Screen, StatBars, StatusHeader, Title } from '../ui'
+import { Button, Card, Choice, FirstTimeTip, Screen, StatBars, StatusHeader, Title } from '../ui'
 
 export function YearStartScreen({ game }: { game: GameState }) {
   const startYear = useGame((s) => s.startYear)
@@ -19,6 +19,18 @@ export function YearStartScreen({ game }: { game: GameState }) {
       <StatusHeader game={game} />
 
       <Title eyebrow={`${game.careerYear}년차 · ${game.calendarYear}년`}>올해는 무엇에 집중할까요?</Title>
+
+      {game.history.length === 0 && (
+        <FirstTimeTip title="한 해는 이렇게 흘러가요">
+          <ol className="list-decimal pl-4">
+            <li>올해 집중할 것을 골라요. 능력치가 자라고 체력이 줄어요.</li>
+            <li>회사에서 일이 1~2개 터져요. 선택에 따라 결과가 달라져요.</li>
+            <li>연말에 고과(S~D)가 나오고 연봉과 승진이 정해져요.</li>
+            <li>그다음 승진 조건과 채용 공고를 확인하고 새해로 넘어가요.</li>
+          </ol>
+          <p className="mt-1">60세까지 이어 가면 직책·평판·업적으로 명성 등급이 매겨져요. 체력이 0이 되면 번아웃이니 가끔 쉬어 가세요.</p>
+        </FirstTimeTip>
+      )}
 
       <Card>
         <p className="mb-3 text-sm font-medium text-gray-600">현재 능력치</p>

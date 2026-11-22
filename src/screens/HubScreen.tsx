@@ -25,7 +25,7 @@ import {
   type StatKey,
 } from '../engine'
 import { useGame } from '../store/game'
-import { Badge, Button, Card, Screen, StatBars, StatusHeader, Title } from '../ui'
+import { Badge, Button, Card, FirstTimeTip, Screen, StatBars, StatusHeader, Title } from '../ui'
 import { fillTemplate } from '../engine/text'
 import { JOB_LOSS_TRIGGERS, majorEvents } from './majorEvents'
 
@@ -57,6 +57,13 @@ export function HubScreen({ game }: { game: GameState }) {
       <StatusHeader game={game} />
 
       <Title eyebrow={game.unemployed ? '지금은 회사가 없어요' : `${game.careerYear - 1}년차를 마쳤어요`}>확인할 일</Title>
+
+      {game.history.length === 1 && !game.unemployed && (
+        <FirstTimeTip title="해가 바뀌기 전에 확인할 것들">
+          '다음 승진 조건'에서 모자란 능력치를 보고 내년 집중을 정해 보세요. 채용 공고에 지원하면 이직할 수 있어요 (평소엔 1곳, 연초에 '이직 준비'를 고르면 3곳).
+          다 봤으면 아래 버튼으로 새해를 시작해요.
+        </FirstTimeTip>
+      )}
 
       {game.unemployed && (
         <Card className="bg-red-50">

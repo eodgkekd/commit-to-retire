@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { events, platformLabels } from '../data'
 import { formatSalary, rankDisplay, type FeedPlatform, type FeedTrigger, type GameState, type Grade } from '../engine'
 import { useGame } from '../store/game'
-import { Badge, Button, Card, Screen, StatBars } from '../ui'
+import { Badge, Button, Card, FirstTimeTip, Screen, StatBars } from '../ui'
 import { majorEvents, type MajorEventInfo } from './majorEvents'
 
 const GRADE_STYLE: Record<Grade, string> = {
@@ -16,8 +16,8 @@ const GRADE_STYLE: Record<Grade, string> = {
 const TRIGGER_BADGE: Record<FeedTrigger, { text: string; tone: 'blue' | 'red' | 'green' | 'amber' | 'gray' }> = {
   promoted: { text: '🎉 승진', tone: 'blue' },
   jobChanged: { text: '💼 이직', tone: 'gray' },
-  burnout: { text: '🫠 번아웃', tone: 'red' },
-  companyClosed: { text: '🪦 회사 폐업', tone: 'red' },
+  burnout: { text: '😵 번아웃', tone: 'red' },
+  companyClosed: { text: '⚰️ 회사 폐업', tone: 'red' },
   layoff: { text: '📉 권고사직', tone: 'red' },
   exit: { text: '💰 엑싯', tone: 'green' },
   incident: { text: '🚨 장애', tone: 'amber' },
@@ -65,6 +65,13 @@ export function YearEndScreen({ game }: { game: GameState }) {
             </Badge>
           ))}
         </div>
+      )}
+
+      {game.history.length === 1 && !record.founder && (
+        <FirstTimeTip title="고과는 이렇게 정해져요">
+          직급에 기대되는 실력보다 얼마나 잘했는지에 올해 집중(업무 올인이면 크게 오름)과 사건 결과, 약간의 운이 더해져요. S·A면 연봉이 많이 오르고, 승진 조건을
+          채운 해에 B 이상이면 승진할 수 있어요.
+        </FirstTimeTip>
       )}
 
       {major.map((m) => (

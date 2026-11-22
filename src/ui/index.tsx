@@ -1,6 +1,6 @@
 // 공통 UI 조각. 모바일 우선: 폭 최대 28rem, 하단 고정 버튼.
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { achievementById, BURNOUTS_TO_RETIRE, companyTypeById, industryById, statLabels } from '../data'
 import { formatSalary, rankDisplay, type Effects, type GameState, type StatKey, type Stats } from '../engine'
 
@@ -54,6 +54,23 @@ export function Button({
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <section className={`rounded-2xl bg-gray-50 p-4 ${className}`}>{children}</section>
+}
+
+/** 처음 하는 사람용 안내. 첫해에만 화면에 넣고, 닫으면 그 화면에서 사라진다 */
+export function FirstTimeTip({ title, children }: { title: string; children: ReactNode }) {
+  const [closed, setClosed] = useState(false)
+  if (closed) return null
+  return (
+    <section className="rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-semibold">💡 {title}</p>
+        <button type="button" onClick={() => setClosed(true)} className="shrink-0 text-xs text-blue-400" aria-label="안내 닫기">
+          닫기
+        </button>
+      </div>
+      <div className="mt-1 leading-relaxed text-blue-800">{children}</div>
+    </section>
+  )
 }
 
 /** 선택형 카드 (학력, 집중, 선택지 등) */
@@ -173,7 +190,7 @@ export function StatusHeader({ game }: { game: GameState }) {
       <StaminaBar value={game.stamina} />
       {game.counters.burnouts > 0 && (
         <p className="text-xs font-medium text-red-500">
-          🫠 번아웃 {game.counters.burnouts}/{BURNOUTS_TO_RETIRE} · {BURNOUTS_TO_RETIRE}번이면 은퇴해요
+          😵 번아웃 {game.counters.burnouts}/{BURNOUTS_TO_RETIRE} · {BURNOUTS_TO_RETIRE}번이면 은퇴해요
         </p>
       )}
     </Card>

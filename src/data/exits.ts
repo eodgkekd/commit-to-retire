@@ -17,9 +17,9 @@ export const careerExits: CareerExitDef[] = [
     goodPerPoint: 0.005,
     badPerPoint: 0.007,
     outcomes: [
-      { id: 'top', chance: 0.2, ending: '단가 높은 프리랜서가 됐어요. 일은 골라서 받아요 💻', yearlyIncome: 6000, achievement: 'freelancer_top' },
-      { id: 'steady', chance: 0.5, ending: '프리랜서로 이 프로젝트 저 프로젝트를 다니며 일했어요 🧳', yearlyIncome: 3500, achievement: 'freelancer' },
-      { id: 'dry', chance: 0.3, ending: '프리랜서가 됐지만 일감이 끊겨 통장 잔고와 눈싸움하며 지냈어요 🧳', yearlyIncome: 800, achievement: 'freelancer' },
+      { id: 'top', title: '귀하신 프리랜서', chance: 0.2, ending: '단가 높은 프리랜서가 됐어요. 일은 골라서 받아요 💻', yearlyIncome: 6000, achievement: 'freelancer_top' },
+      { id: 'steady', title: '떠돌이 프리랜서', chance: 0.5, ending: '프리랜서로 이 프로젝트 저 프로젝트를 다니며 일했어요 🧳', yearlyIncome: 3500, achievement: 'freelancer' },
+      { id: 'dry', title: '일감 끊긴 프리랜서', chance: 0.3, ending: '프리랜서가 됐지만 일감이 끊겨 통장 잔고와 눈싸움하며 지냈어요 🧳', yearlyIncome: 800, achievement: 'freelancer' },
     ],
   },
   {
@@ -35,9 +35,9 @@ export const careerExits: CareerExitDef[] = [
     goodPerPoint: 0.004,
     badPerPoint: 0.008,
     outcomes: [
-      { id: 'star', chance: 0.12, ending: '개발 유튜브 구독자 100만, 업계 셀럽이 됐어요 🎥', assets: 50000, achievement: 'creator_star' },
-      { id: 'teacher', chance: 0.48, ending: '부트캠프 강사로 후배들을 가르치며 지냈어요 📚', yearlyIncome: 3000, achievement: 'creator' },
-      { id: 'flop', chance: 0.4, ending: '채널을 열었지만 구독자는 가족 셋이었어요 📉', yearlyIncome: 500, achievement: 'creator' },
+      { id: 'star', title: '구독자 100만 유튜버', chance: 0.12, ending: '개발 유튜브 구독자 100만, 업계 셀럽이 됐어요 🎥', assets: 50000, achievement: 'creator_star' },
+      { id: 'teacher', title: '부트캠프 강사', chance: 0.48, ending: '부트캠프 강사로 후배들을 가르치며 지냈어요 📚', yearlyIncome: 3000, achievement: 'creator' },
+      { id: 'flop', title: '구독자 셋 유튜버', chance: 0.4, ending: '채널을 열었지만 구독자는 가족 셋이었어요 📉', yearlyIncome: 500, achievement: 'creator' },
     ],
   },
   {
@@ -53,8 +53,8 @@ export const careerExits: CareerExitDef[] = [
     badPerPoint: 0.006,
     agePenaltyFrom: 35,
     outcomes: [
-      { id: 'pass', chance: 0.35, ending: '전산직 공무원 시험에 붙었어요. 이제 6시에 퇴근해요 🏛️', yearlyIncome: 2500, achievement: 'civil_servant' },
-      { id: 'fail', chance: 0.65, ending: '공시 3수 끝에 노량진을 떠났어요 📚', assets: -3000, achievement: 'gongsi' },
+      { id: 'pass', title: '전산직 공무원', chance: 0.35, ending: '전산직 공무원 시험에 붙었어요. 이제 6시에 퇴근해요 🏛️', yearlyIncome: 2500, achievement: 'civil_servant' },
+      { id: 'fail', title: '노량진 졸업', chance: 0.65, ending: '공시 3수 끝에 노량진을 떠났어요 📚', assets: -3000, achievement: 'gongsi' },
     ],
   },
 ]

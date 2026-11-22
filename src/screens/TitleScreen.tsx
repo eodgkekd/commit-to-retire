@@ -4,6 +4,7 @@ import { useGame } from '../store/game'
 import { useGallery } from '../store/gallery'
 import { achievements } from '../data'
 import { GallerySheet } from './GallerySheet'
+import { endingCatalog } from '../engine/endings'
 import { Button, Card, Screen } from '../ui'
 
 const MILESTONES = ['신입', '시니어', '리드', 'CTO', '은퇴']
@@ -16,6 +17,7 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
   const [confirming, setConfirming] = useState(false)
   const [gallery, setGallery] = useState(false)
   const unlockedCount = useGallery((s) => achievements.filter((a) => s.unlocked[a.id]).length)
+  const endingCount = useGallery((s) => endingCatalog.filter((e) => s.endings?.[e.key]).length)
 
   return (
     <Screen
@@ -79,7 +81,10 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
       )}
 
       <button type="button" onClick={() => setGallery(true)} className="rounded-2xl bg-gray-50 p-3 text-left text-sm text-gray-600 active:bg-gray-100">
-        🏆 업적 모음 <span className="font-semibold text-gray-800">{unlockedCount}/{achievements.length}</span>
+        🏆 모음 · 업적 <span className="font-semibold text-gray-800">{unlockedCount}/{achievements.length}</span> · 엔딩{' '}
+        <span className="font-semibold text-gray-800">
+          {endingCount}/{endingCatalog.length}
+        </span>
       </button>
 
       {gallery && <GallerySheet onClose={() => setGallery(false)} />}
