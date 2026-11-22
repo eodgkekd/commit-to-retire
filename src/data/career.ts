@@ -19,6 +19,19 @@ export const ranks: RankDef[] = [
   { id: 'fellow', label: '펠로우', track: 'ic', minYears: 21, minStats: { design: 94, coding: 88, reputation: 80 }, from: 'principal', salaryBump: 0.2, fameScore: 75 },
 ]
 
+/**
+ * 화면에 직책과 함께 보여주는 회사 직급 (사원·대리·과장…). 승진(직책)과 별개로 연차로 오른다.
+ * minRank: 직책이 이만큼 올랐으면 연차가 모자라도 이 직급으로 본다. 임원 직책은 executiveTitles
+ */
+export const corporateTitles: { title: string; minCareerYear: number; minRank?: RankId[] }[] = [
+  { title: '부장', minCareerYear: 16 },
+  { title: '차장', minCareerYear: 12, minRank: ['lead', 'em', 'staff'] },
+  { title: '과장', minCareerYear: 8, minRank: ['senior'] },
+  { title: '대리', minCareerYear: 4 },
+  { title: '사원', minCareerYear: 1 },
+]
+export const executiveTitles: Partial<Record<RankId, string>> = { director: '이사', principal: '이사', vp: '상무', fellow: '상무', cto: '전무' }
+
 /** 이벤트 문구의 {boss}: 내 직급에서 바로 위 상사를 부르는 말 (팀장급이 되면 더는 '팀장'이 상사가 아니다) */
 export const bossTitles: Record<RankId, string> = {
   newbie: '팀장', junior: '팀장', mid: '팀장', senior: '팀장',

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { randomGame } from './bot'
 import { careerPeriodLabel, endingResult, endingShareText, summarizeCareer } from './career'
 import { evaluateRetirement } from './ending'
+import { corporateTitle, rankDisplay } from './rules'
 import { finishYear, startYear } from './year'
 import type { FocusId, YearRecord } from './types'
 
@@ -54,5 +55,27 @@ describe('집중 훈련', () => {
     expect(training.stats[focus]).toBeGreaterThan(study.stats[focus])
     expect(training.history[0].focus).toBe(focus)
     expect(training.stamina).toBe(study.stamina)
+  })
+})
+
+describe('회사 직급', () => {
+  it('연차에 따라 사원 → 대리 → 과장 → 차장 → 부장으로 오른다', () => {
+    expect(corporateTitle('junior', 1)).toBe('사원')
+    expect(corporateTitle('junior', 4)).toBe('대리')
+    expect(corporateTitle('mid', 8)).toBe('과장')
+    expect(corporateTitle('senior', 12)).toBe('차장')
+    expect(corporateTitle('senior', 16)).toBe('부장')
+  })
+
+  it('직책이 빨리 오르면 직급도 따라 올라가고, 임원은 임원 직급이다', () => {
+    expect(corporateTitle('senior', 5)).toBe('과장')
+    expect(corporateTitle('lead', 6)).toBe('차장')
+    expect(corporateTitle('director', 10)).toBe('이사')
+    expect(corporateTitle('cto', 25)).toBe('전무')
+  })
+
+  it('화면 표시는 "직급 · 직책", 창업 중이면 대표', () => {
+    expect(rankDisplay('lead', 13)).toBe('차장 · 테크리드')
+    expect(rankDisplay('lead', 13, true)).toBe('대표')
   })
 })

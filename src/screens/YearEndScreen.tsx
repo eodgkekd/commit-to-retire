@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { events, platformLabels, rankById } from '../data'
-import { formatSalary, type FeedPlatform, type FeedTrigger, type GameState, type Grade } from '../engine'
+import { events, platformLabels } from '../data'
+import { formatSalary, rankDisplay, type FeedPlatform, type FeedTrigger, type GameState, type Grade } from '../engine'
 import { useGame } from '../store/game'
 import { Badge, Button, Card, Screen, StatBars } from '../ui'
 import { majorEvents, type MajorEventInfo } from './majorEvents'
@@ -50,7 +50,7 @@ export function YearEndScreen({ game }: { game: GameState }) {
     <Screen footer={<Button onClick={acknowledge}>{game.retirement ? '은퇴식으로' : '확인'}</Button>}>
       <header className="flex flex-col gap-1">
         <p className="text-sm text-gray-500">
-          {record.calendarYear}년 · {record.age}세 · {record.founder ? `${record.company.name} 대표` : rankById[record.rank].label}
+          {record.calendarYear}년 · {record.age}세 · {record.founder ? `${record.company.name} 대표` : rankDisplay(record.rank, game.careerYear - 1)}
         </p>
         <h1 className="text-2xl font-bold">
           {record.founder ? '올해 사업 성적은' : '올해 고과는'} <span className={`text-4xl font-black ${GRADE_STYLE[record.grade]}`}>{record.grade}</span>

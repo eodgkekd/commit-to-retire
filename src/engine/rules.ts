@@ -1,6 +1,6 @@
 // 여러 단계에서 공통으로 쓰는 계산 규칙. 밸런스 조정은 주로 이 파일과 src/data/에서 한다.
 
-import { companyTypeById, educationById, industryById, rankById, ranks } from '../data'
+import { companyTypeById, corporateTitles, educationById, executiveTitles, industryById, rankById, ranks } from '../data'
 import { EDUCATION_DECAY } from '../data/balance'
 import type { Rng } from './rng'
 import type {
@@ -71,6 +71,19 @@ export function nextPromotion(s: GameState, assumeTrack?: 'manager' | 'ic'): Pro
   if (!rank) return null
   const speed = companyTypeById[s.company.type].promotionSpeed
   return { rank, minCareerYear: Math.ceil(rank.minYears / speed) }
+}
+
+/** 회사 직급 (사원·대리·과장·차장·부장, 임원은 이사·상무·전무). careerYear는 몇 년 차인지 */
+export function corporateTitle(rank: RankId, careerYear: number): string {
+  const executive = executiveTitles[rank]
+  if (executive) return executive
+  return corporateTitles.find((t) => careerYear >= t.minCareerYear || t.minRank?.includes(rank))!.title
+}
+
+/** 화면에 보여줄 직급과 직책 ("과장 · 테크리드"). 창업 중이면 "대표" */
+export function rankDisplay(rank: RankId, careerYear: number, founder = false): string {
+  if (founder) return '대표'
+  return `${corporateTitle(rank, careerYear)} · ${rankById[rank].label}`
 }
 
 /** 학력 가산점에 곱하는 값. 연차가 쌓일수록 학교보다 경력을 본다 */

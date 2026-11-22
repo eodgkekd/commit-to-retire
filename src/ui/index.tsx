@@ -1,8 +1,8 @@
 // 공통 UI 조각. 모바일 우선: 폭 최대 28rem, 하단 고정 버튼.
 
 import type { ReactNode } from 'react'
-import { achievementById, BURNOUTS_TO_RETIRE, companyTypeById, industryById, rankById, statLabels } from '../data'
-import { formatSalary, type Effects, type GameState, type StatKey, type Stats } from '../engine'
+import { achievementById, BURNOUTS_TO_RETIRE, companyTypeById, industryById, statLabels } from '../data'
+import { formatSalary, rankDisplay, type Effects, type GameState, type StatKey, type Stats } from '../engine'
 
 export function Screen({
   children,
@@ -153,9 +153,8 @@ export function StatusHeader({ game }: { game: GameState }) {
       <div className="flex items-center gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-3xl">{game.profile.emoji}</span>
         <div className="min-w-0 flex-1">
-          <p className="font-bold">
-            {game.profile.name} <span className="font-normal text-gray-500">· {game.startup ? '대표' : rankById[game.rank].label}</span>
-          </p>
+          <p className="truncate font-bold">{game.profile.name}</p>
+          <p className="truncate text-sm font-medium text-gray-600">{rankDisplay(game.rank, game.careerYear, Boolean(game.startup))}</p>
           {game.unemployed ? (
             <p className="truncate text-sm font-medium text-red-500">🎒 실직 중 · 전 직장 {game.company.name}</p>
           ) : (
