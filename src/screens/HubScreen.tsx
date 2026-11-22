@@ -137,8 +137,8 @@ export function HubScreen({ game }: { game: GameState }) {
         <StatBars stats={game.stats} />
       </Card>
 
-      {!game.unemployed &&
-        (confirmRetire ? (
+      {/* 실직 중에도 은퇴는 할 수 있다 (40세 미만은 치킨집을 못 차려서 이게 유일한 출구) */}
+      {(confirmRetire ? (
           <div className="flex flex-col gap-2">
             <p className="text-center text-sm text-gray-600">정말 은퇴할까요? 되돌릴 수 없어요.</p>
             <div className="grid grid-cols-2 gap-2">

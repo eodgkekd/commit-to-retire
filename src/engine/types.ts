@@ -102,6 +102,8 @@ export interface CompanyTypeDef {
   hiringBar: number
   /** 회사 이름 후보 (패러디 또는 가상) */
   names: string[]
+  /** 이 유형의 회사가 속할 수 있는 업종 (은행인데 게임 업종 같은 조합을 막는다) */
+  industries: IndustryId[]
 }
 
 export interface IndustryDef {
@@ -448,7 +450,7 @@ export interface GameState {
   /** 올해 연말 이직 제안 수에 더해질 값 (이벤트로 생김). 예전 세이브에는 없을 수 있다 */
   offerBonus?: number
   /** 연초 시점 스냅샷 (연말 결과 화면의 변화량 계산용) */
-  yearStart: { stats: Stats; salary: number }
+  yearStart: { stats: Stats; salary: number; /** 연초의 장애 대응 횟수. 예전 세이브에는 없을 수 있다 */ incidents?: number }
 
   offers: JobOffer[]
   /** 허브에서 생겨 다음 해 연말 피드에 반영할 사건 (이직). 예전 세이브에는 없을 수 있다 */

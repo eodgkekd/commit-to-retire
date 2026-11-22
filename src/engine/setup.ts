@@ -1,6 +1,7 @@
 // 캐릭터 생성 → 첫 회사 입사까지
 
 import {
+  companyTypeById,
   companyTypes,
   educationById,
   playStyleById,
@@ -53,6 +54,10 @@ export interface NewGameInput {
 export function createGame({ profile, companyType, industry, seed }: NewGameInput): GameState {
   const option = firstJobOptions(profile).find((o) => o.type === companyType)
   if (!option?.passed) throw new Error(`서류 탈락한 회사에는 입사할 수 없어요: ${companyType}`)
+
+  if (!companyTypeById[companyType].industries.includes(industry)) {
+    throw new Error(`${companyType} 유형에는 없는 업종이에요: ${industry}`)
+  }
 
   const rng = createRng(seed)
   const stats = startingStats(profile)

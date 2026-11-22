@@ -57,6 +57,20 @@ describe('데이터 무결성', () => {
     expect(new Set(all).size, `중복 회사 이름: ${all.filter((n, i) => all.indexOf(n) !== i)}`).toBe(all.length)
   })
 
+  it('회사 유형마다 가능한 업종이 있고, 모든 업종은 어느 유형에선가 나온다', () => {
+    for (const c of companyTypes) expect(c.industries.length, c.id).toBeGreaterThan(0)
+    for (const i of industries) expect(companyTypes.some((c) => c.industries.includes(i.id)), i.id).toBe(true)
+  })
+
+  it('회사 유형과 업종 조건이 같이 걸린 이벤트는 실제로 가능한 조합이 있다', () => {
+    for (const event of events) {
+      const c = event.conditions
+      if (!c?.companyTypes || !c.industries) continue
+      const reachable = companyTypes.some((t) => c.companyTypes!.includes(t.id) && t.industries.some((i) => c.industries!.includes(i)))
+      expect(reachable, event.id).toBe(true)
+    }
+  })
+
   it('회사 수치가 허용 범위 안에 있다', () => {
     for (const c of companyTypes) {
       expect(c.risk, c.id).toBeGreaterThanOrEqual(0)

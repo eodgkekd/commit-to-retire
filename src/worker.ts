@@ -1,12 +1,14 @@
 import { SHARE_ID, validResult } from './engine/share'
 
 interface Env {
-  SHARED_RESULTS: { get(key: string): Promise<string | null>; put(key: string, value: string): Promise<void> }
+  SHARED_RESULTS: { get(key: string): Promise<string | null>; put(key: string, value: string, options?: { expirationTtl: number }): Promise<void> }
   SHARE_LIMITER: { limit(options: { key: string }): Promise<{ success: boolean }> }
   ASSETS: { fetch(request: Request): Promise<Response> }
 }
 
 const MAX_BYTES = 24000
+/** 공유 결과 보관 기간(초): 1년. 지나면 KV가 알아서 지운다 */
+const RESULT_TTL = 60 * 60 * 24 * 365
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } })
 
 export default {
@@ -45,7 +47,7 @@ export default {
           return json({ error: '잘못된 결과예요.' }, 400)
         }
         const id = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(12)))).replaceAll('+', '-').replaceAll('/', '_')
-        await env.SHARED_RESULTS.put(id, JSON.stringify({ version: 1, result: data.result }))
+        await env.SHARED_RESULTS.put(id, JSON.stringify({ version: 1, result: data.result }), { expirationTtl: RESULT_TTL })
         return json({ id }, 201)
       }
       const match = url.pathname.match(/^\/api\/results\/([^/]+)$/)

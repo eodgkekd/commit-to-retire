@@ -112,6 +112,11 @@ export function pickCompanyName(rng: Rng, type: CompanyTypeId, exclude: string[]
   return names.length > 0 ? rng.pick(names) : null
 }
 
+/** 회사 유형에 맞는 업종 중 하나 */
+export function pickIndustry(rng: Rng, type: CompanyTypeId): IndustryId {
+  return rng.pick(companyTypeById[type].industries)
+}
+
 export function formatSalary(manwon: number): string {
   if (manwon >= 10000) {
     const eok = Math.floor(manwon / 10000)

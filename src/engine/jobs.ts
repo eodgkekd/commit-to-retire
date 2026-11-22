@@ -7,14 +7,13 @@ import {
   companyTypes,
   focusById,
   GAP_HIRING_PENALTY,
-  industries,
   ranks,
   rankById,
   RETIRE_AGE,
 } from '../data'
 import { evaluateRetirement } from './ending'
 import { createRng, type Rng } from './rng'
-import { clamp, hiringScore, marketSalary, meetsStats, pickCompanyName, unlock } from './rules'
+import { clamp, hiringScore, marketSalary, meetsStats, pickCompanyName, pickIndustry, unlock } from './rules'
 import type {
   ApplicationResult,
   ChickenOutcome,
@@ -70,7 +69,7 @@ export function rollHeadhunterOffer(s: GameState, grade: Grade, focus: FocusId, 
   for (let attempt = 0; attempt < 6; attempt++) {
     const type = rng.pick(companyTypes).id
     if (hiringScore(s.stats, s.profile.education, type) < companyTypeById[type].hiringBar) continue
-    const industry = rng.pick(industries).id
+    const industry = pickIndustry(rng, type)
     const name = pickCompanyName(rng, type, [s.company.name, ...closedCompanies(s)])
     if (!name) continue
     const offer = makeOffer(s, { name, type, industry }, postingRank(s, rng), rng)
@@ -93,7 +92,7 @@ export function generatePostings(s: GameState, rng: Rng): JobPosting[] {
     const name = pickCompanyName(rng, type, [...used])
     if (!name) continue
     used.add(name)
-    const company: Company = { name, type, industry: rng.pick(industries).id }
+    const company: Company = { name, type, industry: pickIndustry(rng, type) }
     const rank = postingRank(s, rng)
     const offer = makeOffer(s, company, rank, rng)
     if (!worthMoving(s, offer)) continue

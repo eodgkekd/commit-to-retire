@@ -11,7 +11,7 @@ function fixture() {
 }
 function env() {
   return {
-    SHARED_RESULTS: { get: vi.fn(async (_id: string): Promise<string | null> => null), put: vi.fn(async () => {}) },
+    SHARED_RESULTS: { get: vi.fn(async (_id: string): Promise<string | null> => null), put: vi.fn(async (_id: string, _value: string, _options?: { expirationTtl: number }) => {}) },
     SHARE_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
     ASSETS: { fetch: vi.fn(async () => new Response('app')) },
   }
@@ -35,6 +35,14 @@ describe('공유 Worker API', () => {
     bindings.SHARE_LIMITER.limit.mockResolvedValue({ success: false })
     expect((await worker.fetch(post(fixture()), bindings)).status).toBe(429)
     expect(bindings.SHARED_RESULTS.put).not.toHaveBeenCalled()
+  })
+
+  it('올바른 결과는 1년 만료로 저장한다', async () => {
+    const bindings = env()
+    const response = await worker.fetch(post(fixture()), bindings)
+    expect(response.status).toBe(201)
+    expect(bindings.SHARED_RESULTS.put).toHaveBeenCalledTimes(1)
+    expect(bindings.SHARED_RESULTS.put.mock.calls[0][2]).toEqual({ expirationTtl: 60 * 60 * 24 * 365 })
   })
 
   it('저장소 실패를 성공으로 알리지 않는다', async () => {

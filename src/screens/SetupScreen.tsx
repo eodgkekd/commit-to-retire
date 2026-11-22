@@ -34,6 +34,13 @@ export function SetupScreen({ onBack, onStarted }: { onBack: () => void; onStart
   const [companyType, setCompanyType] = useState<CompanyTypeId | null>(null)
   const [industry, setIndustry] = useState<IndustryId>('b2b_saas')
 
+  // 회사 유형마다 가능한 업종이 다르다. 유형을 바꾸면 업종도 맞는 것으로 옮긴다
+  const pickCompanyType = (type: CompanyTypeId) => {
+    setCompanyType(type)
+    const allowed = companyTypeById[type].industries
+    if (!allowed.includes(industry)) setIndustry(allowed[0])
+  }
+
   const patch = (p: Partial<Profile>) => setProfile((prev) => ({ ...prev, ...p }))
   const jobOptions = useMemo(() => firstJobOptions(profile), [profile])
   const stats = useMemo(() => startingStats(profile), [profile])
@@ -212,7 +219,7 @@ export function SetupScreen({ onBack, onStarted }: { onBack: () => void; onStart
               .map((o) => {
                 const c = companyTypeById[o.type]
                 return (
-                  <Choice key={o.type} selected={companyType === o.type} disabled={!o.passed} onClick={() => setCompanyType(o.type)}>
+                  <Choice key={o.type} selected={companyType === o.type} disabled={!o.passed} onClick={() => pickCompanyType(o.type)}>
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-semibold">
                         {c.emoji} {c.label}
@@ -230,7 +237,7 @@ export function SetupScreen({ onBack, onStarted }: { onBack: () => void; onStart
 
           <p className="mt-2 text-sm font-medium text-gray-600">업종</p>
           <div className="grid grid-cols-2 gap-2">
-            {industries.map((i) => (
+            {industries.filter((i) => !companyType || companyTypeById[companyType].industries.includes(i.id)).map((i) => (
               <Choice key={i.id} selected={industry === i.id} onClick={() => setIndustry(i.id)}>
                 <p className="text-sm font-semibold">
                   {i.emoji} {i.label}

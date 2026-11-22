@@ -1,10 +1,10 @@
 // 자동 플레이 봇. 밸런스 시뮬레이션과 테스트에서 한 판을 끝까지 돌릴 때 쓴다.
 
-import { companyTypeById, focuses, specialties, playStyles, educations, START_AGE_MIN, START_AGE_MAX, industries } from '../data'
+import { companyTypeById, focuses, specialties, playStyles, educations, START_AGE_MIN, START_AGE_MAX } from '../data'
 import { acceptOffer, canChooseTrack, chooseTrack, declineOffers, nextYear } from './hub'
 import { applyToPosting, canSpendGapYear, spendGapYear } from './jobs'
 import { createRng, type Rng } from './rng'
-import { nextPromotion } from './rules'
+import { nextPromotion, pickIndustry } from './rules'
 import { createGame, firstJobOptions } from './setup'
 import type { FocusId, GameState, Profile, StatKey } from './types'
 import { acknowledgeYear, chooseEventOption, currentEvent, finishYear, staminaChange, startYear } from './year'
@@ -84,10 +84,11 @@ export function randomGame(seed: number): GameState {
     focusStats: [rng.pick(['coding', 'design', 'communication', 'domain'] as const)],
   }
   const passed = firstJobOptions(profile).filter((o) => o.passed)
+  const companyType = rng.pick(passed).type
   return createGame({
     profile,
-    companyType: rng.pick(passed).type,
-    industry: rng.pick(industries).id,
+    companyType,
+    industry: pickIndustry(rng, companyType),
     seed: rng.int(1, 2 ** 31),
   })
 }

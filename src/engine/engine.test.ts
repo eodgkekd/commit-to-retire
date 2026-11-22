@@ -4,7 +4,7 @@ import { acceptOffer, nextYear } from './hub'
 import { createRng } from './rng'
 import { createGame, firstJobOptions, startingStats } from './setup'
 import type { GameState, Profile } from './types'
-import { events, ranks } from '../data'
+import { companyTypeById, events, ranks } from '../data'
 import { acknowledgeYear, checkFailMultiplier, chooseEventOption, currentEvent, finishYear, isEligible, overworkDrain, startYear } from './year'
 
 /** 선택지는 언제나 고를 수 있으니 첫 번째를 고른다 */
@@ -246,6 +246,32 @@ describe('한 판 전체', () => {
       }
       expect(s.stamina).toBeGreaterThanOrEqual(0)
       expect(s.salary).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('장애 배지', () => {
+  const started = () => ({ ...startYear(createGame({ profile, companyType: 'sme_si', industry: 'si_sm', seed: 3 }), 'study'), pendingEvents: [] })
+
+  it('장애 대응 횟수가 늘어난 해에만 붙는다', () => {
+    const calm = finishYear(started())
+    expect(calm.history.at(-1)!.triggers).not.toContain('incident')
+
+    const s = started()
+    const busy = finishYear({ ...s, counters: { ...s.counters, incidents: s.counters.incidents + 1 } })
+    expect(busy.history.at(-1)!.triggers).toContain('incident')
+  })
+})
+
+describe('회사 유형과 업종', () => {
+  it('유형에 없는 업종으로는 시작할 수 없다', () => {
+    expect(() => createGame({ profile, companyType: 'sme_si', industry: 'game', seed: 1 })).toThrow()
+  })
+
+  it('봇이 만나는 모든 회사는 유형에 맞는 업종이다', () => {
+    for (let seed = 1; seed <= 30; seed++) {
+      const g = playToEnd(randomGame(seed), 'hopper', seed)
+      for (const h of g.history) expect(companyTypeById[h.company.type].industries, `${h.company.name}`).toContain(h.company.industry)
     }
   })
 })

@@ -78,7 +78,7 @@ export function startYear(state: GameState, focus: FocusId): GameState {
   s.gradeBonus = 0
   s.offerBonus = 0
   s.yearEvents = []
-  s.yearStart = { stats: { ...s.stats }, salary: s.salary }
+  s.yearStart = { stats: { ...s.stats }, salary: s.salary, incidents: s.counters.incidents }
 
   const count = rng.chance(0.5) ? 2 : 1
   const pool = events.filter((e) => isEligible(e, s))
@@ -199,7 +199,12 @@ export function finishYear(state: GameState): GameState {
   // 올해 이벤트로 회사를 떠났다 (희망퇴직·권고사직)
   const leftMidYear = s.unemployed
 
-  if (s.yearEvents.some((e) => eventById[e.eventId]?.category === '장애')) triggers.push('incident')
+  // 장애 배지는 실제로 장애 대응을 한 해에만 붙는다 (막아낸 해에는 안 붙음). 연초 기록이 없는 예전 세이브는 이벤트 종류로 판정
+  const hadIncident =
+    s.yearStart.incidents !== undefined
+      ? s.counters.incidents > s.yearStart.incidents
+      : s.yearEvents.some((e) => eventById[e.eventId]?.category === '장애')
+  if (hadIncident) triggers.push('incident')
 
   growStats(s, rng)
 
