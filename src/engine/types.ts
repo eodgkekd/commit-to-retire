@@ -355,6 +355,8 @@ export interface Profile {
   playStyle: PlayStyleId
   /** 집중 육성 능력치 (최대 2개) */
   focusStats: StatKey[]
+  /** 첫 취업 전에 취업 준비로 보낸 햇수 (0~2). 예전 세이브에는 없을 수 있다 */
+  jobPrepYears?: number
 }
 
 export interface EventLogEntry {

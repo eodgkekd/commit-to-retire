@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { playToEnd, randomGame } from './bot'
 import { acceptOffer, nextYear } from './hub'
 import { createRng } from './rng'
-import { createGame, firstJobOptions, startingStats } from './setup'
+import { createGame, startingStats } from './setup'
 import type { GameState, Profile } from './types'
 import { companyTypeById, events, ranks } from '../data'
 import { acknowledgeYear, checkFailMultiplier, chooseEventOption, currentEvent, finishYear, isEligible, overworkDrain, startYear } from './year'
@@ -61,21 +61,9 @@ describe('캐릭터 생성', () => {
     expect(stats.domain).toBe(27)
   })
 
-  it('명문대는 지방대보다 합격 가능한 회사가 많거나 같다', () => {
-    const local = firstJobOptions(profile).filter((o) => o.passed).length
-    const top = firstJobOptions({ ...profile, education: 'top_cs' }).filter((o) => o.passed).length
-    expect(top).toBeGreaterThanOrEqual(local)
-  })
-
-  it('누구든 최소 한 곳은 합격한다', () => {
-    const worst: Profile = { ...profile, education: 'self_taught', playStyle: 'communicator', startAge: 22 }
-    expect(firstJobOptions(worst).some((o) => o.passed)).toBe(true)
-  })
-
-  it('서류 탈락한 회사로는 시작할 수 없다', () => {
-    const failed = firstJobOptions(profile).find((o) => !o.passed)
-    if (!failed) return
-    expect(() => createGame({ profile, companyType: failed.type, industry: 'b2c', seed: 1 })).toThrow()
+  it('취업 준비로 보낸 해만큼 코딩이 오른다', () => {
+    const base = startingStats(profile)
+    expect(startingStats({ ...profile, jobPrepYears: 2 }).coding).toBe(base.coding + 6)
   })
 })
 

@@ -1,12 +1,13 @@
 // 자동 플레이 봇. 밸런스 시뮬레이션과 테스트에서 한 판을 끝까지 돌릴 때 쓴다.
 
-import { companyTypeById, focuses, specialties, playStyles, educations, START_AGE_MIN, START_AGE_MAX } from '../data'
+import { companyTypeById, companyTypes, FIRST_JOB, focuses, specialties, playStyles, educations, START_AGE_MIN, START_AGE_MAX } from '../data'
 import { acceptOffer, canChooseTrack, chooseTrack, declineOffers, nextYear } from './hub'
 import { applyToPosting, canSpendGapYear, spendGapYear } from './jobs'
 import { createRng, type Rng } from './rng'
 import { nextPromotion, pickIndustry } from './rules'
-import { createGame, firstJobOptions } from './setup'
-import type { FocusId, GameState, Profile, StatKey } from './types'
+import { applyFirstJobs } from './firstJob'
+import { createGame } from './setup'
+import type { CompanyTypeId, FocusId, GameState, Profile, StatKey } from './types'
 import { acknowledgeYear, chooseEventOption, currentEvent, finishYear, staminaChange, startYear } from './year'
 
 /** 이름 붙은 기본 전략: 무작위 / 일만 하는 사람 / 이직러 */
@@ -83,8 +84,17 @@ export function randomGame(seed: number): GameState {
     playStyle: rng.pick(playStyles).id,
     focusStats: [rng.pick(['coding', 'design', 'communication', 'domain'] as const)],
   }
-  const passed = firstJobOptions(profile).filter((o) => o.passed)
-  const companyType = rng.pick(passed).type
+  // 사람처럼 세 곳에 지원하고, 붙은 곳 중 초봉이 가장 높은 회사로 간다. 다 떨어지면 전형 없는 회사로
+  const candidates = companyTypes.map((c) => c.id).filter((id) => !FIRST_JOB.safetyTypes.includes(id))
+  const picks: CompanyTypeId[] = []
+  while (picks.length < FIRST_JOB.applications) {
+    const pick = rng.pick(candidates)
+    if (!picks.includes(pick)) picks.push(pick)
+  }
+  const offers = applyFirstJobs(profile, picks, rng.int(1, 2 ** 31)).filter((r) => !r.failedAt).map((r) => r.type)
+  const companyType = offers.length > 0
+    ? offers.reduce((best, id) => (companyTypeById[id].baseSalary > companyTypeById[best].baseSalary ? id : best))
+    : rng.pick(FIRST_JOB.safetyTypes)
   return createGame({
     profile,
     companyType,

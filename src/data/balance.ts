@@ -137,3 +137,29 @@ export const SEVERITY_FAIL_MULTIPLIER = [0.8, 1, 1.3]
 
 /** 명성 점수 = 최고 직책 점수 + 평판 × 이 값 + 업적 점수 */
 export const FAME_REPUTATION_WEIGHT = 0.25
+
+// ─── 첫 취업 ───────────────────────────────────────────
+
+/**
+ * 신입 공채: 서류 → 인적성·코딩테스트 → 면접. 한 번에 지원할 수 있는 회사 수와 단계별 합격 확률 계수.
+ * 확률 = 서류는 (서류 점수 − 회사 문턱)의 시그모이드, 나머지는 능력치와 문턱의 차이에 비례 (MIN~MAX로 자름).
+ * 지방대 컴공 기준 최종 합격률이 중견 약 40%, 대기업 SI 약 15%, 대기업 본사 약 5%가 되도록 맞췄다
+ */
+export const FIRST_JOB = {
+  applications: 3,
+  /** 지원하지 않아도 언제든 갈 수 있는 회사 유형 (전형 없이 합격) */
+  safetyTypes: ['sme_si', 'agency'] as CompanyTypeId[],
+  /** 취업 준비로 보낼 수 있는 최대 햇수, 1년마다 오르는 코딩 */
+  maxPrepYears: 2,
+  prepCodingGain: 3,
+  /** 서류: 점수 차이를 이 값으로 나눠 시그모이드에 넣는다 (작을수록 가파름) */
+  resumeSpread: 8,
+  /** 지방대 컴공의 금융권·공공 서류 가산점 (지역 인재 채용) */
+  regionalBonus: { education: 'local_cs', companyType: 'finance_public', score: 12 } as const,
+  /** 인적성·코테: start + (실력 − (base + 문턱 × perBar)) / spread */
+  test: { start: 0.55, base: 30, perBar: 0.35, spread: 40 },
+  /** 면접: start + (소통·설계 평균 − (base + 문턱 × perBar)) / spread */
+  interview: { start: 0.72, base: 20, perBar: 0.2, spread: 40 },
+  minChance: 0.03,
+  maxChance: 0.97,
+}
