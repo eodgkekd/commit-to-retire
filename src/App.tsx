@@ -16,7 +16,6 @@ type View = 'title' | 'setup' | 'game'
 
 export default function App() {
   const game = useGame((s) => s.game)
-  const reset = useGame((s) => s.reset)
   const [view, setView] = useState<View>('title')
   const [shared, setShared] = useState(() => readSharedResult(window.location.hash))
   const [retry, setRetry] = useState(0)
@@ -41,8 +40,8 @@ export default function App() {
     return () => { controller?.abort(); window.removeEventListener('hashchange', update) }
   }, [retry])
 
-  // 새 게임이 만들어지면 바로 게임 화면으로
-  const current: View = view === 'setup' && game ? 'game' : view
+  // 설정 화면은 저장된 커리어가 있어도 보여준다. 저장은 새 캐릭터를 다 만든 순간에만 바뀐다
+  const current: View = view
 
   // 화면이 바뀌면 맨 위로 (연초 → 이벤트 → 결과 문구 → 연말 → 허브, 다음 해)
   const lastOutcome = useGame((s) => s.lastOutcome)
@@ -82,15 +81,13 @@ export default function App() {
     </Screen>
   )
 
+  if (current === 'setup') return <SetupScreen onBack={() => setView('title')} onStarted={() => setView('game')} />
   if (current === 'title' || !game) {
-    if (current === 'setup') return <SetupScreen onBack={() => setView('title')} />
     return <TitleScreen onNew={() => setView('setup')} onContinue={() => setView('game')} />
   }
 
-  const startOver = () => {
-    reset()
-    setView('setup')
-  }
+  // 지난 결과는 새 캐릭터를 다 만들 때까지 남겨 둔다
+  const startOver = () => setView('setup')
 
   switch (game.phase) {
     case 'year_start':

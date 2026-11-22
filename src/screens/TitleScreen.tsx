@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { rankById } from '../data'
 import { useGame } from '../store/game'
 import { Button, Card, Screen } from '../ui'
@@ -6,21 +7,18 @@ const MILESTONES = ['신입', '시니어', '리드', 'CTO', '은퇴']
 
 export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContinue: () => void }) {
   const game = useGame((s) => s.game)
-  const reset = useGame((s) => s.reset)
+  const saveDropped = useGame((s) => s.saveDropped)
+  const dismissSaveNotice = useGame((s) => s.dismissSaveNotice)
   const resumable = game && game.phase !== 'retired'
+  const [confirming, setConfirming] = useState(false)
 
   return (
     <Screen
       footer={
         <div className="flex flex-col gap-2">
           {game && <Button onClick={onContinue}>{resumable ? '이어하기' : '지난 결과 보기'}</Button>}
-          <Button
-            variant={game ? 'secondary' : 'primary'}
-            onClick={() => {
-              reset()
-              onNew()
-            }}
-          >
+          {/* 진행 중인 커리어가 있으면 한 번 더 묻는다. 저장은 새 캐릭터를 다 만들 때 바뀐다 */}
+          <Button variant={game ? 'secondary' : 'primary'} onClick={() => (resumable ? setConfirming(true) : onNew())}>
             새로운 커리어 시작하기
           </Button>
         </div>
@@ -56,6 +54,16 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
         </div>
       </Card>
 
+      {saveDropped && (
+        <Card className="bg-amber-50">
+          <p className="font-semibold text-amber-800">저장된 커리어를 불러오지 못했어요</p>
+          <p className="text-sm text-amber-700">게임이 업데이트되면서 예전 저장 데이터와 맞지 않게 됐어요. 새 커리어로 시작해 주세요.</p>
+          <button type="button" onClick={dismissSaveNotice} className="mt-2 text-sm font-medium text-amber-800 underline">
+            알겠어요
+          </button>
+        </Card>
+      )}
+
       {resumable && (
         <Card>
           <p className="text-sm text-gray-500">저장된 커리어</p>
@@ -63,6 +71,26 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
             {game.profile.emoji} {game.profile.name} · {game.age}세 · {rankById[game.rank].label} · {game.company.name}
           </p>
         </Card>
+      )}
+
+      {confirming && resumable && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-t-3xl bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:rounded-3xl">
+            <p className="text-lg font-bold">새 커리어를 시작할까요?</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              진행 중인 커리어({game.profile.name} · {game.age}세 · {rankById[game.rank].label})는 새 캐릭터를 다 만들면 지워져요. 만드는
+              도중에 돌아오면 그대로 남아 있어요.
+            </p>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              <Button variant="secondary" onClick={() => setConfirming(false)}>
+                계속 이어하기
+              </Button>
+              <Button variant="danger" onClick={onNew}>
+                새로 시작하기
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </Screen>
   )

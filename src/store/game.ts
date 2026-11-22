@@ -24,12 +24,16 @@ import {
   type GameState,
   type NegotiationRaise,
 } from '../engine'
+import { isLoadableSave } from '../engine/save'
 import type { NewGameInput } from '../engine/setup'
 
 interface Store {
   game: GameState | null
   /** 방금 고른 이벤트 선택지의 결과 (결과 문구를 보여준 뒤 지운다) */
   lastOutcome: EventOutcome | null
+  /** 저장된 커리어가 지금 버전과 맞지 않아 버렸을 때 true (타이틀에서 한 번 알린다) */
+  saveDropped: boolean
+  dismissSaveNotice: () => void
 
   newGame: (input: Omit<NewGameInput, 'seed'>) => void
   startYear: (focus: FocusId) => void
@@ -68,6 +72,8 @@ export const useGame = create<Store>()(
       return {
         game: null,
         lastOutcome: null,
+        saveDropped: false,
+        dismissSaveNotice: () => set({ saveDropped: false }),
 
         newGame: (input) => set({ game: createGame({ ...input, seed: randomSeed() }), lastOutcome: null }),
         startYear: (focus) => update((g) => startYear(g, focus)),
@@ -108,6 +114,16 @@ export const useGame = create<Store>()(
       name: 'commit-to-retire-save-v1',
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({ game: s.game, lastOutcome: s.lastOutcome }),
+      // 저장 형식 버전. 형식을 바꾸면 숫자를 올리고 migrate에서 옛 형식을 변환한다
+      version: 1,
+      migrate: (persisted) => persisted,
+      // 지금 버전이 읽을 수 없는 세이브(없어진 회사 유형 등)는 화면이 터지기 전에 버린다
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<Pick<Store, 'game' | 'lastOutcome'>>
+        if (saved.game == null) return current
+        if (!isLoadableSave(saved.game)) return { ...current, saveDropped: true }
+        return { ...current, game: saved.game, lastOutcome: saved.lastOutcome ?? null }
+      },
     },
   ),
 )

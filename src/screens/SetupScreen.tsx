@@ -19,7 +19,7 @@ const AVATARS = ['🧑', '👩', '👨', '🧔', '👱', '👧', '🧓', '🤓',
 const RANDOM_NAMES = ['김커밋', '이머지', '박배포', '최리뷰', '정디버그', '강핫픽스', '조롤백', '윤스프린트', '장레거시', '한푸시']
 const FOCUSABLE: StatKey[] = ['coding', 'design', 'communication', 'domain']
 
-export function SetupScreen({ onBack }: { onBack: () => void }) {
+export function SetupScreen({ onBack, onStarted }: { onBack: () => void; onStarted: () => void }) {
   const newGame = useGame((s) => s.newGame)
   const [step, setStep] = useState(0)
   const [profile, setProfile] = useState<Profile>({
@@ -53,6 +53,7 @@ export function SetupScreen({ onBack }: { onBack: () => void }) {
       window.scrollTo(0, 0)
     } else if (companyType) {
       newGame({ profile: { ...profile, name: profile.name.trim() }, companyType, industry })
+      onStarted()
     }
   }
 
