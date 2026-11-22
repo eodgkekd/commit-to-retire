@@ -25,6 +25,10 @@ export function validResult(value: unknown): value is EndingResult {
   if (!object(stats) || !Object.keys(statLabels).every((key) => number(stats[key], 0, 100))) return false
   if (!Array.isArray(achievements) || achievements.length > 100 || !achievements.every((id) => known(id, achievementById))) return false
   if (!Array.isArray(career) || career.length > 100) return false
+  const timeline = value.timeline
+  if (timeline !== undefined && (!Array.isArray(timeline) || timeline.length > 100 || !timeline.every((p) =>
+    object(p) && number(p.year, 1900, 3000) && number(p.age, 0, 120) && number(p.salary, 0, 1e9) && known(p.rank, rankById) &&
+    Array.isArray(p.stats) && p.stats.length === 5 && p.stats.every((v) => number(v, 0, 100))))) return false
   let lastYear = 0
   for (const period of career) {
     if (!object(period) || !number(period.start, 1900, 3000) || !number(period.end, period.start, 3000) ||

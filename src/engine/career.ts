@@ -23,6 +23,25 @@ export interface EndingResult {
   jobChanges: number
   years: number
   career: CareerPeriod[]
+  /** 해마다의 연말 기록 (엔딩 그래프용). 예전에 공유된 결과에는 없을 수 있다 */
+  timeline?: TimelinePoint[]
+}
+
+/** 그래프 한 점: 그해 연말의 연봉·능력치와 일어난 일 */
+export interface TimelinePoint {
+  year: number
+  age: number
+  /** 연말 연봉 (만 원) */
+  salary: number
+  rank: RankId
+  /** 코딩·설계·소통·도메인·평판 (정수) */
+  stats: [number, number, number, number, number]
+  /** 그해 승진했으면 true */
+  promoted?: boolean
+  /** 그해 회사를 옮겼거나 떠났으면 true (이직·폐업·권고사직·창업) */
+  moved?: boolean
+  /** 실직 공백기 */
+  gap?: boolean
 }
 
 export function endingResult(game: GameState): EndingResult {
@@ -33,7 +52,26 @@ export function endingResult(game: GameState): EndingResult {
     salary: game.salary, assets: game.assets, stats: { ...game.stats },
     achievements: [...game.achievements], jobChanges: game.counters.jobChanges,
     years: game.history.length, career: summarizeCareer(game.history),
+    timeline: careerTimeline(game.history),
   }
+}
+
+const MOVE_TRIGGERS = ['jobChanged', 'companyClosed', 'layoff', 'startupFounded', 'startupFailed', 'startupExit'] as const
+
+export function careerTimeline(history: YearRecord[]): TimelinePoint[] {
+  return history.map((r) => {
+    const s = r.statsAfter
+    return {
+      year: r.calendarYear,
+      age: r.age,
+      salary: r.salaryAfter,
+      rank: r.rank,
+      stats: [s.coding, s.design, s.communication, s.domain, s.reputation].map((v) => Math.round(v)) as TimelinePoint['stats'],
+      ...(r.triggers.includes('promoted') ? { promoted: true } : {}),
+      ...(r.triggers.some((t) => (MOVE_TRIGGERS as readonly string[]).includes(t)) ? { moved: true } : {}),
+      ...(r.gap ? { gap: true } : {}),
+    }
+  })
 }
 
 /** 연속 재직만 합친다. 공백기와 재입사는 별도 기간으로 남긴다. */

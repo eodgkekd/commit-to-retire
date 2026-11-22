@@ -6,6 +6,7 @@ import { formatSalary, type FameGrade, type Retirement } from '../engine'
 import { endingFor } from '../engine/endings'
 import { Button, Card, Screen, StatBars } from '../ui'
 import { drawResultImage } from '../ui/resultImage'
+import { SalaryChart, StatsChart } from '../ui/CareerCharts'
 
 function reasonText(r: Retirement): string {
   return endingFor(r).text
@@ -162,6 +163,19 @@ export function EndingScreen({ game, onNew, shared = false }: { game: EndingResu
         <span className="text-gray-500">모은 자산</span>
         <span className="text-right font-semibold">{formatSalary(Math.max(0, game.assets))}</span>
       </Card>
+
+      {game.timeline && game.timeline.length >= 2 && (
+        <>
+          <Card>
+            <p className="mb-2 text-sm font-medium text-gray-600">💰 연봉 변화</p>
+            <SalaryChart timeline={game.timeline} />
+          </Card>
+          <Card>
+            <p className="mb-2 text-sm font-medium text-gray-600">📈 능력치 변화</p>
+            <StatsChart timeline={game.timeline} />
+          </Card>
+        </>
+      )}
 
       <Card>
         <p className="mb-3 text-sm font-medium text-gray-600">최종 능력치</p>

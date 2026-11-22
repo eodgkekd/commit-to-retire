@@ -1,7 +1,7 @@
 // 엔딩 결과를 인스타 스토리 비율(1080×1920) 이미지 카드로 그린다
 
 import { achievementById, companyTypeById, rankById } from '../data'
-import type { EndingResult } from '../engine/career'
+import type { EndingResult, TimelinePoint } from '../engine/career'
 import { formatSalary, type FameGrade } from '../engine'
 
 const W = 1080
@@ -116,26 +116,77 @@ export async function drawResultImage(game: EndingResult, reason: string, siteUr
     ctx.fillText(value, W - 130, y)
   })
 
-  // 커리어 경로: 거친 회사 이름 한 줄씩 (공백기 제외, 최대 4곳)
+  // 커리어 경로: 거친 회사 이름 한 줄씩 (공백기 제외). 연봉 그래프가 있으면 2곳, 없으면 4곳까지
+  const timeline = game.timeline ?? []
+  const hasChart = timeline.length >= 2
+  const maxRoute = hasChart ? 2 : 4
   const companies = game.career.filter((p) => !p.gap)
-  const route = companies.slice(0, 4).map((p) => `${companyTypeById[p.company.type].emoji} ${p.company.name} · ${p.end - p.start + 1}년`)
-  if (companies.length > 4) route.push(`외 ${companies.length - 4}곳`)
+  const route = companies.slice(0, maxRoute).map((p) => `${companyTypeById[p.company.type].emoji} ${p.company.name} · ${p.end - p.start + 1}년`)
+  if (companies.length > maxRoute) route.push(`외 ${companies.length - maxRoute}곳`)
   ctx.textAlign = 'center'
   ctx.fillStyle = '#334155'
   ctx.font = `600 36px ${FONT}`
-  route.forEach((line, i) => ctx.fillText(fit(ctx, line, W - 160), W / 2, 1430 + i * 56))
+  route.forEach((line, i) => ctx.fillText(fit(ctx, line, W - 160), W / 2, 1420 + i * 52))
+
+  // 연봉 변화 미니 그래프
+  if (hasChart) drawSalarySpark(ctx, timeline, 80, 1560, W - 160, 160)
 
   // 업적: 이모지 줄 + 개수
   const unlocked = game.achievements.map((id) => achievementById[id]).filter(Boolean)
+  ctx.textAlign = 'center'
+  ctx.fillStyle = '#334155'
   ctx.font = `64px ${FONT}`
-  ctx.fillText(unlocked.slice(0, 10).map((a) => a.emoji).join(' ') || '🔒', W / 2, 1740)
+  ctx.fillText(unlocked.slice(0, 10).map((a) => a.emoji).join(' ') || '🔒', W / 2, hasChart ? 1775 : 1740)
   ctx.fillStyle = '#64748b'
   ctx.font = `500 36px ${FONT}`
-  ctx.fillText(`업적 ${unlocked.length}개 달성`, W / 2, 1820)
+  ctx.fillText(`업적 ${unlocked.length}개 달성`, W / 2, hasChart ? 1838 : 1820)
 
   ctx.fillStyle = '#94a3b8'
   ctx.font = `500 32px ${FONT}`
-  ctx.fillText(siteUrl.replace(/^https?:\/\//, ''), W / 2, 1880)
+  ctx.fillText(siteUrl.replace(/^https?:\/\//, ''), W / 2, 1886)
 
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('이미지를 만들지 못했어요'))), 'image/png'))
+}
+
+
+/** 결과 카드의 연봉 변화 그래프 (흰 카드 안에 선 하나, 승진한 해는 점) */
+function drawSalarySpark(ctx: CanvasRenderingContext2D, timeline: TimelinePoint[], x: number, y: number, w: number, h: number) {
+  ctx.fillStyle = '#ffffff'
+  roundRect(ctx, x, y, w, h, 32)
+  ctx.fill()
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#64748b'
+  ctx.font = `500 28px ${FONT}`
+  ctx.fillText('연봉 변화', x + 36, y + 40)
+  ctx.textAlign = 'right'
+  ctx.fillStyle = '#0f172a'
+  ctx.font = `700 28px ${FONT}`
+  const first = timeline[0].salary
+  const last = timeline[timeline.length - 1].salary
+  ctx.fillText(`${formatSalary(first)} → ${formatSalary(last)}`, x + w - 36, y + 40)
+
+  const left = x + 36
+  const right = x + w - 36
+  const top = y + 74
+  const bottom = y + h - 24
+  // 작은 그래프라 0이 아니라 최저 연봉부터 그려서 오르내림이 보이게 한다
+  const max = Math.max(...timeline.map((p) => p.salary), 1)
+  const min = Math.min(...timeline.map((p) => p.salary))
+  const span = Math.max(1, max - min)
+  const px = (i: number) => left + (i / (timeline.length - 1)) * (right - left)
+  const py = (v: number) => bottom - ((v - min) / span) * (bottom - top)
+  ctx.strokeStyle = '#2a78d6'
+  ctx.lineWidth = 5
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+  ctx.beginPath()
+  timeline.forEach((p, i) => (i === 0 ? ctx.moveTo(px(i), py(p.salary)) : ctx.lineTo(px(i), py(p.salary))))
+  ctx.stroke()
+  ctx.fillStyle = '#2a78d6'
+  timeline.forEach((p, i) => {
+    if (!p.promoted) return
+    ctx.beginPath()
+    ctx.arc(px(i), py(p.salary), 8, 0, Math.PI * 2)
+    ctx.fill()
+  })
 }

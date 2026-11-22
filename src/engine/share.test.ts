@@ -95,3 +95,20 @@ describe('짧은 링크 저장 및 다른 클라이언트 조회', () => {
     expect(readSharedResult(new URL(resultUrl(result(), 'https://example.com')).hash).status).toBe('valid')
   })
 })
+
+describe('엔딩 그래프 기록', () => {
+  it('해마다 한 점씩 남고, 공유 링크로 주고받을 수 있다', async () => {
+    const { playToEnd } = await import('./bot')
+    const { validResult } = await import('./share')
+    const game = playToEnd(randomGame(3), 'random', 3)
+    const result = endingResult(game)
+    expect(result.timeline).toHaveLength(game.history.length)
+    expect(result.timeline![0].year).toBe(game.history[0].calendarYear)
+    expect(result.timeline!.some((p) => p.promoted)).toBe(true)
+    expect(validResult(JSON.parse(JSON.stringify(result)))).toBe(true)
+    // 예전에 공유된 결과(그래프 기록 없음)도 그대로 열린다
+    const { timeline: _omit, ...old } = result
+    expect(validResult(JSON.parse(JSON.stringify(old)))).toBe(true)
+    expect(validResult({ ...result, timeline: [{ year: 2030, age: 30, salary: 1, rank: 'nope', stats: [1, 2, 3, 4, 5] }] })).toBe(false)
+  })
+})
