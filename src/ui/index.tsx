@@ -173,14 +173,14 @@ export function StatusHeader({ game }: { game: GameState }) {
           <p className="truncate font-bold">{game.profile.name}</p>
           <p className="truncate text-sm font-medium text-gray-600">{rankDisplay(game.rank, game.careerYear, Boolean(game.startup))}</p>
           {game.unemployed ? (
-            <p className="truncate text-sm font-medium text-red-500">🎒 실직 중 · 전 직장 {game.company.name}</p>
+            <p className="break-keep text-sm font-medium leading-snug text-red-500">🎒 실직 중 · 전 직장 {game.company.name}</p>
           ) : (
-            <p className="truncate text-sm text-gray-500">
+            <p className="break-keep text-sm leading-snug text-gray-500">
               {company.emoji} {game.company.name} · {industry.label}
             </p>
           )}
         </div>
-        <div className="text-right">
+        <div className="shrink-0 text-right">
           <p className="text-xs text-gray-500">
             {game.calendarYear}년 · {game.age}세
           </p>
