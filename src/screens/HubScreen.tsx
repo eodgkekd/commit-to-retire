@@ -91,7 +91,7 @@ export function HubScreen({ game }: { game: GameState }) {
         <p className="rounded-2xl bg-gray-50 p-3 text-sm text-gray-500">🚀 사이드 프로젝트를 꾸준히 해서 창업할 준비가 됐어요. {startupBlocker(game)}.</p>
       )}
 
-      {canChooseTrack(game) && (
+      {canChooseTrack(game) && !game.startup && (
         <Card className="flex flex-col gap-3">
           <div>
             <p className="font-semibold">🛤️ 커리어 갈림길</p>
@@ -110,7 +110,7 @@ export function HubScreen({ game }: { game: GameState }) {
         </Card>
       )}
 
-      <OverworkCard game={game} />
+      {!game.startup && <OverworkCard game={game} />}
 
       {game.startup ? <FounderCard game={game} /> : !game.unemployed && <PromotionCard game={game} />}
 

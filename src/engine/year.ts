@@ -117,6 +117,8 @@ export function isEligible(event: GameEvent, s: GameState): boolean {
   // 창업 중에는 회사 생활 이벤트가 나오지 않는다
   if (s.startup && !event.conditions?.founder) {
     if (!(FOUNDER_EVENT_CATEGORIES as readonly string[]).includes(event.category) || event.conditions?.companyTypes) return false
+    // 회사에서 잘리는 결과가 있는 이벤트(구조조정 등)는 대표에게 맞지 않는다
+    if (event.choices.some((c) => c.outcomes.some((o) => o.effects.jobLoss))) return false
   }
   return matchesConditions(event.conditions, s)
 }

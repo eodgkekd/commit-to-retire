@@ -64,7 +64,8 @@ export function careerTimeline(history: YearRecord[]): TimelinePoint[] {
     return {
       year: r.calendarYear,
       age: r.age,
-      salary: r.salaryAfter,
+      // 공백기에는 받은 연봉이 없다
+      salary: r.gap ? 0 : r.salaryAfter,
       rank: r.rank,
       stats: [s.coding, s.design, s.communication, s.domain, s.reputation].map((v) => Math.round(v)) as TimelinePoint['stats'],
       ...(r.triggers.includes('promoted') ? { promoted: true } : {}),
