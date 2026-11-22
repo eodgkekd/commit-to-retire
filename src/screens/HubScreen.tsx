@@ -33,8 +33,11 @@ export function HubScreen({ game }: { game: GameState }) {
   const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, openChickenShop, foundStartup, takeCareerExit, lastApplication, dismissApplication } = useGame()
   const [confirmRetire, setConfirmRetire] = useState(false)
   const postings = game.postings ?? []
-  const appsLeft = game.applicationsLeft ?? 0
-  const gapYear = canSpendGapYear(game)
+  // 지원 결과 팝업이 단계별로 보여주는 동안에는 뒤 화면을 지원하기 전 상태로 둔다
+  // (남은 지원 수가 먼저 줄거나 '모두 떨어졌어요'가 결과보다 먼저 보이지 않게)
+  const revealing = lastApplication !== null
+  const appsLeft = (game.applicationsLeft ?? 0) + (revealing ? 1 : 0)
+  const gapYear = canSpendGapYear(game) && !revealing
   // 결과 팝업이 단계별로 보여주는 동안은 방금 합격한 회사의 제안을 목록에서 숨긴다 (결과가 뒤에서 먼저 보이지 않게)
   const pendingReveal = lastApplication?.posting.company.name
   const visibleOffers = game.offers.map((offer, index) => ({ offer, index })).filter(({ offer }) => offer.company.name !== pendingReveal)
