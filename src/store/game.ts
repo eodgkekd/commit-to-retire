@@ -12,6 +12,7 @@ import {
   declineOffers,
   finishYear,
   foundStartup,
+  takeCareerExit,
   nextYear,
   negotiateOffer,
   openChickenShop,
@@ -20,6 +21,7 @@ import {
   spendGapYear,
   startYear,
   type ApplicationResult,
+  type CareerExitId,
   type EventOutcome,
   type FocusId,
   type GameState,
@@ -54,6 +56,7 @@ interface Store {
   spendGapYear: () => void
   openChickenShop: () => void
   foundStartup: () => void
+  takeCareerExit: (id: CareerExitId) => void
   nextYear: () => void
   retire: () => void
   reset: () => void
@@ -108,6 +111,7 @@ export const useGame = create<Store>()(
         spendGapYear: () => update(spendGapYear),
         openChickenShop: () => update(openChickenShop),
         foundStartup: () => update(foundStartup),
+        takeCareerExit: (id) => update((g) => takeCareerExit(g, id)),
         nextYear: () => update(nextYear),
         retire: () => update(retireNow),
         reset: () => set({ game: null, lastOutcome: null, lastApplication: null }),

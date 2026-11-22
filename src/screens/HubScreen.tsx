@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CHICKEN, companyTypeById, industryById, rankById, startupStages, STARTUP, statLabels } from '../data'
 import {
   agePenalty,
+  availableCareerExits,
   canChooseTrack,
   canFoundStartup,
   canOpenChickenShop,
@@ -14,6 +15,8 @@ import {
   startupBlocker,
   STAGE_LABELS,
   type ApplicationResult,
+  type CareerExitDef,
+  type CareerExitId,
   type GameState,
   type JobOffer,
   type JobPosting,
@@ -27,7 +30,7 @@ import { fillTemplate } from '../engine/text'
 import { JOB_LOSS_TRIGGERS, majorEvents } from './majorEvents'
 
 export function HubScreen({ game }: { game: GameState }) {
-  const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, openChickenShop, foundStartup, lastApplication, dismissApplication } = useGame()
+  const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, openChickenShop, foundStartup, takeCareerExit, lastApplication, dismissApplication } = useGame()
   const [confirmRetire, setConfirmRetire] = useState(false)
   const postings = game.postings ?? []
   const appsLeft = game.applicationsLeft ?? 0
@@ -149,6 +152,8 @@ export function HubScreen({ game }: { game: GameState }) {
         <StatBars stats={game.stats} />
       </Card>
 
+      <CareerExitsCard exits={availableCareerExits(game)} onTake={takeCareerExit} />
+
       {/* 실직 중에도 은퇴는 할 수 있다 (40세 미만은 치킨집을 못 차려서 이게 유일한 출구) */}
       {(confirmRetire ? (
           <div className="flex flex-col gap-2">
@@ -170,6 +175,54 @@ export function HubScreen({ game }: { game: GameState }) {
 
       {lastApplication && <ApplicationSheet result={lastApplication} onClose={dismissApplication} />}
     </Screen>
+  )
+}
+
+/** 개발자 말고 다른 길 (프리랜서·강사/유튜버·공무원). 고르면 게임이 끝나서 접어 두고 한 번 더 확인한다 */
+function CareerExitsCard({ exits, onTake }: { exits: CareerExitDef[]; onTake: (id: CareerExitId) => void }) {
+  const [open, setOpen] = useState(false)
+  const [confirm, setConfirm] = useState<CareerExitId | null>(null)
+  if (exits.length === 0) return null
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="rounded-2xl bg-gray-50 p-3 text-left text-sm text-gray-600 active:bg-gray-100">
+        🚪 개발자 말고 다른 길도 있어요 ({exits.map((e) => e.label).join(' · ')})
+      </button>
+    )
+  }
+  return (
+    <Card className="flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <p className="font-semibold">🚪 개발자 말고 다른 길</p>
+          <p className="text-xs text-gray-500">고르면 지금 커리어가 끝나고 그 길의 결과로 엔딩을 봐요. 결과는 실력과 운에 달렸어요.</p>
+        </div>
+        <button type="button" onClick={() => { setOpen(false); setConfirm(null) }} className="shrink-0 text-sm text-gray-400">
+          접기
+        </button>
+      </div>
+      {exits.map((e) => (
+        <div key={e.id} className="flex flex-col gap-2 rounded-2xl bg-white p-3">
+          <p className="font-semibold">
+            {e.emoji} {e.label}
+          </p>
+          <p className="text-sm text-gray-600">{e.description}</p>
+          {confirm === e.id ? (
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="secondary" onClick={() => setConfirm(null)}>
+                그만둘게요
+              </Button>
+              <Button onClick={() => onTake(e.id)}>이 길로 가기</Button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => setConfirm(e.id)} className="self-start text-sm font-medium text-blue-500 underline">
+              {e.label}의 길로 가기
+            </button>
+          )}
+          {confirm === e.id && <p className="text-center text-xs text-gray-400">되돌릴 수 없어요. 게임이 끝나요.</p>}
+        </div>
+      ))}
+    </Card>
   )
 }
 

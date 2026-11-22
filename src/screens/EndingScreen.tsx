@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { achievements, companyTypeById, educationById, rankById } from '../data'
 import { careerPeriodLabel, endingShareText, type EndingResult } from '../engine/career'
 import { createShortResultUrl, readSharedResult } from '../engine/share'
-import { formatSalary, type ChickenOutcome, type FameGrade, type RetireReason, type Retirement } from '../engine'
+import { careerExitEnding, formatSalary, type ChickenOutcome, type FameGrade, type RetireReason, type Retirement } from '../engine'
 import { Button, Card, Screen, StatBars } from '../ui'
 import { drawResultImage } from '../ui/resultImage'
 
-const REASON: Record<Exclude<RetireReason, 'chicken'>, string> = {
+const REASON: Record<Exclude<RetireReason, 'chicken' | 'career_exit'>, string> = {
   age: '60세, 정년을 채우고 은퇴했어요',
   voluntary: '스스로 키보드를 내려놓았어요',
   burnout: '세 번째 번아웃 끝에 업계를 떠났어요',
@@ -20,7 +20,9 @@ const CHICKEN: Record<ChickenOutcome, string> = {
 }
 
 function reasonText(r: Retirement): string {
-  return r.reason === 'chicken' ? CHICKEN[r.chicken ?? 'local'] : REASON[r.reason]
+  if (r.reason === 'chicken') return CHICKEN[r.chicken ?? 'local']
+  if (r.reason === 'career_exit') return r.careerExit ? careerExitEnding(r.careerExit) : '개발자 말고 다른 길을 찾았어요'
+  return REASON[r.reason]
 }
 
 const GRADE_STYLE: Record<FameGrade, string> = {

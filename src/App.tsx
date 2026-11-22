@@ -11,6 +11,7 @@ import { TitleScreen } from './screens/TitleScreen'
 import { YearEndScreen } from './screens/YearEndScreen'
 import { YearStartScreen } from './screens/YearStartScreen'
 import { useGame } from './store/game'
+import { recordInGallery } from './store/gallery'
 
 type View = 'title' | 'setup' | 'game'
 
@@ -19,6 +20,10 @@ export default function App() {
   const [view, setView] = useState<View>('title')
   const [shared, setShared] = useState(() => readSharedResult(window.location.hash))
   const [retry, setRetry] = useState(0)
+  // 은퇴한 판의 업적을 업적 모음에 남긴다 (같은 판은 한 번만)
+  useEffect(() => {
+    if (game?.phase === 'retired') recordInGallery(game)
+  }, [game])
   useEffect(() => {
     let controller: AbortController | undefined
     const update = () => {

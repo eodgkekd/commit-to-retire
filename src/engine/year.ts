@@ -370,7 +370,8 @@ export function performance(s: GameState): number {
     case 'ic':
       return design * 0.5 + coding * (0.3 - ai * 0.1) + domain * (0.2 + ai * 0.1)
     default:
-      return coding * (0.5 - ai * 0.2) + design * 0.3 + domain * (0.2 + ai * 0.2)
+      // 리드 전에도 소통을 조금 본다 (세미나만 열심히 한 사람이 고과에서 완전히 무시되지 않게)
+      return coding * (0.45 - ai * 0.2) + design * 0.25 + domain * (0.2 + ai * 0.2) + communication * 0.1
   }
 }
 

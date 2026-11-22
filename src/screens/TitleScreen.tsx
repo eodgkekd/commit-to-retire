@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { rankDisplay } from '../engine'
 import { useGame } from '../store/game'
+import { useGallery } from '../store/gallery'
+import { achievements } from '../data'
+import { GallerySheet } from './GallerySheet'
 import { Button, Card, Screen } from '../ui'
 
 const MILESTONES = ['신입', '시니어', '리드', 'CTO', '은퇴']
@@ -11,6 +14,8 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
   const dismissSaveNotice = useGame((s) => s.dismissSaveNotice)
   const resumable = game && game.phase !== 'retired'
   const [confirming, setConfirming] = useState(false)
+  const [gallery, setGallery] = useState(false)
+  const unlockedCount = useGallery((s) => achievements.filter((a) => s.unlocked[a.id]).length)
 
   return (
     <Screen
@@ -72,6 +77,12 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
           </p>
         </Card>
       )}
+
+      <button type="button" onClick={() => setGallery(true)} className="rounded-2xl bg-gray-50 p-3 text-left text-sm text-gray-600 active:bg-gray-100">
+        🏆 업적 모음 <span className="font-semibold text-gray-800">{unlockedCount}/{achievements.length}</span>
+      </button>
+
+      {gallery && <GallerySheet onClose={() => setGallery(false)} />}
 
       {confirming && resumable && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" role="dialog" aria-modal="true">

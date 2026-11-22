@@ -15,6 +15,7 @@ export {
 export { startYear, currentEvent, remainingEvents, chooseEventOption, finishYear, acknowledgeYear, staminaChange, overworkDrain } from './year'
 export { acceptOffer, declineOffers, chooseTrack, canChooseTrack, nextYear, retireNow } from './hub'
 export { corporateTitle, formatSalary, meetsStats, nextPromotion, rankDisplay, type PromotionTarget } from './rules'
+export { availableCareerExits, careerExitEnding, takeCareerExit } from './exits'
 export { canFoundStartup, foundStartup, sideProjectYears, startupBlocker } from './startup'
 export {
   negotiateOffer,

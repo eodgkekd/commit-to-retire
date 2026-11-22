@@ -1,11 +1,13 @@
 import { achievements, focuses, ranks } from './career'
 import { companyTypes, industries } from './companies'
+import { careerExits } from './exits'
 import { educations, playStyles, specialties } from './profile'
 
 export * from './balance'
 export * from './career'
 export * from './companies'
 export * from './events'
+export * from './exits'
 export * from './feed'
 export * from './profile'
 
@@ -21,6 +23,7 @@ export const industryById = byId(industries)
 export const rankById = byId(ranks)
 export const focusById = byId(focuses)
 export const achievementById = byId(achievements)
+export const careerExitById = byId(careerExits)
 
 export const statLabels = {
   coding: '코딩',

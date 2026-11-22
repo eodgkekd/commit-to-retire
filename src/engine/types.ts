@@ -218,6 +218,8 @@ export interface EventConditions {
   minJobChanges?: number
   /** 최대 이직 횟수 (0 = 첫 회사에서만) */
   maxJobChanges?: number
+  /** true: 실직 공백기를 보내고 다시 취업한 첫해에만 나온다 */
+  afterGapYear?: boolean
   /** true: 창업한 사람에게만 나온다. 창업 중에는 이 이벤트와 개인·생활·업계·장애 이벤트만 나온다 */
   founder?: boolean
 }
@@ -399,7 +401,7 @@ export type Phase =
   | 'hub'         // 확인할 일 (이직 제안 등)
   | 'retired'
 
-export type RetireReason = 'age' | 'voluntary' | 'burnout' | 'startup_quit' | 'chicken'
+export type RetireReason = 'age' | 'voluntary' | 'burnout' | 'startup_quit' | 'chicken' | 'career_exit'
 
 /** 치킨집 창업 결과: 프랜차이즈 대박 · 동네 맛집 · 폐업 */
 export type ChickenOutcome = 'franchise' | 'local' | 'closed'
@@ -411,6 +413,43 @@ export interface Retirement {
   title: string
   /** reason이 'chicken'일 때만 */
   chicken?: ChickenOutcome
+  /** reason이 'career_exit'일 때만: 고른 길과 결과 */
+  careerExit?: { id: CareerExitId; outcome: string }
+}
+
+export type CareerExitId = 'freelancer' | 'creator' | 'civil_servant'
+
+export interface CareerExitOutcomeDef {
+  id: string
+  chance: number
+  /** 엔딩 화면 첫 줄 */
+  ending: string
+  /** 60세까지 해마다 버는 돈 (만 원) */
+  yearlyIncome?: number
+  /** 한 번에 생기거나 나가는 돈 (만 원) */
+  assets?: number
+  achievement: string
+}
+
+export interface CareerExitDef {
+  id: CareerExitId
+  label: string
+  emoji: string
+  description: string
+  /** 조건을 사람이 읽는 문구 */
+  requirement: string
+  conditions: { minCareerYear?: number; maxAge?: number }
+  /** 이 능력치 중 하나라도 기준 이상이어야 한다 */
+  statGate?: Partial<Stats>
+  /** 결과 확률을 움직이는 능력치 (평균) */
+  skill: StatKey[]
+  pivot: number
+  goodPerPoint: number
+  badPerPoint: number
+  /** 이 나이부터 1살마다 능력치 평균을 2점씩 깎아 본다 */
+  agePenaltyFrom?: number
+  /** 첫 결과가 가장 좋고 마지막이 가장 나쁘다. chance 합은 1 */
+  outcomes: CareerExitOutcomeDef[]
 }
 
 export interface GameState {

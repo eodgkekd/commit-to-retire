@@ -45,6 +45,7 @@ export function matchesConditions(c: EventConditions | undefined, s: GameState):
   if (c.flags && !c.flags.every((f) => s.flags.includes(f))) return false
   if (c.notFlags && c.notFlags.some((f) => s.flags.includes(f))) return false
   if (c.founder !== undefined && c.founder !== Boolean(s.startup)) return false
+  if (c.afterGapYear && !s.history.at(-1)?.gap) return false
   return true
 }
 

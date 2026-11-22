@@ -18,7 +18,7 @@
 - `npm run balance` 봇 자동 플레이 리포트 + **필승법 검사** (고정 전략 하나라도 S 20% 초과면 실패). 약 2분. 수치를 바꾸면 반드시 돌린다
 
 ## 엔진 흐름
-(`applyFirstJobs`로 첫 회사 결정) → `createGame` → (`startYear` → `chooseEventOption`* → `finishYear` → `acknowledgeYear` → 허브: `applyToPosting`/`acceptOffer`/`declineOffers`/`chooseTrack`/`spendGapYear`/`foundStartup`/`openChickenShop`/`nextYear`/`retireNow`) 반복 → `retired`.
+(`applyFirstJobs`로 첫 회사 결정) → `createGame` → (`startYear` → `chooseEventOption`* → `finishYear` → `acknowledgeYear` → 허브: `applyToPosting`/`acceptOffer`/`declineOffers`/`chooseTrack`/`spendGapYear`/`foundStartup`/`openChickenShop`/`takeCareerExit`/`nextYear`/`retireNow`) 반복 → `retired`.
 모든 함수는 상태를 복사해 새 상태를 돌려준다. 밸런스 규칙은 `src/engine/year.ts`·`rules.ts`·`jobs.ts`·`startup.ts`(창업), **밸런스 수치는 `src/data/balance.ts`**, 나머지 데이터는 `src/data/`.
 
 ## 저장과 CI

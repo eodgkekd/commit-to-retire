@@ -154,5 +154,11 @@ export const achievements: AchievementDef[] = [
   { id: 'founder', title: '대표님', emoji: '🚀', description: '회사를 그만두고 내 회사를 차렸어요.', fame: 2 },
   { id: 'founder_failed', title: '실패도 경력', emoji: '🪂', description: '차린 회사를 접어 봤어요.', fame: 1 },
   { id: 'founder_exit', title: '연쇄 창업가의 시작', emoji: '🦄', description: '차린 회사를 매각했어요.', fame: 15 },
+  { id: 'freelancer', title: '노마드 개발자', emoji: '🧳', description: '회사를 나와 프리랜서가 됐어요.', fame: 3 },
+  { id: 'freelancer_top', title: '귀하신 프리랜서', emoji: '💎', description: '일을 골라 받는 프리랜서가 됐어요.', fame: 8 },
+  { id: 'creator', title: '지식 공유자', emoji: '📚', description: '개발을 가르치거나 영상을 찍었어요.', fame: 4 },
+  { id: 'creator_star', title: '개발 유튜버 셀럽', emoji: '🎥', description: '구독자 100만을 모았어요.', fame: 15 },
+  { id: 'civil_servant', title: '칼퇴의 주인공', emoji: '🏛️', description: '전산직 공무원이 됐어요.', fame: 5 },
+  { id: 'gongsi', title: '노량진 졸업생', emoji: '📝', description: '공무원 시험에 도전했어요.', fame: 1 },
   { id: 'chicken_franchise', title: '치킨 프랜차이즈 대표', emoji: '🐔', description: '차린 치킨집이 전국 프랜차이즈가 됐어요.', fame: 12 },
 ]
