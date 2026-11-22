@@ -1,7 +1,7 @@
 // 이벤트 한 건의 '장면' 만들기: 심각도·변형·변수를 굴리고, 문구와 효과를 그에 맞게 풀어낸다.
 // 굴린 값은 GameState.pendingEvents에 저장하므로 저장 후 이어해도 같은 장면이 나온다.
 
-import { events, rankById, SEVERITY_EFFECT_MULTIPLIER, SEVERITY_WEIGHTS } from '../data'
+import { bossTitles, events, rankById, SEVERITY_EFFECT_MULTIPLIER, SEVERITY_WEIGHTS } from '../data'
 import type { Rng } from './rng'
 import { fillTemplate } from './text'
 import type {
@@ -21,7 +21,8 @@ export const eventById = Object.fromEntries(events.map((e) => [e.id, e])) as Rec
 const SEVERITIES: Severity[] = [1, 2, 3]
 
 /** 문구에 언제나 쓸 수 있는 변수 */
-export const BUILT_IN_VARS = ['name', 'company', 'rank'] as const
+/** 모든 이벤트 문구에 쓸 수 있는 변수. boss는 내 직급 기준 바로 위 상사 호칭 (src/data/career.ts의 bossTitles) */
+export const BUILT_IN_VARS = ['name', 'company', 'rank', 'boss'] as const
 
 export function pendingId(p: string | PendingEvent): string {
   return typeof p === 'string' ? p : p.id
@@ -116,12 +117,15 @@ export function scaleEffects(effects: Effects, severity: Severity): Effects {
 export function resolveEvent(instance: PendingEvent, s: GameState): ResolvedEvent {
   const event = eventById[instance.id]
   const scene = (instance.variant !== null && event.variants?.[instance.variant]) || event
-  const values: Record<string, string> = {
+  const builtIn: Record<string, string> = {
     name: s.profile.name,
     company: s.company.name,
     rank: rankById[s.rank].label,
-    ...instance.vars,
+    boss: bossTitles[s.rank],
   }
+  // 굴린 변수 값 안에도 {boss} 같은 기본 변수를 쓸 수 있다
+  const rolled = Object.fromEntries(Object.entries(instance.vars).map(([k, v]) => [k, fillTemplate(v, builtIn)]))
+  const values: Record<string, string> = { ...builtIn, ...rolled }
   const fill = (text: string) => fillTemplate(text, values)
   const severity = event.severity ? instance.severity : 2
 

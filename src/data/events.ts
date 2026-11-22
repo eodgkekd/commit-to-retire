@@ -8,6 +8,8 @@ import type { GameEvent } from '../engine/types'
 //   severity: true → 뽑힐 때 심각도(1 가벼움 · 2 보통 · 3 큰일)를 굴려 결과의 체력·고과·능력치 변화와 실패 확률이 달라진다
 //   vars → 뽑힐 때 굴리는 변수. 문구에 {이름}으로 쓰고, 뒤에 (이)가 · (을)를 · (으)로 같은 조사 표기를 붙일 수 있다.
 //          bySeverity로 심각도별 후보를 따로 둘 수 있다. {name} {company} {rank}는 언제나 쓸 수 있다
+//   {boss} → 내 바로 위 상사 호칭. 시니어까지 팀장, 리드급 본부장, 디렉터급 상무, 그 위는 대표.
+//          '내 상사'를 가리킬 때는 '팀장'을 직접 쓰지 말고 {boss}를 쓴다 (팀장급에게 '팀장이 시켰다'가 나오지 않게)
 //   variants → 같은 선택지를 쓰는 다른 장면(제목·본문). 결과 문구와 어긋나지 않게 쓴다
 
 const STARTUPS = ['seed', 'series_b', 'unicorn'] as const
@@ -19,7 +21,7 @@ export const events: GameEvent[] = [
     category: '장애',
     emoji: '🚨',
     title: '금요일 {hour}시 배포',
-    text: "팀장이 '{change} 정도는 간단하니까 지금 배포하고 퇴근하자'고 해요.",
+    text: "{boss}(이)가 '{change} 정도는 간단하니까 지금 배포하고 퇴근하자'고 해요.",
     weight: 10,
     severity: true,
     vars: {
@@ -35,11 +37,11 @@ export const events: GameEvent[] = [
     variants: [
       {
         title: '연휴 전날 배포',
-        text: "내일부터 연휴예요. 팀장이 '{change} 정도는 올리고 가자'고 해요. 다들 벌써 가방을 싸고 있어요.",
+        text: "내일부터 연휴예요. {boss}(이)가 '{change} 정도는 올리고 가자'고 해요. 다들 벌써 가방을 싸고 있어요.",
       },
       {
         title: '공지 없는 {hour}시 배포',
-        text: "오늘은 금요일이에요. 팀장이 '{change} 정도는 공지 없이 조용히 올리자'고 해요.",
+        text: "오늘은 금요일이에요. {boss}(이)가 '{change} 정도는 공지 없이 조용히 올리자'고 해요.",
       },
     ],
     choices: [
@@ -59,10 +61,10 @@ export const events: GameEvent[] = [
         label: '월요일에 하자고 설득한다',
         check: { communication: 40 },
         outcomes: [
-          { chance: 0.7, text: '팀장이 마지못해 동의했어요.', tone: 'skill', effects: { stats: { communication: 2 } } },
+          { chance: 0.7, text: '{boss}(이)가 마지못해 동의했어요.', tone: 'skill', effects: { stats: { communication: 2 } } },
           {
             chance: 0.3,
-            text: "팀장이 '말 많네' 하며 그냥 배포했어요. 주말이 날아갔어요.",
+            text: "{boss}(이)가 '말 많네' 하며 그냥 배포했어요. 주말이 날아갔어요.",
             tone: 'unlucky',
             effects: { stamina: -15, counters: { incidents: 1 }, achievement: 'weekend_rollback' },
           },
@@ -101,7 +103,7 @@ export const events: GameEvent[] = [
         label: '혼자 원인을 찾는다',
         check: { coding: 50 },
         outcomes: [
-          { chance: 0.7, text: '{minutes}분 만에 범인 쿼리를 찾아 죽였어요. 아침에 팀장이 칭찬했어요.', tone: 'skill', effects: { stamina: -8, gradeBonus: 8, counters: { incidents: 1 } } },
+          { chance: 0.7, text: '{minutes}분 만에 범인 쿼리를 찾아 죽였어요. 아침에 {boss}(이)가 칭찬했어요.', tone: 'skill', effects: { stamina: -8, gradeBonus: 8, counters: { incidents: 1 } } },
           { chance: 0.3, text: '해 뜰 때까지 헤맸어요. 결국 선배가 5분 만에 해결했어요.', tone: 'unlucky', effects: { stamina: -15, stats: { coding: 2 }, counters: { incidents: 1 } } },
         ],
       },
@@ -284,7 +286,7 @@ export const events: GameEvent[] = [
     conditions: { maxYearsAtCompany: 0, minJobChanges: 1 },
     vars: {
       tests: ['테스트 0개', '3년째 깨져 있는 테스트', '주석 처리된 테스트 200개'],
-      deploy: ['FTP', '팀장 PC에서 수동 빌드', '금요일 밤 일괄 배포'],
+      deploy: ['FTP', '{boss} PC에서 수동 빌드', '금요일 밤 일괄 배포'],
       docs: ['3년 전 위키', '퇴사자의 개인 노션', '엑셀 파일 하나'],
     },
     variants: [
@@ -298,7 +300,7 @@ export const events: GameEvent[] = [
         label: '개선안을 정리해서 제안한다',
         check: { communication: 45, design: 45 },
         outcomes: [
-          { chance: 0.6, text: '팀장이 반가워하며 CI 도입을 맡겼어요. 새 회사에서 존재감이 생겼어요.', tone: 'skill', effects: { stats: { design: 3, reputation: 1 }, gradeBonus: 10 } },
+          { chance: 0.6, text: '{boss}(이)가 반가워하며 CI 도입을 맡겼어요. 새 회사에서 존재감이 생겼어요.', tone: 'skill', effects: { stats: { design: 3, reputation: 1 }, gradeBonus: 10 } },
           { chance: 0.4, text: '"원래 이렇게 해 왔어요" 한마디로 끝났어요. 들어오자마자 불평하는 사람으로 찍혔어요.', tone: 'unlucky', effects: { gradeBonus: -10, stamina: -5 } },
         ],
       },
@@ -415,7 +417,7 @@ export const events: GameEvent[] = [
     weight: 8,
     severity: true,
     vars: {
-      who: ['팀장', '기획자', '옆 팀 팀장', '대표님'],
+      who: ['{boss}', '기획자', '옆 팀 팀장', '대표님'],
       when: ['내일까지', '오늘 퇴근 전까지', '이번 주 안에'],
       feature: {
         bySeverity: [
@@ -1118,7 +1120,7 @@ export const events: GameEvent[] = [
     category: '사람',
     emoji: '🎓',
     title: '신입 {count}명의 멘토가 됐어요',
-    text: '팀장이 이번에 들어온 신입 {count}명의 멘토를 맡겼어요. 내 일정은 줄여 주지 않았어요.',
+    text: '{boss}(이)가 이번에 들어온 신입 {count}명의 멘토를 맡겼어요. 내 일정은 줄여 주지 않았어요.',
     weight: 6,
     conditions: { ranks: ['mid', 'senior', 'lead', 'staff'] },
     vars: {
@@ -1159,10 +1161,10 @@ export const events: GameEvent[] = [
         ],
       },
       {
-        label: '팀장과 커리어 면담을 잡는다',
+        label: '{boss}(와)과 커리어 면담을 잡는다',
         check: { communication: 50 },
         outcomes: [
-          { chance: 0.6, text: '팀장이 내가 뭘 원하는지 처음 알았대요. 올해 평가에 반영해 주기로 했어요.', tone: 'skill', effects: { gradeBonus: 8, stats: { communication: 1 } } },
+          { chance: 0.6, text: '{boss}(이)가 내가 뭘 원하는지 처음 알았대요. 올해 평가에 반영해 주기로 했어요.', tone: 'skill', effects: { gradeBonus: 8, stats: { communication: 1 } } },
           { chance: 0.4, text: '"요즘 다들 승진 얘기만 하네"라는 답이 돌아왔어요.', tone: 'unlucky', effects: { gradeBonus: -3 } },
         ],
       },
@@ -1553,8 +1555,8 @@ export const events: GameEvent[] = [
     id: 'younger_boss',
     category: '사람',
     emoji: '👔',
-    title: '나보다 {gap}살 어린 팀장',
-    text: '조직 개편으로 새 팀장이 왔어요. 나보다 {gap}살 어리고, 내가 {years}년 전 면접을 봤던 사람이에요.',
+    title: '나보다 {gap}살 어린 {boss}',
+    text: '조직 개편으로 새 {boss}(이)가 왔어요. 나보다 {gap}살 어리고, 내가 {years}년 전 면접을 봤던 사람이에요.',
     weight: 6,
     conditions: { minAge: 40, ranks: ['mid', 'senior', 'lead', 'staff'] },
     vars: {
@@ -1566,7 +1568,7 @@ export const events: GameEvent[] = [
         label: '먼저 다가가 도와준다',
         check: { communication: 50 },
         outcomes: [
-          { chance: 0.7, text: '새 팀장이 어려운 결정마다 나를 찾아요. 팀에서 내 자리가 더 단단해졌어요.', tone: 'skill', effects: { stats: { communication: 2, reputation: 1 }, gradeBonus: 8 } },
+          { chance: 0.7, text: '새 {boss}(이)가 어려운 결정마다 나를 찾아요. 팀에서 내 자리가 더 단단해졌어요.', tone: 'skill', effects: { stats: { communication: 2, reputation: 1 }, gradeBonus: 8 } },
           { chance: 0.3, text: '도와준다는 게 간섭으로 보였나 봐요. 회의에서 내 의견이 자꾸 빠져요.', tone: 'unlucky', effects: { gradeBonus: -8 } },
         ],
       },
@@ -1654,7 +1656,7 @@ export const events: GameEvent[] = [
     conditions: { minAge: 45 },
     vars: {
       place: ['창고 옆', '복도 끝 창가', '아무도 안 쓰는 회의실', '다른 층 빈자리'],
-      sign: ['맡던 프로젝트 권한도 사라졌어요.', '팀 메신저 방에서 빠져 있어요.', '팀장은 눈을 마주치지 않아요.'],
+      sign: ['맡던 프로젝트 권한도 사라졌어요.', '팀 메신저 방에서 빠져 있어요.', '{boss}(은)는 눈을 마주치지 않아요.'],
     },
     choices: [
       {
@@ -1877,7 +1879,7 @@ export const events: GameEvent[] = [
         check: { communication: 45 },
         outcomes: [
           { chance: 0.6, text: '할 일을 끝내고 당당히 나갔어요. 의외로 아무도 뭐라 안 해요.', tone: 'skill', effects: { stamina: 12 } },
-          { chance: 0.4, text: '다음 날 팀장이 "요즘 여유 있나 봐?"라며 일을 더 줬어요.', tone: 'unlucky', effects: { gradeBonus: -10, stamina: -5 } },
+          { chance: 0.4, text: '다음 날 {boss}(이)가 "요즘 여유 있나 봐?"라며 일을 더 줬어요.', tone: 'unlucky', effects: { gradeBonus: -10, stamina: -5 } },
         ],
       },
       {

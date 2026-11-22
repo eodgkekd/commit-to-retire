@@ -1,6 +1,6 @@
 // 연말 커뮤니티 반응 피드 생성
 
-import { companyTypes, feedTemplates, rankById } from '../data'
+import { bossTitles, companyTypes, feedTemplates, rankById } from '../data'
 import { createRng, type Rng } from './rng'
 import { formatSalary } from './rules'
 import { fillTemplate } from './text'
@@ -127,6 +127,7 @@ export function fillText(text: string, s: GameState): string {
     company: s.company.name,
     salary: formatSalary(s.salary),
     rank: s.startup ? '대표' : rankById[s.rank].label,
+    boss: s.startup ? '투자자' : bossTitles[s.rank],
   })
 }
 

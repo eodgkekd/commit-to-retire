@@ -126,6 +126,15 @@ describe('이벤트 장면 (심각도·변수·변형)', () => {
     expect(new Set(instances.map((i) => resolveEvent(i, game()).text)).size).toBeGreaterThan(10)
   })
 
+  it('{boss}는 직급에 따라 상사 호칭이 바뀐다 (팀장급에게 팀장이 시키는 일이 없다)', () => {
+    const vars = { change: '버튼 색', hour: '5' }
+    const text = (rank: GameState['rank']) => resolveEvent({ id: 'friday_deploy', severity: 2, variant: null, vars }, { ...game(), rank }).text
+    expect(text('junior')).toContain('팀장이')
+    expect(text('lead')).toContain('본부장이')
+    expect(text('director')).toContain('상무가')
+    expect(text('lead')).not.toContain('팀장')
+  })
+
   it('조건이 붙은 변형은 조건이 맞을 때만 나온다', () => {
     const event = events.find((e) => e.id === 'spec_change_d3')!
     const clientVariant = event.variants!.findIndex((v) => v.conditions?.industries)

@@ -13,6 +13,7 @@ const SENIOR_UP: RankId[] = ['senior', 'lead', 'em', 'director', 'vp', 'cto', 's
 
 // 연말 커뮤니티 반응 템플릿. 게임 속 게시글이라 화면 문구(해요체)와 달리 커뮤니티 말투를 쓴다.
 // 조건이 많을수록 뽑힐 가중치가 높다 (engine/feed.ts). 올해 사건(triggers)이 있으면 그에 맞는 글이 최소 하나 나온다.
+// {boss}는 내 바로 위 상사 호칭(시니어까지 팀장, 그 위는 본부장·상무·대표). 내 상사를 가리킬 때는 '팀장' 대신 쓴다.
 // 치환어 뒤 조사는 {rank}(으)로, {company}(이)가, {name}(은)는, {company}(와)과 처럼 쓰면 받침에 맞게 바뀐다.
 export const feedTemplates: FeedTemplate[] = [
   // ─── 조건 없음 (언제나 나올 수 있다) ─────────────────────
@@ -110,13 +111,13 @@ export const feedTemplates: FeedTemplate[] = [
     id: 'okko_grade_low',
     platform: 'okko',
     conditions: { grades: ['C', 'D'] },
-    texts: ['고과 바닥 찍었는데 이직할 때 티 나나요? 참고로 저는 잘못 없고 팀장이 문제입니다'],
+    texts: ['고과 바닥 찍었는데 이직할 때 티 나나요? 참고로 저는 잘못 없고 {boss}(이)가 문제입니다'],
   },
   {
     id: 'github_grade_low',
     platform: 'github',
     conditions: { grades: ['C', 'D'] },
-    texts: ['PR #77 "{name}의 올해 성과" · 상태: Changes requested · 리뷰어: 팀장'],
+    texts: ['PR #77 "{name}의 올해 성과" · 상태: Changes requested · 리뷰어: {boss}'],
   },
 
   // ─── 올해 일어난 일 ─────────────────────────────────────
@@ -354,7 +355,7 @@ export const feedTemplates: FeedTemplate[] = [
     platform: 'blinder',
     conditions: { focus: ['job_hunt'] },
     texts: [
-      '{company} 다니면서 몰래 이직 준비 중인데 팀장이 내 링크드아웃 프로필 조회함. 끝났다',
+      '{company} 다니면서 몰래 이직 준비 중인데 {boss}(이)가 내 링크드아웃 프로필 조회함. 끝났다',
       '연차 쓰고 면접 보러 갔는데 대기실에 {company} 팀장님 앉아 계심. 서로 못 본 걸로 함',
     ],
   },

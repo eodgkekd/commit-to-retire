@@ -1,4 +1,4 @@
-import type { AchievementDef, FameGrade, FocusDef, Grade, RankDef } from '../engine/types'
+import type { AchievementDef, FameGrade, FocusDef, Grade, RankDef, RankId } from '../engine/types'
 
 export const ranks: RankDef[] = [
   { id: 'newbie', label: '신입', track: 'common', minYears: 0, minStats: {}, from: null, salaryBump: 0, fameScore: 0 },
@@ -18,6 +18,14 @@ export const ranks: RankDef[] = [
   { id: 'principal', label: '프린시펄 엔지니어', track: 'ic', minYears: 16, minStats: { design: 88, coding: 82, reputation: 50 }, from: 'staff', salaryBump: 0.12, fameScore: 55 },
   { id: 'fellow', label: '펠로우', track: 'ic', minYears: 21, minStats: { design: 94, coding: 88, reputation: 80 }, from: 'principal', salaryBump: 0.2, fameScore: 75 },
 ]
+
+/** 이벤트 문구의 {boss}: 내 직급에서 바로 위 상사를 부르는 말 (팀장급이 되면 더는 '팀장'이 상사가 아니다) */
+export const bossTitles: Record<RankId, string> = {
+  newbie: '팀장', junior: '팀장', mid: '팀장', senior: '팀장',
+  lead: '본부장', em: '본부장', staff: '본부장',
+  director: '상무', principal: '상무',
+  vp: '대표', fellow: '대표', cto: '대표',
+}
 
 export const focuses: FocusDef[] = [
   {
