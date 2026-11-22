@@ -10,3 +10,41 @@ body {
   background: #f3f4f6;
   color: #111827;
 }
+
+/* ─── 도트 장면 애니메이션 (src/ui/scene/EventScene.tsx) ─── */
+@keyframes px-bob { 0%, 100% { translate: 0 0 } 50% { translate: 0 -1px } }
+@keyframes px-shake { 0%, 100% { translate: 0 0 } 25% { translate: -1px 0 } 75% { translate: 1px 0 } }
+@keyframes px-glow { 0%, 100% { opacity: 0.55 } 50% { opacity: 0.9 } }
+@keyframes px-blink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0.15 } }
+@keyframes px-alarm { 0%, 49% { opacity: 0 } 50%, 100% { opacity: 0.28 } }
+@keyframes px-pop { 0%, 100% { translate: 0 0 } 50% { translate: 0 -1px } }
+@keyframes px-dots { 0% { clip-path: inset(0 66% 0 0) } 33% { clip-path: inset(0 33% 0 0) } 66%, 100% { clip-path: inset(0 0 0 0) } }
+@keyframes px-steam { 0% { translate: 0 0; opacity: 0.9 } 100% { translate: 0 -4px; opacity: 0 } }
+@keyframes px-sweat { 0% { translate: 0 0; opacity: 1 } 80% { translate: 0 6px; opacity: 1 } 100% { translate: 0 7px; opacity: 0 } }
+@keyframes px-fall { 0% { translate: 0 -10px; rotate: 0deg } 100% { translate: 2px 0; rotate: 20deg } }
+@keyframes px-walk { 0% { translate: -20px 0 } 60%, 100% { translate: 58px 0 } }
+@keyframes px-cat { 0% { translate: -20px 0 } 100% { translate: 140px 0 } }
+
+.px-bob { animation: px-bob 0.5s steps(2) infinite }
+.px-bob-alt { animation: px-bob 0.5s steps(2) infinite 0.25s }
+.px-bob-slow { animation: px-bob 1.4s steps(2) infinite }
+.px-step { animation: px-bob 0.3s steps(2) infinite }
+.px-shake { animation: px-shake 0.2s steps(2) infinite }
+.px-glow { animation: px-glow 1.6s steps(4) infinite }
+@keyframes px-alert-glow { 0%, 49% { filter: drop-shadow(0 0 1px #EF4444) drop-shadow(0 0 2px #EF4444) } 50%, 100% { filter: none } }
+@keyframes px-screen-glow { 0%, 100% { filter: drop-shadow(0 0 1px #7DD3FC88) } 50% { filter: drop-shadow(0 0 2px #7DD3FCCC) } }
+.px-alert-glow { animation: px-alert-glow 0.5s infinite }
+.px-screen-glow { animation: px-screen-glow 2s steps(4) infinite }
+.px-alert { animation: px-blink 0.5s infinite }
+.px-alarm { animation: px-alarm 0.8s infinite }
+.px-pop { animation: px-pop 1s steps(2) infinite }
+.px-dots { display: inline-block; animation: px-dots 1.2s steps(1) infinite }
+.px-steam { animation: px-steam 1.5s steps(4) infinite }
+.px-sweat { animation: px-sweat 1.8s steps(6) infinite }
+.px-fall { animation: px-fall 1s steps(5) forwards }
+.px-walk { animation: px-walk 4s steps(26) infinite }
+.px-cat { animation: px-cat 9s steps(60) infinite }
+
+@media (prefers-reduced-motion: reduce) {
+  [class^='px-'], [class*=' px-'] { animation: none !important }
+}
