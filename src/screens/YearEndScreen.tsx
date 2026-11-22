@@ -21,6 +21,10 @@ const TRIGGER_BADGE: Record<FeedTrigger, { text: string; tone: 'blue' | 'red' | 
   layoff: { text: '📉 권고사직', tone: 'red' },
   exit: { text: '💰 엑싯', tone: 'green' },
   incident: { text: '🚨 장애', tone: 'amber' },
+  startupFounded: { text: '🚀 창업', tone: 'blue' },
+  startupRaised: { text: '📈 투자 유치', tone: 'green' },
+  startupFailed: { text: '🪂 사업 정리', tone: 'red' },
+  startupExit: { text: '🦄 회사 매각', tone: 'green' },
 }
 
 const PLATFORM_STYLE: Record<FeedPlatform, string> = {
@@ -46,10 +50,10 @@ export function YearEndScreen({ game }: { game: GameState }) {
     <Screen footer={<Button onClick={acknowledge}>{game.retirement ? '은퇴식으로' : '확인'}</Button>}>
       <header className="flex flex-col gap-1">
         <p className="text-sm text-gray-500">
-          {record.calendarYear}년 · {record.age}세 · {rankById[record.rank].label}
+          {record.calendarYear}년 · {record.age}세 · {record.founder ? `${record.company.name} 대표` : rankById[record.rank].label}
         </p>
         <h1 className="text-2xl font-bold">
-          올해 고과는 <span className={`text-4xl font-black ${GRADE_STYLE[record.grade]}`}>{record.grade}</span>
+          {record.founder ? '올해 사업 성적은' : '올해 고과는'} <span className={`text-4xl font-black ${GRADE_STYLE[record.grade]}`}>{record.grade}</span>
         </h1>
       </header>
 
@@ -77,7 +81,7 @@ export function YearEndScreen({ game }: { game: GameState }) {
         <p className="text-lg font-semibold tabular-nums">
           {formatSalary(record.salaryBefore)} → {formatSalary(record.salaryAfter)}
           <span className={`ml-2 text-sm ${raise > 0 ? 'text-red-500' : 'text-gray-400'}`}>
-            {raise > 0 ? `+${raisePct}%` : '동결'}
+            {raise > 0 ? (record.salaryBefore > 0 ? `+${raisePct}%` : '첫 월급') : '동결'}
           </span>
         </p>
       </Card>

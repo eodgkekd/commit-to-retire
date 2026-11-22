@@ -193,6 +193,69 @@ export const feedTemplates: FeedTemplate[] = [
     texts: ['{name}네 회사 엑싯했다며? 스톡옵션 있는 사람들 오늘 표정 관리 안 되던데. 부럽다'],
   },
   {
+    id: 'linkedout_founded',
+    platform: 'linkedout',
+    conditions: { triggers: ['startupFounded'] },
+    texts: [
+      '새로운 여정을 시작합니다. {company} 대표 {name}입니다. 같이 세상을 바꿀 분 DM 주세요 (월급은 아직 없습니다) #창업 #도전',
+      '안정적인 회사를 나와 {company}(을)를 차렸습니다. 부모님께는 아직 말씀 못 드렸습니다 🙏 #퇴사 #창업',
+    ],
+  },
+  {
+    id: 'blinder_founded',
+    platform: 'blinder',
+    conditions: { triggers: ['startupFounded'] },
+    texts: [
+      '{name} 퇴사하고 창업했다던데 아이템이 뭐임? "AI로 뭔가 함"이라는데 그게 뭔데',
+      '전 회사 동료가 {company} 차렸다고 투자 링크 보냄. 아직 서비스는 없고 피치덱만 있음',
+    ],
+  },
+  {
+    id: 'linkedout_raised',
+    platform: 'linkedout',
+    conditions: { triggers: ['startupRaised'] },
+    texts: [
+      '{company}(이)가 투자를 유치했습니다. 믿어 주신 투자사와 밤새 같이 달린 팀원들께 감사드립니다 🚀 #투자유치 #채용중',
+      '기쁜 소식 전합니다. {company} 다음 라운드 투자 마무리했습니다. 이제 대표 월급이 생겼습니다 #스타트업',
+    ],
+  },
+  {
+    id: 'blinder_raised',
+    platform: 'blinder',
+    conditions: { triggers: ['startupRaised'] },
+    texts: ['{company} 투자 받았다는 기사 떴던데 기업가치 보고 눈 비빔. 매출은 얼마인지 아무도 모름'],
+  },
+  {
+    id: 'linkedout_failed',
+    platform: 'linkedout',
+    conditions: { triggers: ['startupFailed'] },
+    texts: [
+      '{company}의 여정을 마무리합니다. 실패에서 배운 10가지를 정리해 봤습니다 (1/10) #회고 #실패도자산',
+      '사업을 접었습니다. 다시 개발자로 돌아갑니다. 좋은 팀 소개 부탁드립니다 🙏 #구직중',
+    ],
+  },
+  {
+    id: 'okko_failed',
+    platform: 'okko',
+    conditions: { triggers: ['startupFailed'] },
+    texts: ['창업 실패하고 다시 취업하려는데 공백기를 이력서에 어떻게 써야 하나요? (답변: "대표 경험"이라고 쓰세요)'],
+  },
+  {
+    id: 'blinder_founder_exit',
+    platform: 'blinder',
+    conditions: { triggers: ['startupExit'] },
+    texts: [
+      '{company} 대표 엑싯했다며? 사이드 프로젝트로 시작한 거라던데 나도 오늘부터 퇴근하고 뭐 만든다',
+      '{name} 매각 대금 얼마냐고 물어보니까 웃기만 함. 그 웃음이 답임',
+    ],
+  },
+  {
+    id: 'linkedout_founder_exit',
+    platform: 'linkedout',
+    conditions: { triggers: ['startupExit'] },
+    texts: ['{company}(이)가 새 가족을 만났습니다. 사이드 프로젝트에서 시작한 작은 회사가 여기까지 왔네요 #엑싯 #감사'],
+  },
+  {
     id: 'github_incident',
     platform: 'github',
     conditions: { triggers: ['incident'] },

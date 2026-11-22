@@ -4,6 +4,7 @@ import { acceptOffer } from './hub'
 import { createRng } from './rng'
 import { CHICKEN, rankById } from '../data'
 import { createGame } from './setup'
+import { educationWeight, hiringScore } from './rules'
 import type { GameState, Profile } from './types'
 
 const profile: Profile = {
@@ -254,5 +255,19 @@ describe('폐업한 회사', () => {
       const names = [...generatePostings(s, rng).map((p) => p.company.name), ...rollHeadhunterOffer(s, 'S', 'networking', rng).map((o) => o.company.name)]
       expect(names).not.toContain('주식회사 무언가')
     }
+  })
+})
+
+describe('학력 가산점 감소', () => {
+  it('1년 차에는 그대로, 연차가 쌓이면 줄다가 바닥에서 멈춘다', () => {
+    expect(educationWeight(1)).toBe(1)
+    expect(educationWeight(6)).toBeCloseTo(0.5)
+    expect(educationWeight(30)).toBe(0.25)
+  })
+
+  it('명문대와 고졸의 서류 점수 차이가 경력이 쌓이면 좁혀진다', () => {
+    const stats = { coding: 60, design: 50, communication: 50, domain: 50, reputation: 20 }
+    const gap = (y: number) => hiringScore(stats, 'top_cs', 'chaebol', y) - hiringScore(stats, 'self_taught', 'chaebol', y)
+    expect(gap(15)).toBeLessThan(gap(1) / 2)
   })
 })

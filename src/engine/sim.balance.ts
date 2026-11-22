@@ -41,6 +41,11 @@ function report(label: string, games: GameState[]) {
   lines.push(`평균 자산: ${formatSalary(Math.round(avg(games.map((g) => g.assets))))}`)
   lines.push(`평균 번아웃: ${avg(games.map((g) => g.counters.burnouts)).toFixed(2)}회, 평균 이직: ${avg(games.map((g) => g.counters.jobChanges)).toFixed(1)}회`)
   lines.push(`평균 명성 점수: ${avg(games.map((g) => g.retirement!.fameScore)).toFixed(0)}`)
+  const founded = games.filter((g) => g.achievements.includes('founder')).length
+  if (founded > 0) {
+    const exited = games.filter((g) => g.achievements.includes('founder_exit')).length
+    lines.push(`창업: ${pct(founded, n)}, 매각까지 간 판 ${pct(exited, n)}, 폐업해 본 판 ${pct(games.filter((g) => g.achievements.includes('founder_failed')).length, n)}`)
+  }
 
   // 시니어 도달 연차
   const seniorYears = games
@@ -97,7 +102,7 @@ const run = (strategy: BotStrategy, n: number) => Array.from({ length: n }, (_, 
 
 it('밸런스 리포트', () => {
   const all: GameState[] = []
-  for (const strategy of ['random', 'grinder', 'hopper'] as const) {
+  for (const strategy of ['random', 'grinder', 'hopper', 'founder'] as const) {
     const games = run(strategy, GAMES)
     report(strategy, games)
     all.push(...games)
@@ -128,6 +133,11 @@ it('한 가지 집중만 고르는 전략은 필승법이 아니다', () => {
       ...mixed.map((r) => r.line),
     ].join('\n'),
   )
+
+  // 사이드 프로젝트만 하다 창업하는 것도 한 버튼 전략이다
+  const founder = summarize('사이드 → 창업 반복', run('founder', FIXED_GAMES))
+  fixed.push(founder)
+  console.log(founder.line)
 
   for (const r of fixed) expect(r.s, `${r.label}의 S 비율`).toBeLessThanOrEqual(MAX_FIXED_S)
   // 조건을 보고 섞어 쓰는 쪽이 어떤 한 버튼 전략보다 평균 명성이 높아야 한다

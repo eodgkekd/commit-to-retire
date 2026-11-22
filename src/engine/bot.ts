@@ -4,6 +4,7 @@ import { companyTypeById, companyTypes, FIRST_JOB, focuses, specialties, playSty
 import { acceptOffer, canChooseTrack, chooseTrack, declineOffers, nextYear } from './hub'
 import { applyToPosting, canSpendGapYear, spendGapYear } from './jobs'
 import { createRng, type Rng } from './rng'
+import { canFoundStartup, foundStartup } from './startup'
 import { nextPromotion, pickIndustry } from './rules'
 import { applyFirstJobs } from './firstJob'
 import { createGame } from './setup'
@@ -11,7 +12,7 @@ import type { CompanyTypeId, FocusId, GameState, Profile, StatKey } from './type
 import { acknowledgeYear, chooseEventOption, currentEvent, finishYear, staminaChange, startYear } from './year'
 
 /** 이름 붙은 기본 전략: 무작위 / 일만 하는 사람 / 이직러 */
-export type NamedStrategy = 'random' | 'grinder' | 'hopper'
+export type NamedStrategy = 'random' | 'grinder' | 'hopper' | 'founder'
 
 /** 봇의 행동 규칙. 체력이 낮으면 어떤 전략이든 쉰다 */
 export interface BotPolicy {
@@ -23,14 +24,24 @@ export interface BotPolicy {
   apply: 'never' | 'sometimes' | 'always'
   /** 연봉이 더 높은 제안을 받았을 때 옮길 확률 */
   moveChance: number
+  /** 창업할 수 있게 됐을 때 창업할 확률 (없으면 창업하지 않는다). 창업 중에는 이직하지 않는다 */
+  found?: number
 }
 
 export type BotStrategy = NamedStrategy | BotPolicy
 
 const NAMED: Record<NamedStrategy, BotPolicy> = {
-  random: { focus: (_s, rng) => rng.pick(focuses).id, track: 'random', apply: 'sometimes', moveChance: 1 },
+  random: { focus: (_s, rng) => rng.pick(focuses).id, track: 'random', apply: 'sometimes', moveChance: 1, found: 0.3 },
   grinder: { focus: (_s, rng) => rng.pick(['all_in', 'study'] as const), track: 'random', apply: 'never', moveChance: 0.2 },
   hopper: { focus: (_s, rng) => rng.pick(['job_hunt', 'networking', 'study'] as const), track: 'random', apply: 'always', moveChance: 1 },
+  /** 사이드 프로젝트를 하다가 조건이 되면 바로 창업하고, 망하면 다시 취업해 또 준비한다 */
+  founder: {
+    focus: (s, rng) => (s.startup ? rng.pick(['side_project', 'networking', 'all_in'] as const) : 'side_project'),
+    track: 'random',
+    apply: 'never',
+    moveChance: 0,
+    found: 1,
+  },
 }
 
 /** 매년 같은 집중만 고르는 전략. 한 버튼 필승법이 생겼는지 확인하는 데 쓴다 */
@@ -134,10 +145,13 @@ export function playToEnd(initial: GameState, strategy: BotStrategy = 'random', 
       s = chooseTrack(s, policy.track === 'random' ? (rng.chance(0.5) ? 'manager' : 'ic') : policy.track)
     }
 
+    if (policy.found && canFoundStartup(s) && rng.chance(policy.found)) s = foundStartup(s)
+
     // 지원: 실직이면 무조건, 그 밖에는 전략에 따라
     const wantsToApply = policy.apply === 'always' || (policy.apply === 'sometimes' && rng.chance(0.3))
-    if (wantsToApply && !s.unemployed) s = applyAll(s, 'salary')
+    if (wantsToApply && !s.unemployed && !s.startup) s = applyAll(s, 'salary')
 
+    if (s.offers.length > 0 && s.startup) s = declineOffers(s)
     if (s.offers.length > 0 && !s.unemployed) {
       const best = bestOffer(s)
       const better = s.offers[best].salary > s.salary

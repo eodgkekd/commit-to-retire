@@ -43,6 +43,7 @@ export function matchesConditions(c: EventConditions | undefined, s: GameState):
   if (c.specialties && !c.specialties.includes(s.profile.specialty)) return false
   if (c.flags && !c.flags.every((f) => s.flags.includes(f))) return false
   if (c.notFlags && c.notFlags.some((f) => s.flags.includes(f))) return false
+  if (c.founder !== undefined && c.founder !== Boolean(s.startup)) return false
   return true
 }
 

@@ -11,6 +11,7 @@ import {
   createGame,
   declineOffers,
   finishYear,
+  foundStartup,
   nextYear,
   negotiateOffer,
   openChickenShop,
@@ -52,6 +53,7 @@ interface Store {
   lastApplication: ApplicationResult | null
   spendGapYear: () => void
   openChickenShop: () => void
+  foundStartup: () => void
   nextYear: () => void
   retire: () => void
   reset: () => void
@@ -105,6 +107,7 @@ export const useGame = create<Store>()(
         dismissApplication: () => set({ lastApplication: null }),
         spendGapYear: () => update(spendGapYear),
         openChickenShop: () => update(openChickenShop),
+        foundStartup: () => update(foundStartup),
         nextYear: () => update(nextYear),
         retire: () => update(retireNow),
         reset: () => set({ game: null, lastOutcome: null, lastApplication: null }),

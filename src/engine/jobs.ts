@@ -68,7 +68,7 @@ export function rollHeadhunterOffer(s: GameState, grade: Grade, focus: FocusId, 
   // 헤드헌터는 내 이력으로 붙을 만한 회사를 가져온다
   for (let attempt = 0; attempt < 6; attempt++) {
     const type = rng.pick(companyTypes).id
-    if (hiringScore(s.stats, s.profile.education, type) < companyTypeById[type].hiringBar) continue
+    if (hiringScore(s.stats, s.profile.education, type, s.careerYear) < companyTypeById[type].hiringBar) continue
     const industry = pickIndustry(rng, type)
     const name = pickCompanyName(rng, type, [s.company.name, ...closedCompanies(s)])
     if (!name) continue
@@ -81,7 +81,7 @@ export function rollHeadhunterOffer(s: GameState, grade: Grade, focus: FocusId, 
 
 /** 다니다가 폐업한 회사들. 공고와 헤드헌터 제안에 다시 나오지 않는다 */
 export function closedCompanies(s: GameState): string[] {
-  return s.history.filter((r) => r.triggers.includes('companyClosed')).map((r) => r.company.name)
+  return s.history.filter((r) => r.triggers.includes('companyClosed') || r.triggers.includes('startupFailed')).map((r) => r.company.name)
 }
 
 export function generatePostings(s: GameState, rng: Rng): JobPosting[] {
@@ -162,7 +162,7 @@ export function stagePassChance(s: GameState, type: CompanyTypeId, stage: Hiring
   const [value, target] = (() => {
     switch (stage) {
       case 'resume':
-        return [hiringScore(s.stats, s.profile.education, type), bar + careerExpectation + stretch]
+        return [hiringScore(s.stats, s.profile.education, type, s.careerYear), bar + careerExpectation + stretch]
       case 'codingTest':
         return [coding, 35 + bar * 0.5 + stretch]
       case 'techInterview':

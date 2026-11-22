@@ -2319,4 +2319,151 @@ export const events: GameEvent[] = [
       },
     ],
   },
+
+  // ─── 창업 (창업한 사람에게만) ─────────────────────────────
+  {
+    id: 'founder_investor_pitch',
+    category: '회사',
+    emoji: '🎤',
+    title: '투자사 피칭',
+    text: '{vc} 심사역 앞에서 {company} 피칭을 해요. 첫 질문은 "{question}"예요.',
+    weight: 10,
+    conditions: { founder: true },
+    vars: {
+      vc: ['스파크벤처스', '퍼스트펭귄파트너스', '로켓캐피탈', '모험투자'],
+      question: ['그래서 매출은요?', '네모버가 똑같이 만들면 어떡하죠?', 'AI는 어디에 쓰나요?', '대표님은 왜 이걸 하세요?'],
+    },
+    choices: [
+      {
+        label: '숫자로 정면 돌파한다',
+        check: { domain: 55 },
+        outcomes: [
+          { chance: 0.5, text: '지표를 술술 설명했어요. 심사역이 다음 미팅을 잡재요.', tone: 'skill', effects: { gradeBonus: 10, stats: { domain: 2 } } },
+          { chance: 0.5, text: '숫자 하나가 틀렸어요. 심사역이 계산기를 꺼냈어요.', tone: 'unlucky', effects: { gradeBonus: -5 } },
+        ],
+      },
+      {
+        label: '비전을 크게 이야기한다',
+        check: { communication: 55 },
+        outcomes: [
+          { chance: 0.5, text: '"이 시장 전체를 바꿀 거예요." 심사역이 고개를 끄덕였어요.', tone: 'skill', effects: { gradeBonus: 8, stats: { communication: 2 } } },
+          { chance: 0.5, text: '"그래서 내년에 뭐 하시는데요?" 비전이 너무 커서 안 보였대요.', tone: 'unlucky', effects: { gradeBonus: -4 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'founder_cofounder_leaves',
+    category: '사람',
+    emoji: '🚪',
+    title: '공동창업자의 고백',
+    text: '같이 시작한 {who}(이)가 "{reason}"라며 그만두겠대요.',
+    weight: 6,
+    conditions: { founder: true },
+    vars: {
+      who: ['대학 동기', '전 회사 동료', '사이드 프로젝트 동료'],
+      reason: ['대기업에서 연락이 왔어', '아이가 생겼어', '나랑은 방향이 안 맞는 것 같아', '1년만 하기로 했잖아'],
+    },
+    choices: [
+      {
+        label: '지분을 더 주고 붙잡는다',
+        check: { communication: 50 },
+        outcomes: [
+          { chance: 0.6, text: '남기로 했어요. 대신 내 지분이 줄었어요.', tone: 'skill', effects: { gradeBonus: 4 } },
+          { chance: 0.4, text: '지분 얘기를 꺼내자 분위기가 더 싸해졌어요. 결국 떠났어요.', tone: 'unlucky', effects: { gradeBonus: -8, stamina: -8 } },
+        ],
+      },
+      {
+        label: '좋게 보내 주고 혼자 버틴다',
+        outcomes: [
+          { chance: 1, text: '일이 두 배가 됐어요. 그래도 회사는 굴러가요.', effects: { stamina: -15, stats: { design: 2, domain: 2 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'founder_runway',
+    category: '회사',
+    emoji: '⏳',
+    title: '통장 잔고 {months}개월',
+    text: '이대로면 {months}개월 뒤에 월급을 못 줘요. 직원들 얼굴이 떠올라요.',
+    weight: 8,
+    conditions: { founder: true },
+    vars: { months: { min: 2, max: 6 } },
+    choices: [
+      {
+        label: '외주를 받아 버틴다',
+        outcomes: [
+          { chance: 1, text: '외주로 숨통이 트였어요. 우리 서비스 개발은 멈췄어요.', effects: { assets: 1500, gradeBonus: -4, stamina: -10 } },
+        ],
+      },
+      {
+        label: '내 돈을 넣는다',
+        outcomes: [
+          { chance: 1, text: '전세 대출 한도를 확인했어요. 회사는 석 달 더 살아요.', effects: { assets: -3000, gradeBonus: 4 } },
+        ],
+      },
+      {
+        label: '브릿지 투자를 받으러 다닌다',
+        check: { reputation: 40 },
+        outcomes: [
+          { chance: 0.5, text: '예전 동료가 엔젤로 들어와 줬어요.', tone: 'skill', effects: { gradeBonus: 8 } },
+          { chance: 0.5, text: '미팅 열두 번에 커피만 열두 잔 마셨어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -4 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'founder_viral',
+    category: '업계',
+    emoji: '📣',
+    title: '{where}에서 터졌어요',
+    text: '{company} 서비스가 {where}에서 갑자기 화제가 됐어요. 가입자가 하룻밤에 {times}배로 늘었어요.',
+    weight: 6,
+    conditions: { founder: true },
+    vars: {
+      where: ['커뮤니티 인기글', '숏폼 영상', '테크 뉴스레터', '유명 개발자 SNS'],
+      times: { min: 3, max: 30 },
+    },
+    choices: [
+      {
+        label: '밤새 서버를 늘린다',
+        check: { coding: 55 },
+        outcomes: [
+          { chance: 0.6, text: '서버가 버텼어요. 들어온 사람들이 그대로 남았어요.', tone: 'skill', effects: { gradeBonus: 12, stamina: -12, stats: { reputation: 3 } } },
+          { chance: 0.4, text: '서버가 내려갔어요. "이거 왜 안 돼요?"가 새 인기글이 됐어요.', tone: 'unlucky', effects: { gradeBonus: -2, stamina: -15 } },
+        ],
+      },
+      {
+        label: '대기 명단을 받는다',
+        outcomes: [
+          { chance: 1, text: '"한정 오픈"이라고 했더니 오히려 더 궁금해해요.', effects: { gradeBonus: 6, stats: { reputation: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'founder_payroll_night',
+    category: '개인',
+    emoji: '🧾',
+    title: '대표의 25일',
+    text: '월급날 전날 밤이에요. {task}까지 대표가 해야 해요.',
+    weight: 5,
+    conditions: { founder: true },
+    vars: { task: ['세금계산서 발행', '4대 보험 신고', '사무실 정수기 필터 교체', '법인 카드 영수증 정리'] },
+    choices: [
+      {
+        label: '오늘도 내가 한다',
+        outcomes: [
+          { chance: 1, text: '새벽 3시에 끝냈어요. 코드는 한 줄도 못 짰어요.', effects: { stamina: -10, stats: { domain: 1 } } },
+        ],
+      },
+      {
+        label: '운영 담당자를 뽑는다',
+        outcomes: [
+          { chance: 1, text: '좋은 사람이 왔어요. 고정비는 조금 늘었어요.', effects: { assets: -800, stamina: 5, gradeBonus: 2 } },
+        ],
+      },
+    ],
+  },
 ]

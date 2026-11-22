@@ -46,6 +46,7 @@ import { eventById, matchesConditions, pendingId, resolveEvent, rollInstance, to
 import { generateFeed } from './feed'
 import { applicationLimit, generatePostings, rollHeadhunterOffer } from './jobs'
 import { createRng, type Rng } from './rng'
+import { FOUNDER_EVENT_CATEGORIES, settleStartupYear } from './startup'
 import {
   aiPressure,
   applyEffects,
@@ -113,6 +114,10 @@ function pickEvent(candidates: GameEvent[], s: GameState, rng: Rng): GameEvent |
 
 export function isEligible(event: GameEvent, s: GameState): boolean {
   if (event.once && s.seenEvents.includes(event.id)) return false
+  // 창업 중에는 회사 생활 이벤트가 나오지 않는다
+  if (s.startup && !event.conditions?.founder) {
+    if (!(FOUNDER_EVENT_CATEGORIES as readonly string[]).includes(event.category) || event.conditions?.companyTypes) return false
+  }
   return matchesConditions(event.conditions, s)
 }
 
@@ -198,6 +203,7 @@ export function finishYear(state: GameState): GameState {
   const rankBefore = s.rank
   // 올해 이벤트로 회사를 떠났다 (희망퇴직·권고사직)
   const leftMidYear = s.unemployed
+  const founderYear = Boolean(s.startup)
 
   // 장애 배지는 실제로 장애 대응을 한 해에만 붙는다 (막아낸 해에는 안 붙음). 연초 기록이 없는 예전 세이브는 이벤트 종류로 판정
   const hadIncident =
@@ -212,19 +218,32 @@ export function finishYear(state: GameState): GameState {
   const burnedOut = updateStamina(s)
   if (burnedOut) triggers.push('burnout')
 
-  // 고과와 연봉
-  const grade: Grade = burnedOut ? 'D' : gradeFor(s, rng)
-  let raise = leftMidYear ? 0 : gradeThresholds.find((g) => g.grade === grade)!.raise
-  // 시장 연봉보다 많이 받고 있으면 인상 폭이 줄어든다
-  if (s.salary > currentMarket(s) * SALARY_CAP.overMarket) raise *= SALARY_CAP.raiseMultiplier
-  s.salary = Math.round(s.salary * (1 + raise))
+  let grade: Grade
+  if (s.startup && !leftMidYear) {
+    // 창업: 고과·승진·회사 사건 대신 사업 결산 (투자 유치·폐업·엑싯)
+    const result = settleStartupYear(s, rng)
+    grade = burnedOut && result.grade !== 'S' ? 'D' : result.grade
+    if (result.trigger) triggers.push(result.trigger)
+  } else {
+    // 고과와 연봉
+    grade = burnedOut ? 'D' : gradeFor(s, rng)
+    let raise = leftMidYear ? 0 : gradeThresholds.find((g) => g.grade === grade)!.raise
+    // 시장 연봉보다 많이 받고 있으면 인상 폭이 줄어든다
+    if (s.salary > currentMarket(s) * SALARY_CAP.overMarket) raise *= SALARY_CAP.raiseMultiplier
+    s.salary = Math.round(s.salary * (1 + raise))
 
-  // 승진
-  if (!burnedOut && !leftMidYear && tryPromotion(s, grade, rng)) triggers.push('promoted')
+    // 승진
+    if (!burnedOut && !leftMidYear && tryPromotion(s, grade, rng)) triggers.push('promoted')
 
-  // 회사 사건 (폐업·구조조정·엑싯), 40대부터는 나이 때문인 권고사직
-  const companyEvent = leftMidYear ? 'layoff' : (rollCompanyRisk(s, rng) ?? rollAgeLayoff(s, rng))
-  if (companyEvent) triggers.push(companyEvent)
+    // 회사 사건 (폐업·구조조정·엑싯), 40대부터는 나이 때문인 권고사직
+    const companyEvent = leftMidYear ? 'layoff' : (rollCompanyRisk(s, rng) ?? rollAgeLayoff(s, rng))
+    if (companyEvent) triggers.push(companyEvent)
+  }
+  // 창업 중 이벤트로 회사를 접었다
+  if (leftMidYear && s.startup) {
+    unlock(s, 'founder_failed')
+    delete s.startup
+  }
 
   // 저축
   s.assets += Math.round(s.salary * SAVINGS_RATE)
@@ -239,6 +258,7 @@ export function finishYear(state: GameState): GameState {
   checkAchievements(s)
 
   s.history.push({
+    ...(founderYear ? { founder: true } : {}),
     calendarYear: s.calendarYear,
     age: s.age,
     company: { ...s.company },

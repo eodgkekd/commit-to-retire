@@ -224,3 +224,9 @@ export const industries: IndustryDef[] = [
     growth: { coding: 0.8, communication: 1.2 },
   },
 ]
+
+/** 내가 차린 회사 이름 후보 */
+export const startupNames = ['사이드킥', '퇴근후랩스', '밤샘컴퍼니', '첫커밋', '핫픽스랩', 'MVP스튜디오', '주말코딩', '디프로이', '야간비행', '혼자서도잘해요', '런웨이', '프로덕트헌트']
+
+/** 창업 단계 이름 (STARTUP.salary·targets와 순서가 같다) */
+export const startupStages = ['부트스트랩', '시드 투자', '시리즈 A', '시리즈 B']

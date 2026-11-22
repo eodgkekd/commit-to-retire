@@ -102,6 +102,11 @@ export const AGE_HIRING_PENALTY = { from: 40, perYear: 0.02, max: 0.35 }
  * 공백기는 '이직 준비'로 기록돼 +0.1을 받으므로 첫해는 거의 상쇄되고 둘째 해부터 아프다
  */
 export const GAP_HIRING_PENALTY = 0.15
+/**
+ * 학력 서류 가산점은 연차가 쌓일수록 줄어든다. 1년 차 100%에서 해마다 perYear씩 깎여 min까지.
+ * 10년 차쯤이면 학교보다 경력을 본다
+ */
+export const EDUCATION_DECAY = { perYear: 0.1, min: 0.25 }
 
 // ─── 치킨집 ────────────────────────────────────────────
 
@@ -119,6 +124,38 @@ export const CHICKEN = {
   localYearlyProfit: 3000,
   /** 프랜차이즈 대박의 가맹 사업 수익 (만 원) */
   franchiseProfit: 60000,
+}
+
+// ─── 창업 ──────────────────────────────────────────────
+
+/**
+ * 사이드 프로젝트를 minSideProjectYears년 이상 해 본 사람은 (회사를 접은 뒤에는 그 뒤로 다시 그만큼) 허브에서 창업할 수 있다.
+ * 창업하면 해마다 사업 점수를 굴린다: (설계+소통+도메인)/3 + 평판×reputationWeight + 집중 보너스 + 이벤트 고과 보정 ± luck.
+ * 점수 − 단계 목표(targets)가 raiseMargin 이상이면 다음 투자 단계, failMargin 미만이면 failChance로 폐업.
+ * 마지막 단계(시리즈 B)에 오르면 해마다 exitChance로 인수돼 엑싯한다
+ */
+export const STARTUP = {
+  minSideProjectYears: 2,
+  minCareerYear: 3,
+  maxAge: 55,
+  /** 창업할 때 통장에 있어야 하는 돈 (만 원) */
+  minAssets: 3000,
+  /** 단계별 대표 연봉 (만 원): 부트스트랩 · 시드 · 시리즈 A · 시리즈 B */
+  salary: [0, 3000, 5000, 8000],
+  /** 단계별 목표 점수 */
+  targets: [50, 62, 74, 85],
+  reputationWeight: 0.2,
+  luck: 15,
+  raiseMargin: 8,
+  failMargin: -8,
+  failChance: 0.7,
+  /** 월급 없는 부트스트랩 단계에서 해마다 자산에서 빠지는 생활비 (만 원). 자산이 바닥나면 폐업 */
+  livingCost: 2400,
+  /** 올해 집중별 사업 점수 보너스 */
+  focusBonus: { side_project: 8, all_in: 6, networking: 6, rest: -6, job_hunt: -10 } as Partial<Record<FocusId, number>>,
+  exitChance: 0.15,
+  /** 엑싯 금액 범위 (만 원) */
+  exitPayout: [30000, 150000] as [number, number],
 }
 
 // ─── 이벤트 ────────────────────────────────────────────

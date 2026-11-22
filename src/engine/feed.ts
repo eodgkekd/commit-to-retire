@@ -126,7 +126,7 @@ export function fillText(text: string, s: GameState): string {
     name: s.profile.name,
     company: s.company.name,
     salary: formatSalary(s.salary),
-    rank: rankById[s.rank].label,
+    rank: s.startup ? '대표' : rankById[s.rank].label,
   })
 }
 

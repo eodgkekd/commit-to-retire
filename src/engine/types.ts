@@ -218,6 +218,8 @@ export interface EventConditions {
   minJobChanges?: number
   /** 최대 이직 횟수 (0 = 첫 회사에서만) */
   maxJobChanges?: number
+  /** true: 창업한 사람에게만 나온다. 창업 중에는 이 이벤트와 개인·생활·업계·장애 이벤트만 나온다 */
+  founder?: boolean
 }
 
 /** 1 가벼운 일 · 2 보통 · 3 큰일 */
@@ -296,6 +298,7 @@ export interface FeedTemplate {
 
 export type FeedTrigger =
   | 'promoted' | 'jobChanged' | 'burnout' | 'companyClosed' | 'layoff' | 'exit' | 'incident'
+  | 'startupFounded' | 'startupRaised' | 'startupFailed' | 'startupExit'
 
 export interface FeedPost {
   platform: FeedPlatform
@@ -372,6 +375,8 @@ export interface EventLogEntry {
 export interface YearRecord {
   /** 실직 후 취업 준비로 보낸 해 */
   gap?: boolean
+  /** 창업한 회사를 운영한 해 (고과 대신 사업 성적) */
+  founder?: boolean
   calendarYear: number
   age: number
   company: Company
@@ -469,6 +474,16 @@ export interface GameState {
   /** 이벤트 id → 마지막으로 나온 달력 연도 (반복 방지용). 예전 세이브에는 없을 수 있다 */
   eventLastSeen?: Record<string, number>
 
+  /** 내가 차린 회사. 창업 중일 때만 있다 (company에도 같은 회사가 들어간다) */
+  startup?: StartupState
+
   history: YearRecord[]
   retirement: Retirement | null
+}
+
+export interface StartupState {
+  /** 0 부트스트랩 · 1 시드 · 2 시리즈 A · 3 시리즈 B */
+  stage: number
+  /** 창업 후 보낸 햇수 */
+  years: number
 }

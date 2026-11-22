@@ -1,6 +1,7 @@
 // 여러 단계에서 공통으로 쓰는 계산 규칙. 밸런스 조정은 주로 이 파일과 src/data/에서 한다.
 
 import { companyTypeById, educationById, industryById, rankById, ranks } from '../data'
+import { EDUCATION_DECAY } from '../data/balance'
 import type { Rng } from './rng'
 import type {
   CompanyTypeId,
@@ -72,15 +73,22 @@ export function nextPromotion(s: GameState, assumeTrack?: 'manager' | 'ic'): Pro
   return { rank, minCareerYear: Math.ceil(rank.minYears / speed) }
 }
 
-/** 서류 점수. 회사의 hiringBar 이상이면 합격 */
+/** 학력 가산점에 곱하는 값. 연차가 쌓일수록 학교보다 경력을 본다 */
+export function educationWeight(careerYear: number): number {
+  return clamp(1 - (careerYear - 1) * EDUCATION_DECAY.perYear, EDUCATION_DECAY.min, 1)
+}
+
+/** 서류 점수. 회사의 hiringBar 이상이면 합격. careerYear는 지금 몇 년 차인지 (신입 공채는 1) */
 export function hiringScore(
   stats: Stats,
   education: Profile['education'],
   companyType: CompanyTypeId,
+  careerYear = 1,
 ): number {
   const edu = educationById[education]
   const workAvg = (stats.coding + stats.design + stats.communication + stats.domain) / 4
-  return workAvg * 1.2 + stats.reputation * 0.3 + edu.hiringBonus + (edu.companyBonus?.[companyType] ?? 0)
+  const eduBonus = (edu.hiringBonus + (edu.companyBonus?.[companyType] ?? 0)) * educationWeight(careerYear)
+  return workAvg * 1.2 + stats.reputation * 0.3 + eduBonus
 }
 
 /** 회사·업종·직급·연차 기준 시장 연봉 (만 원) */

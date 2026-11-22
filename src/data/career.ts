@@ -130,5 +130,8 @@ export const achievements: AchievementDef[] = [
   { id: 'soju_shower', title: '소주 세례', emoji: '🍶', description: '회식 자리에서 얼굴에 소주를 맞았어요.', fame: 2 },
   { id: 'parental_leave', title: '육아휴직 다녀왔어요', emoji: '🍼', description: '눈치 보지 않고 육아휴직을 썼어요.', fame: 3 },
   { id: 'chicken_shop', title: '개발자의 종착역', emoji: '🍗', description: '실직 후 치킨집을 차렸어요.', fame: 2 },
+  { id: 'founder', title: '대표님', emoji: '🚀', description: '회사를 그만두고 내 회사를 차렸어요.', fame: 2 },
+  { id: 'founder_failed', title: '실패도 경력', emoji: '🪂', description: '차린 회사를 접어 봤어요.', fame: 1 },
+  { id: 'founder_exit', title: '연쇄 창업가의 시작', emoji: '🦄', description: '차린 회사를 매각했어요.', fame: 15 },
   { id: 'chicken_franchise', title: '치킨 프랜차이즈 대표', emoji: '🐔', description: '차린 치킨집이 전국 프랜차이즈가 됐어요.', fame: 12 },
 ]

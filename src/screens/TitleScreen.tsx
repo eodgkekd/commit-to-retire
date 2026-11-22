@@ -68,7 +68,7 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
         <Card>
           <p className="text-sm text-gray-500">저장된 커리어</p>
           <p className="font-semibold">
-            {game.profile.emoji} {game.profile.name} · {game.age}세 · {rankById[game.rank].label} · {game.company.name}
+            {game.profile.emoji} {game.profile.name} · {game.age}세 · {game.startup ? '대표' : rankById[game.rank].label} · {game.company.name}
           </p>
         </Card>
       )}
@@ -78,7 +78,7 @@ export function TitleScreen({ onNew, onContinue }: { onNew: () => void; onContin
           <div className="w-full max-w-md rounded-t-3xl bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:rounded-3xl">
             <p className="text-lg font-bold">새 커리어를 시작할까요?</p>
             <p className="mt-2 text-sm leading-relaxed text-gray-600">
-              진행 중인 커리어({game.profile.name} · {game.age}세 · {rankById[game.rank].label})는 새 캐릭터를 다 만들면 지워져요. 만드는
+              진행 중인 커리어({game.profile.name} · {game.age}세 · {game.startup ? '대표' : rankById[game.rank].label})는 새 캐릭터를 다 만들면 지워져요. 만드는
               도중에 돌아오면 그대로 남아 있어요.
             </p>
             <div className="mt-5 grid grid-cols-2 gap-2">

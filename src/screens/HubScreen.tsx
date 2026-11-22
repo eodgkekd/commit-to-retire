@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { CHICKEN, companyTypeById, industryById, rankById, statLabels } from '../data'
+import { CHICKEN, companyTypeById, industryById, rankById, startupStages, STARTUP, statLabels } from '../data'
 import {
   agePenalty,
   canChooseTrack,
+  canFoundStartup,
   canOpenChickenShop,
   canSpendGapYear,
   formatSalary,
@@ -10,6 +11,7 @@ import {
   nextPromotion,
   NEGOTIATION_RAISES,
   overworkDrain,
+  startupBlocker,
   STAGE_LABELS,
   type ApplicationResult,
   type GameState,
@@ -21,10 +23,11 @@ import {
 } from '../engine'
 import { useGame } from '../store/game'
 import { Badge, Button, Card, Screen, StatBars, StatusHeader, Title } from '../ui'
+import { fillTemplate } from '../engine/text'
 import { JOB_LOSS_TRIGGERS, majorEvents } from './majorEvents'
 
 export function HubScreen({ game }: { game: GameState }) {
-  const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, openChickenShop, lastApplication, dismissApplication } = useGame()
+  const { acceptOffer, negotiateOffer, declineOffers, chooseTrack, nextYear, retire, apply, spendGapYear, openChickenShop, foundStartup, lastApplication, dismissApplication } = useGame()
   const [confirmRetire, setConfirmRetire] = useState(false)
   const postings = game.postings ?? []
   const appsLeft = game.applicationsLeft ?? 0
@@ -70,6 +73,11 @@ export function HubScreen({ game }: { game: GameState }) {
 
       {canOpenChickenShop(game) && <ChickenCard game={game} onOpen={openChickenShop} />}
 
+      {canFoundStartup(game) && <StartupCard game={game} onFound={foundStartup} />}
+      {!canFoundStartup(game) && startupBlocker(game) && (
+        <p className="rounded-2xl bg-gray-50 p-3 text-sm text-gray-500">🚀 사이드 프로젝트를 꾸준히 해서 창업할 준비가 됐어요. {startupBlocker(game)}.</p>
+      )}
+
       {canChooseTrack(game) && (
         <Card className="flex flex-col gap-3">
           <div>
@@ -91,11 +99,12 @@ export function HubScreen({ game }: { game: GameState }) {
 
       <OverworkCard game={game} />
 
-      {!game.unemployed && <PromotionCard game={game} />}
+      {game.startup ? <FounderCard game={game} /> : !game.unemployed && <PromotionCard game={game} />}
 
       {visibleOffers.length > 0 && (
         <section className="flex flex-col gap-2">
           <p className="text-sm font-medium text-gray-600">📨 받은 제안 {visibleOffers.length}건</p>
+          {game.startup && <p className="text-xs text-gray-400">{fillTemplate('제안을 받아들이면 {company}(을)를 접고 그 회사로 가요.', { company: game.company.name })}</p>}
           {visibleOffers.map(({ offer: o, index: i }) => (
             <OfferCard key={o.company.name} offer={o} game={game} onAccept={() => acceptOffer(i)} onNegotiate={(percent) => negotiateOffer(i, percent)} />
           ))}
@@ -131,7 +140,7 @@ export function HubScreen({ game }: { game: GameState }) {
         </section>
       )}
 
-      {postings.length === 0 && visibleOffers.length === 0 && !game.unemployed && (
+      {postings.length === 0 && visibleOffers.length === 0 && !game.unemployed && !game.startup && (
         <p className="rounded-2xl bg-gray-50 p-3 text-sm text-gray-500">지금 확인할 채용 공고가 없어요. 재직 중에는 연봉이 오르거나 더 높은 직급인 공고를 찾아드려요.</p>
       )}
 
@@ -161,6 +170,63 @@ export function HubScreen({ game }: { game: GameState }) {
 
       {lastApplication && <ApplicationSheet result={lastApplication} onClose={dismissApplication} />}
     </Screen>
+  )
+}
+
+/** 사이드 프로젝트를 꾸준히 한 사람: 회사를 그만두고 창업할 수 있다 */
+function StartupCard({ game, onFound }: { game: GameState; onFound: () => void }) {
+  const [confirm, setConfirm] = useState(false)
+  return (
+    <Card className="flex flex-col gap-2 bg-violet-50">
+      <p className="font-semibold text-violet-800">🚀 내 회사를 차려 볼까요?</p>
+      <p className="text-sm text-violet-700">
+        퇴근 후 만들던 사이드 프로젝트가 제법 쓸 만해졌어요. {game.unemployed ? '새 회사를 구하는 대신' : '회사를 그만두고'} 창업할 수 있어요.
+        투자를 받기 전까지는 월급이 없고, 해마다 생활비 {formatSalary(STARTUP.livingCost)} 원이 자산에서 빠져요.
+        설계·소통·도메인 실력과 평판이 높을수록 투자를 잘 받아요.
+      </p>
+      {confirm ? (
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="secondary" onClick={() => setConfirm(false)}>
+            {game.unemployed ? '취업할게요' : '회사에 남을게요'}
+          </Button>
+          <Button onClick={onFound}>창업하기</Button>
+        </div>
+      ) : (
+        <button type="button" onClick={() => setConfirm(true)} className="py-1 text-sm font-medium text-violet-700 underline">
+          창업하기
+        </button>
+      )}
+      {confirm && <p className="text-center text-xs text-violet-600">망하면 다시 채용 공고에 지원해 취업해야 해요.</p>}
+    </Card>
+  )
+}
+
+/** 창업 중: 지금 투자 단계와 다음 목표 */
+function FounderCard({ game }: { game: GameState }) {
+  const stage = game.startup!.stage
+  const last = stage === STARTUP.salary.length - 1
+  const runwayYears = Math.floor(game.assets / STARTUP.livingCost)
+  return (
+    <Card className="flex flex-col gap-2">
+      <p className="text-sm font-medium text-gray-600">🚀 {game.company.name} · 창업 {game.startup!.years + 1}년 차</p>
+      <div className="flex gap-1">
+        {startupStages.map((label, i) => (
+          <span key={label} className={`flex-1 rounded-full px-1 py-1 text-center text-[11px] ${i <= stage ? 'bg-violet-500 text-white' : 'bg-gray-100 text-gray-400'}`}>
+            {label}
+          </span>
+        ))}
+      </div>
+      <p className="text-sm text-gray-600">
+        {last
+          ? '시리즈 B까지 왔어요. 사업이 잘 굴러가는 해에는 인수 제안이 올 수 있어요.'
+          : `다음 목표는 ${startupStages[stage + 1]}예요. 설계·소통·도메인 실력과 평판이 높을수록, 연초에 사이드 프로젝트·업무 올인·네트워킹을 고를수록 투자를 잘 받아요.`}
+      </p>
+      {stage === 0 && (
+        <p className={`text-xs ${runwayYears <= 1 ? 'font-medium text-red-500' : 'text-gray-400'}`}>
+          월급이 없어 해마다 생활비 {formatSalary(STARTUP.livingCost)} 원이 빠져요. 지금 자산이면 {runwayYears}년쯤 버틸 수 있어요.
+        </p>
+      )}
+    </Card>
   )
 }
 

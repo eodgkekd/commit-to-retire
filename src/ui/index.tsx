@@ -154,7 +154,7 @@ export function StatusHeader({ game }: { game: GameState }) {
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-3xl">{game.profile.emoji}</span>
         <div className="min-w-0 flex-1">
           <p className="font-bold">
-            {game.profile.name} <span className="font-normal text-gray-500">· {rankById[game.rank].label}</span>
+            {game.profile.name} <span className="font-normal text-gray-500">· {game.startup ? '대표' : rankById[game.rank].label}</span>
           </p>
           {game.unemployed ? (
             <p className="truncate text-sm font-medium text-red-500">🎒 실직 중 · 전 직장 {game.company.name}</p>
