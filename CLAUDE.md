@@ -18,8 +18,14 @@
 - `npm run balance` 봇 자동 플레이 리포트 + **필승법 검사** (고정 전략 하나라도 S 20% 초과면 실패). 약 2분. 수치를 바꾸면 반드시 돌린다
 
 ## 엔진 흐름
-`createGame` → (`startYear` → `chooseEventOption`* → `finishYear` → `acknowledgeYear` → 허브: `applyToPosting`/`acceptOffer`/`declineOffers`/`chooseTrack`/`spendGapYear`/`nextYear`/`retireNow`) 반복 → `retired`.
+(`applyFirstJobs`로 첫 회사 결정) → `createGame` → (`startYear` → `chooseEventOption`* → `finishYear` → `acknowledgeYear` → 허브: `applyToPosting`/`acceptOffer`/`declineOffers`/`chooseTrack`/`spendGapYear`/`nextYear`/`retireNow`) 반복 → `retired`.
 모든 함수는 상태를 복사해 새 상태를 돌려준다. 밸런스 규칙은 `src/engine/year.ts`·`rules.ts`·`jobs.ts`, **밸런스 수치는 `src/data/balance.ts`**, 나머지 데이터는 `src/data/`.
+
+## 저장과 CI
+- 저장 데이터는 불러올 때 `src/engine/save.ts`의 `isLoadableSave`로 검사한다. `GameState`에 **필수** 필드를 추가하거나 데이터 id(회사 유형·직급 등)를 지우면 예전 세이브가 걸러지므로, 새 필드는 가능한 한 선택(`?`)으로 두고 없을 때의 기본 동작을 넣는다.
+- 저장 형식 자체를 바꾸면 `src/store/game.ts`의 `version`을 올리고 `migrate`에서 변환한다.
+- GitHub Actions(`.github/workflows/ci.yml`)가 푸시·PR마다 `npm run lint`, `npm test`, `npm run build`, `npm run balance`를 돌린다. 올리기 전에 로컬에서 같은 명령을 통과시킨다.
+- 실명, 실제 회사명, 참고한 게임 이름을 코드·문서·커밋 메시지에 넣지 않는다 (이 저장소는 포트폴리오로 공개돼 있다).
 
 ## 문구
 - 이벤트·반응 문구에 `{변수}`(이벤트의 `vars`, 피드의 `{name}` `{company}` 등)를 쓸 수 있다.

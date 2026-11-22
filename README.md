@@ -5,6 +5,8 @@
 
 **▶ 플레이: https://commit-to-retire.commit-to-retire.workers.dev**
 
+[![CI](https://github.com/eodgkekd/commit-to-retire/actions/workflows/ci.yml/badge.svg)](https://github.com/eodgkekd/commit-to-retire/actions/workflows/ci.yml)
+
 <p>
   <img src="docs/screenshots/event.png" alt="이벤트 선택 화면" width="300" />
   <img src="docs/screenshots/year-end.png" alt="연말 결과 화면" width="300" />
@@ -18,7 +20,7 @@
 
 ## 게임 소개
 
-- **캐릭터 생성**: 학력, 주력 분야, 플레이 스타일, 첫 회사(대기업·빅테크·스타트업·SI 등 11종)와 업종을 고릅니다.
+- **캐릭터 생성과 첫 취업**: 학력, 주력 분야, 플레이 스타일을 고른 뒤 신입 공채에 최대 3곳 지원합니다. 서류 → 인적성·코딩테스트 → 면접을 통과해야 하고, 다 떨어지면 전형 없는 회사로 가거나 1년 더 준비할 수 있습니다.
 - **1턴 = 1년**: 연초에 올해 집중할 것을 고르면 한 해가 진행되고, 중간에 사건이 터집니다. (금요일 18시 배포, 새벽 3시 DB 락, 오픈 D-3 기획 변경 등 70개)
 - **같은 사건도 매번 다르게**: 사건마다 심각도와 세부 내용이 달라지고, 최근에 본 사건은 한동안 다시 나오지 않습니다.
 - **연말 결과**: 인사고과, 연봉 인상, 승진, 그리고 블라인더·OKKO 같은 가상 커뮤니티의 반응이 붙습니다.
@@ -33,9 +35,9 @@
 | 영역 | 사용 기술 |
 |---|---|
 | 화면 | React 19, TypeScript, Tailwind CSS, Vite |
-| 상태·저장 | Zustand, 브라우저 localStorage (로그인·DB 없음) |
+| 상태·저장 | Zustand, 브라우저 localStorage (로그인·DB 없음, 읽을 수 없는 저장 데이터는 걸러냄) |
 | 게임 규칙 | UI와 분리한 순수 TypeScript 함수, 시드 기반 난수 |
-| 테스트 | Vitest (단위 테스트 550개, 봇 자동 플레이 시뮬레이션) |
+| 테스트 | Vitest (단위 테스트 570개, 봇 자동 플레이 시뮬레이션), GitHub Actions |
 | 배포 | Cloudflare Workers (정적 자산 + 결과 공유 API, Workers KV) |
 
 게임 자체는 서버 없이 브라우저에서만 동작합니다. 서버 코드는 결과 공유 링크를 저장·조회하는 작은 API([src/worker.ts](src/worker.ts)) 하나뿐입니다.
@@ -54,6 +56,8 @@ npm run dev
 | `npm run build` | 타입 검사 + 빌드 |
 | `npm run balance` | 봇이 수천 판을 자동 플레이해 밸런스 분포를 출력하고, 필승 전략이 생기면 실패 (약 2분) |
 | `npm run deploy` | 빌드 후 Cloudflare에 배포 |
+
+푸시와 PR마다 GitHub Actions가 린트, 테스트, 빌드, 밸런스 시뮬레이션을 돌립니다 ([.github/workflows/ci.yml](.github/workflows/ci.yml)).
 
 짧은 공유 링크까지 로컬에서 확인하려면 `npm run build` 후 별도 터미널에서 `npm run dev:api`를 실행합니다.
 Vite의 `/api` 요청은 로컬 Worker(8787 포트)로 전달됩니다. 로컬 KV는 `.wrangler`에 저장되며 운영 데이터와 분리됩니다.
