@@ -1,4 +1,5 @@
 import { currentEvent, remainingEvents, type GameState } from '../engine'
+import { specialtyById } from '../data'
 import { useGame } from '../store/game'
 import { Badge, Button, Choice, EffectChips, FirstTimeTip, Screen, StatusHeader } from '../ui'
 
@@ -75,6 +76,11 @@ export function EventScreen({ game }: { game: GameState }) {
       <div className="flex flex-col gap-2">
         {event.choices.map((c, i) => (
           <Choice key={c.label} onClick={() => choose(i)}>
+            {c.specialties && (
+              <p className="mb-0.5 text-xs font-medium text-blue-500">
+                {specialtyById[game.profile.specialty].emoji} {specialtyById[game.profile.specialty].label} 개발자라서 떠올린 방법
+              </p>
+            )}
             <p className="font-semibold">{c.label}</p>
           </Choice>
         ))}

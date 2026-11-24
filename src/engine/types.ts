@@ -196,6 +196,8 @@ export interface EventChoice {
    * check가 있으면 실패 결과와 성공 결과가 모두 있어야 한다.
    */
   check?: Partial<Stats>
+  /** 이 주력 분야인 사람에게만 보이는 선택지 (자기 분야 지식으로 푸는 방법) */
+  specialties?: SpecialtyId[]
   outcomes: EventOutcome[]
 }
 

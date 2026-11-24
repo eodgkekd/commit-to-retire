@@ -70,6 +70,39 @@ export const events: GameEvent[] = [
           },
         ],
       },
+      {
+        label: '기능 플래그로 꺼 둔 채 배포만 해 둔다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '코드는 나갔고 기능은 꺼져 있어요. 월요일 아침에 스위치만 켰어요.', tone: 'skill', effects: { stats: { design: 2 }, gradeBonus: 4 } },
+          { chance: 0.3, text: '플래그 기본값을 거꾸로 넣었어요. 금요일 밤에 기능이 켜졌어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -4, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '카나리 배포로 일부 사용자에게만 먼저 내보낸다',
+        specialties: ['infra'],
+        check: { design: 45 },
+        outcomes: [
+          { chance: 0.75, text: '5%에서 오류율이 튀는 걸 보고 바로 되돌렸어요. 나머지 95%는 아무것도 몰라요.', tone: 'skill', effects: { stats: { design: 2 }, gradeBonus: 8 } },
+          { chance: 0.25, text: '카나리 비율 설정이 안 먹었어요. 100%가 카나리였어요.', tone: 'unlucky', effects: { stamina: -12, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '"앱은 심사가 있어서 어차피 월요일에 나가요"라고 한다',
+        specialties: ['mobile'],
+        outcomes: [
+          { chance: 0.8, text: '심사 대기열이 모두를 구했어요. 다들 순순히 퇴근했어요.', tone: 'lucky', effects: { stamina: 5 } },
+          { chance: 0.2, text: '하필 심사가 30분 만에 통과됐어요. 자동 출시가 켜져 있었어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '점검 공지부터 띄우고 패치한다',
+        specialties: ['game'],
+        outcomes: [
+          { chance: 0.7, text: '점검 보상으로 다이아 100개를 뿌렸어요. 유저들이 오히려 점검을 반겨요.', effects: { gradeBonus: 5, stamina: -5 } },
+          { chance: 0.3, text: '점검이 30분 연장됐어요. 커뮤니티에 "또 연장?" 글이 쌓였어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -3 } },
+        ],
+      },
     ],
   },
   {
@@ -120,6 +153,31 @@ export const events: GameEvent[] = [
           { chance: 0.6, text: '아침 회의에서 알림 수신 기록이 공개됐어요.', tone: 'unlucky', effects: { gradeBonus: -20, stats: { reputation: -3 } } },
         ],
       },
+      {
+        label: '락 잡은 세션부터 죽이고 원인은 아침에 본다',
+        outcomes: [
+          { chance: 0.6, text: '서비스는 바로 살아났어요. 원인은 아침에도 모르겠어요.', effects: { stamina: -5, counters: { incidents: 1 } } },
+          { chance: 0.4, text: '죽인 세션이 정산 배치였어요. 아침에 숫자가 안 맞아요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -5, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '쿼리 실행 계획부터 뜯어본다',
+        specialties: ['backend'],
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '인덱스를 안 타는 쿼리 하나를 찾았어요. 인덱스를 추가하고 다시 잤어요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 2, domain: 1 }, gradeBonus: 10, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '실행 계획을 읽다가 해가 떴어요. 원인은 찾았는데 출근 시간이에요.', tone: 'unlucky', effects: { stamina: -14, stats: { coding: 1 }, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '새벽 배치 집계 쿼리가 범인인지 확인한다',
+        specialties: ['data_ai'],
+        check: { domain: 45 },
+        outcomes: [
+          { chance: 0.7, text: '역시 내 집계 배치였어요. 읽기 전용 복제본으로 돌리게 바꿨어요.', tone: 'skill', effects: { stamina: -6, stats: { domain: 2 }, gradeBonus: 6, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '배치는 죄가 없었어요. 의심만 하다 시간이 갔어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
     ],
   },
   {
@@ -159,6 +217,49 @@ export const events: GameEvent[] = [
         label: '시키는 대로 로그만 본다',
         outcomes: [
           { chance: 1, text: '밤새 로그를 봤어요. 많이 배웠지만 아무도 기억하지 않아요.', effects: { stamina: -12, stats: { domain: 3 }, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '덜 중요한 기능을 끄고 결제만 살린다',
+        check: { domain: 45 },
+        outcomes: [
+          { chance: 0.7, text: '추천·리뷰를 끄니 결제가 숨을 쉬어요. 매출은 지켰어요.', tone: 'skill', effects: { stamina: -8, stats: { domain: 2 }, gradeBonus: 10, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '끈 기능 중에 쿠폰 적용이 있었어요. 고객센터 전화가 폭발했어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -5, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '오토스케일링 기준을 바로 고친다',
+        specialties: ['infra'],
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.75, text: '서버가 알아서 늘어나기 시작했어요. 그래프가 평평해졌어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 2 }, gradeBonus: 12, counters: { incidents: 1 } } },
+          { chance: 0.25, text: '늘어난 서버가 DB 연결을 다 먹었어요. 병목이 DB로 옮겨 갔어요.', tone: 'unlucky', effects: { stamina: -14, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '상품 목록 앞에 캐시를 붙인다',
+        specialties: ['backend'],
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '캐시 적중률 95%. DB가 드디어 쉬어요.', tone: 'skill', effects: { stamina: -8, stats: { coding: 2 }, gradeBonus: 10, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '재고가 캐시에 남아 품절 상품이 팔렸어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '대기열 화면을 띄워 들어오는 요청을 줄인다',
+        specialties: ['frontend'],
+        outcomes: [
+          { chance: 0.7, text: '"현재 대기 3,421번째" 화면 덕분에 서버가 버텼어요.', effects: { stamina: -6, gradeBonus: 8, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '사람들이 새로고침을 연타해서 대기열 서버가 먼저 죽었어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '앱의 재시도 간격을 원격 설정으로 늘린다',
+        specialties: ['mobile'],
+        check: { coding: 45 },
+        outcomes: [
+          { chance: 0.7, text: '앱들이 덜 두드리니 서버가 살아났어요. 앱 업데이트 없이 끝났어요.', tone: 'skill', effects: { stamina: -6, gradeBonus: 8, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '구버전 앱은 원격 설정을 안 읽어요. 그 사람들이 제일 많았어요.', tone: 'unlucky', effects: { stamina: -8, counters: { incidents: 1 } } },
         ],
       },
     ],
@@ -203,6 +304,14 @@ export const events: GameEvent[] = [
           { chance: 1, text: '한 줄 고치고 조용히 커밋했어요. 기술 부채가 또 쌓였어요.', effects: { stats: { domain: 1 } } },
         ],
       },
+      {
+        label: '지금 동작을 테스트로 박제하고 고친다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '테스트 40개로 지금 동작을 고정하고 안전하게 고쳤어요.', tone: 'skill', effects: { stamina: -10, stats: { coding: 3 }, gradeBonus: 6 } },
+          { chance: 0.3, text: '테스트를 쓰다 보니 지금 동작 자체가 버그였어요. 일이 두 배가 됐어요.', tone: 'unlucky', effects: { stamina: -14, stats: { coding: 1 } } },
+        ],
+      },
     ],
   },
   {
@@ -231,6 +340,14 @@ export const events: GameEvent[] = [
         label: '바깥에서 우회 코드를 덧댄다',
         outcomes: [
           { chance: 1, text: '우회 코드 위에 "이 코드도 건드리지 마시오"라고 적었어요.', effects: { stats: { domain: 1 } } },
+        ],
+      },
+      {
+        label: '커밋 기록을 거슬러 올라가 이유부터 찾는다',
+        check: { domain: 45 },
+        outcomes: [
+          { chance: 0.6, text: '9년 전 커밋 메시지에 진짜 이유가 있었어요. 그 조건만 피해서 고쳤어요.', tone: 'skill', effects: { stamina: -6, stats: { domain: 3 }, gradeBonus: 6 } },
+          { chance: 0.4, text: '커밋 메시지가 전부 "수정"이었어요.', tone: 'unlucky', effects: { stamina: -6 } },
         ],
       },
     ],
@@ -270,6 +387,13 @@ export const events: GameEvent[] = [
         outcomes: [
           { chance: 0.3, text: '코드가 생각보다 읽기 쉬웠어요.', tone: 'lucky', effects: { stats: { domain: 3 } } },
           { chance: 0.7, text: '첫 장애 때 {who}에게 카톡했는데 읽씹당했어요.', tone: 'unlucky', effects: { stamina: -15, stats: { domain: 4 }, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '장애 날 때 하는 일만 화면 녹화해 달라고 한다',
+        outcomes: [
+          { chance: 0.7, text: '20분짜리 영상 세 개를 받았어요. 문서보다 백 배 나아요.', effects: { stats: { domain: 2 }, gradeBonus: 3 } },
+          { chance: 0.3, text: '녹화 버튼을 안 눌렀대요. 마지막 날이라 다시 찍을 시간도 없어요.', tone: 'unlucky', effects: { stamina: -5 } },
         ],
       },
     ],
@@ -406,6 +530,14 @@ export const events: GameEvent[] = [
           { chance: 0.2, text: '임원이 "그냥 다 해"라고 했어요.', tone: 'unlucky', effects: { stamina: -15 } },
         ],
       },
+      {
+        label: '바뀐 부분을 설정값으로 빼서 오픈 후 바꾸게 한다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.65, text: '설정 화면 하나로 끝냈어요. 오픈 후에 기획자가 직접 바꿨어요.', tone: 'skill', effects: { stamina: -6, stats: { design: 2 }, gradeBonus: 8 } },
+          { chance: 0.35, text: '설정으로 뺄 수 없는 구조였어요. 결국 밤을 샜어요.', tone: 'unlucky', effects: { stamina: -15 } },
+        ],
+      },
     ],
   },
   {
@@ -442,6 +574,31 @@ export const events: GameEvent[] = [
         outcomes: [
           { chance: 0.7, text: '{who}(이)가 "이게 이렇게 큰 거였어?"라며 일주일을 줬어요.', tone: 'skill', effects: { stats: { design: 2, communication: 2 } } },
           { chance: 0.3, text: '{who}(이)가 "그래서 {when} 되냐고"라고 다시 물었어요. 밤을 샜어요.', tone: 'unlucky', effects: { stamina: -15, stats: { design: 1 } } },
+        ],
+      },
+      {
+        label: '제일 단순한 버전만 먼저 내고 나머지는 다음 주로',
+        outcomes: [
+          { chance: 0.6, text: '버튼 하나짜리 버전으로 시간을 벌었어요. 반응이 좋아서 나머지는 천천히 해도 된대요.', tone: 'lucky', effects: { stamina: -4, gradeBonus: 5 } },
+          { chance: 0.4, text: '"이게 다예요?" 실망한 표정을 봤어요. 나머지도 이번 주 안에 하래요.', effects: { stamina: -10 } },
+        ],
+      },
+      {
+        label: '화면 시안부터 보여 주고 범위를 합의한다',
+        specialties: ['frontend'],
+        check: { design: 40 },
+        outcomes: [
+          { chance: 0.7, text: '시안을 보더니 "아, 이건 필요 없네요" 하고 절반을 뺐어요.', tone: 'skill', effects: { stats: { design: 1, communication: 1 }, gradeBonus: 6 } },
+          { chance: 0.3, text: '시안이 너무 그럴듯해서 다 된 줄 알아요. 내일 오픈하재요.', tone: 'unlucky', effects: { stamina: -12 } },
+        ],
+      },
+      {
+        label: '대용량 처리는 밤 배치로 돌리자고 한다',
+        specialties: ['data_ai'],
+        check: { domain: 45 },
+        outcomes: [
+          { chance: 0.7, text: '실시간일 필요가 없었어요. 하루 한 번 배치로 깔끔하게 끝냈어요.', tone: 'skill', effects: { stats: { domain: 2 }, gradeBonus: 6 } },
+          { chance: 0.3, text: '"실시간이어야 해요." 이유는 대표님이 그렇게 말했기 때문이래요.', tone: 'unlucky', effects: { stamina: -10 } },
         ],
       },
     ],
@@ -986,6 +1143,30 @@ export const events: GameEvent[] = [
           { chance: 0.3, text: 'WHERE 절을 빼먹어서 {rows}(이)가 한꺼번에 바뀌었어요. 백업에서 복구하느라 밤을 샜어요.', tone: 'unlucky', effects: { stamina: -15, gradeBonus: -15, stats: { domain: 3 }, counters: { incidents: 1 } } },
         ],
       },
+      {
+        label: '트랜잭션을 열고 결과를 확인한 뒤 커밋한다',
+        check: { coding: 45 },
+        outcomes: [
+          { chance: 0.75, text: '바뀐 건수가 예상과 똑같은 걸 보고 커밋했어요. 손이 떨렸지만 완벽했어요.', tone: 'skill', effects: { stats: { coding: 2 }, gradeBonus: 5 } },
+          { chance: 0.25, text: '트랜잭션을 열어 둔 채 점심을 먹으러 갔어요. 테이블이 잠겼어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '대상 테이블을 백업 테이블로 먼저 떠 둔다',
+        specialties: ['backend'],
+        outcomes: [
+          { chance: 0.85, text: '백업 덕분에 마음이 편했어요. 다행히 쓸 일은 없었어요.', effects: { stats: { coding: 1 }, gradeBonus: 4 } },
+          { chance: 0.15, text: '백업을 뜨느라 디스크가 꽉 찼어요. 고칠 게 하나 늘었어요.', tone: 'unlucky', effects: { stamina: -8, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: 'SELECT로 대상 건수부터 세어 본다',
+        specialties: ['data_ai'],
+        outcomes: [
+          { chance: 0.8, text: '예상 30건, 실제 3만 건. WHERE 조건이 틀린 걸 실행 전에 잡았어요.', tone: 'skill', effects: { stats: { domain: 2 }, gradeBonus: 6 } },
+          { chance: 0.2, text: '세어 보니 맞았어요. 확인하는 동안 요청한 사람이 세 번 재촉했어요.', effects: { stamina: -3 } },
+        ],
+      },
     ],
   },
   {
@@ -1044,6 +1225,13 @@ export const events: GameEvent[] = [
         outcomes: [
           { chance: 0.75, text: '숨은 작업까지 찾아서 2주라고 했어요. 정확히 2주 만에 끝냈어요.', tone: 'skill', effects: { stats: { design: 2 }, gradeBonus: 5 } },
           { chance: 0.25, text: '"그걸 꼭 봐야 알아요?"라는 말을 들었어요. 결국 일정은 위에서 정해졌어요.', tone: 'unlucky', effects: { stamina: -8 } },
+        ],
+      },
+      {
+        label: '생각한 날짜에 두 배를 곱해서 말한다',
+        outcomes: [
+          { chance: 0.6, text: '여유 있게 끝내고 하루 일찍 넘겼어요. "역시 일 잘하네" 소리를 들었어요.', tone: 'lucky', effects: { gradeBonus: 6, stamina: 3 } },
+          { chance: 0.4, text: '"그렇게 오래 걸려요?" 옆자리 선배가 반으로 깎았어요.', effects: { stamina: -6 } },
         ],
       },
     ],
@@ -1111,6 +1299,23 @@ export const events: GameEvent[] = [
         outcomes: [
           { chance: 0.75, text: '동료가 흔쾌히 바꿔 줬어요. 다음 명절은 내가 서기로 했어요.', tone: 'skill', effects: { stamina: 10, stats: { communication: 1 } } },
           { chance: 0.25, text: '다들 일정이 있대요. 결국 표를 취소했어요.', tone: 'unlucky', effects: { stamina: -8, assets: -50 } },
+        ],
+      },
+      {
+        label: '대응 매뉴얼을 써 두고 떠난다',
+        check: { design: 45 },
+        outcomes: [
+          { chance: 0.7, text: '장애가 났지만 매뉴얼대로 동료가 막았어요. 여행은 무사했어요.', tone: 'skill', effects: { stamina: 8, stats: { design: 2 }, gradeBonus: 4 } },
+          { chance: 0.3, text: '매뉴얼에 없는 장애가 났어요. 해변에서 전화를 받았어요.', tone: 'unlucky', effects: { stamina: -5, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '알림 규칙을 정리해 진짜 장애만 울리게 한다',
+        specialties: ['infra'],
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.75, text: '하루 50개 오던 알림이 2개로 줄었어요. 온콜이 처음으로 조용해요.', tone: 'skill', effects: { stamina: 10, stats: { design: 2 }, gradeBonus: 6 } },
+          { chance: 0.25, text: '너무 많이 껐어요. 진짜 장애 알림까지 안 울렸어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -6, counters: { incidents: 1 } } },
         ],
       },
     ],
@@ -1201,6 +1406,60 @@ export const events: GameEvent[] = [
         label: '제일 아픈 것 하나만 확실히 한다',
         outcomes: [
           { chance: 1, text: '{debt} 하나는 확실히 끝냈어요. 팀이 조용히 좋아해요.', effects: { stamina: -5, stats: { design: 2 }, counters: { refactors: 1 } } },
+        ],
+      },
+      {
+        label: '느린 쿼리 상위 10개를 고친다',
+        specialties: ['backend'],
+        check: { coding: 55 },
+        outcomes: [
+          { chance: 0.7, text: 'API 평균 응답이 절반이 됐어요. 숫자로 보여 주니 다들 박수쳐요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 2 }, gradeBonus: 10, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '쿼리를 고쳤더니 다른 쿼리가 느려졌어요. 두더지 잡기예요.', tone: 'unlucky', effects: { stamina: -10 } },
+        ],
+      },
+      {
+        label: '번들 크기부터 줄인다',
+        specialties: ['frontend'],
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '안 쓰는 라이브러리를 걷어내고 첫 화면이 2초 빨라졌어요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 2 }, gradeBonus: 8, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '걷어낸 라이브러리를 결제 화면이 쓰고 있었어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -4, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '최소 지원 OS 버전을 올린다',
+        specialties: ['mobile'],
+        check: { communication: 45 },
+        outcomes: [
+          { chance: 0.65, text: '구형 OS 분기 코드 수천 줄을 지웠어요. 빌드도 빨라졌어요.', tone: 'skill', effects: { stamina: -4, stats: { coding: 1, design: 1 }, gradeBonus: 8, counters: { refactors: 1 } } },
+          { chance: 0.35, text: '마케팅팀이 "아직 구형 폰 쓰는 VIP가 많아요"라며 막았어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+      {
+        label: '데이터 파이프라인 실패 알림을 정리한다',
+        specialties: ['data_ai'],
+        check: { domain: 50 },
+        outcomes: [
+          { chance: 0.7, text: '매일 아침 깨져 있던 대시보드가 이제 제때 맞아요.', tone: 'skill', effects: { stamina: -4, stats: { domain: 2 }, gradeBonus: 8, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '정리하다 보니 3개월째 틀린 숫자를 보고 있었다는 걸 알았어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: 'CI 파이프라인을 병렬로 쪼갠다',
+        specialties: ['infra'],
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '40분 걸리던 빌드가 8분이 됐어요. 팀 전체 시간이 돌아왔어요.', tone: 'skill', effects: { stamina: -4, stats: { design: 2 }, gradeBonus: 10, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '병렬로 돌리니 테스트끼리 데이터를 밟아요. 간헐적 실패가 생겼어요.', tone: 'unlucky', effects: { stamina: -10 } },
+        ],
+      },
+      {
+        label: '게임 로딩 시간부터 줄인다',
+        specialties: ['game'],
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '에셋 압축과 비동기 로딩으로 첫 로딩이 절반이 됐어요. 리뷰 별점이 올랐어요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 2 }, gradeBonus: 10, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '압축하다가 텍스처가 뭉개졌어요. "그래픽 너프" 글이 올라왔어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -4 } },
         ],
       },
     ],
@@ -1428,6 +1687,14 @@ export const events: GameEvent[] = [
         label: '짧은 사과문만 낸다',
         outcomes: [
           { chance: 1, text: '"일시적인 오류로 불편을 드려 죄송합니다." 댓글이 1,000개 달렸어요.', effects: { stamina: -8, stats: { reputation: -2 }, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '재발 방지 전담 조직부터 꾸리고 사과문은 짧게 낸다',
+        check: { domain: 70 },
+        outcomes: [
+          { chance: 0.6, text: '석 달 뒤 개선 결과를 숫자로 발표했어요. 이번엔 기사가 좋게 났어요.', tone: 'skill', effects: { stats: { domain: 2, reputation: 2 }, gradeBonus: 10, stamina: -10 } },
+          { chance: 0.4, text: '"조직만 만들고 말뿐"이라는 기사가 났어요.', tone: 'unlucky', effects: { stats: { reputation: -2 }, gradeBonus: -6 } },
         ],
       },
     ],
@@ -2261,6 +2528,13 @@ export const events: GameEvent[] = [
           { chance: 1, text: '아무도 안 보는 대시보드가 하나 더 생겼어요. 그래도 칼퇴했어요.', effects: { stamina: 5 } },
         ],
       },
+      {
+        label: '남은 예산으로 장비와 교육을 산다',
+        outcomes: [
+          { chance: 0.6, text: '모니터와 교육 과정을 샀어요. 팀이 연말 내내 행복해해요.', tone: 'lucky', effects: { stamina: 8, stats: { coding: 1 } } },
+          { chance: 0.4, text: '감사에서 "목적에 맞지 않는 집행"이라고 지적받았어요.', tone: 'unlucky', effects: { gradeBonus: -5 } },
+        ],
+      },
     ],
   },
   {
@@ -2317,6 +2591,23 @@ export const events: GameEvent[] = [
         outcomes: [
           { chance: 0.5, text: '공문이 통했어요. 다음 달부터 새 브라우저를 깐대요.', tone: 'skill', effects: { gradeBonus: 6, stats: { communication: 2 } } },
           { chance: 0.5, text: '"예산이 없어요." 공문이 그대로 돌아왔어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+      {
+        label: '폴리필을 넣어 코드 한 벌로 유지한다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.65, text: '코드는 한 벌, 구형 브라우저도 대충 돌아가요. 대충이면 충분했어요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 2 }, gradeBonus: 5 } },
+          { chance: 0.35, text: '폴리필로는 안 되는 기능이 있었어요. 결국 코드가 두 벌이 됐어요.', tone: 'unlucky', effects: { stamina: -10 } },
+        ],
+      },
+      {
+        label: '구형 브라우저에는 단순한 화면만 따로 보여 준다',
+        specialties: ['frontend'],
+        check: { design: 45 },
+        outcomes: [
+          { chance: 0.75, text: '기능 감지로 갈라서 구형엔 표 하나짜리 화면을 줬어요. 민원이 오히려 줄었어요.', tone: 'skill', effects: { stamina: -4, stats: { design: 2 }, gradeBonus: 6 } },
+          { chance: 0.25, text: '"우리 화면만 왜 이렇게 생겼냐"는 공문이 왔어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -3 } },
         ],
       },
     ],
@@ -2468,6 +2759,634 @@ export const events: GameEvent[] = [
       },
     ],
   },
+  // ─── 주력 분야 전용 (그 분야인 사람에게만) ──────────────────
+  // 백엔드
+  {
+    id: 'be_n_plus_one',
+    category: '장애',
+    emoji: '🐢',
+    title: '느려진 목록 API',
+    text: '{screen} 목록이 {seconds}초씩 걸려요. 쿼리 로그를 보니 요청 한 번에 쿼리가 {count}번 나가요.',
+    weight: 7,
+    conditions: { specialties: ['backend'] },
+    vars: {
+      screen: ['주문', '상품', '게시글', '알림'],
+      seconds: { min: 3, max: 12 },
+      count: { min: 101, max: 2001 },
+    },
+    choices: [
+      {
+        label: '조인과 일괄 조회로 쿼리를 한 번에 묶는다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '쿼리 2,001번이 2번이 됐어요. 응답이 0.2초로 줄었어요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 3 }, gradeBonus: 10 } },
+          { chance: 0.3, text: '묶었더니 결과가 중복으로 나와요. 페이지마다 같은 글이 두 번씩 보여요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: '결과를 통째로 캐시해서 덮는다',
+        outcomes: [
+          { chance: 0.6, text: '빨라졌어요. 쿼리 2,001번은 이제 1시간에 한 번만 나가요.', effects: { stamina: -3, gradeBonus: 4 } },
+          { chance: 0.4, text: '새 글이 1시간 뒤에야 보여요. "글이 안 올라가요" 문의가 쌓였어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: '한 번에 보여 주는 개수를 줄이자고 한다',
+        check: { communication: 40 },
+        outcomes: [
+          { chance: 0.6, text: '100개에서 20개로 줄였어요. 아무도 100개를 다 보지 않았대요.', tone: 'skill', effects: { stats: { communication: 1 }, gradeBonus: 4 } },
+          { chance: 0.4, text: '"예전엔 됐잖아요." 기획자가 받아들이지 않았어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'be_double_charge',
+    category: '장애',
+    emoji: '💳',
+    title: '이중 결제 {count}건',
+    text: '결제 버튼을 빠르게 두 번 누르면 결제가 두 번 된대요. 오늘만 {count}건이에요.',
+    weight: 6,
+    severity: true,
+    conditions: { specialties: ['backend'] },
+    vars: { count: { bySeverity: [{ min: 3, max: 10 }, { min: 30, max: 80 }, { min: 300, max: 900 }] } },
+    choices: [
+      {
+        label: '같은 요청은 한 번만 처리되게 멱등성 키를 넣는다',
+        check: { design: 55 },
+        outcomes: [
+          { chance: 0.7, text: '이제 몇 번을 눌러도 한 번만 결제돼요. 결제팀의 오랜 숙원이 풀렸어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 3 }, gradeBonus: 12, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '키를 만드는 규칙이 너무 넓어서 다른 주문까지 막혔어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -5, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '중복 건은 손으로 환불하고 버튼만 막는다',
+        outcomes: [
+          { chance: 1, text: '버튼을 누르면 회색이 되게 했어요. 환불은 밤새 손으로 했어요.', effects: { stamina: -12, gradeBonus: 2, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'be_partner_api',
+    category: '레거시',
+    emoji: '🔌',
+    title: '파트너사가 쓰는 API',
+    text: '외부 파트너 {partners}곳이 쓰는 API 응답 형식을 바꿔야 해요. 누가 어떤 필드를 쓰는지 아무도 몰라요.',
+    weight: 6,
+    conditions: { specialties: ['backend'], minCareerYear: 2 },
+    vars: { partners: { min: 4, max: 30 } },
+    choices: [
+      {
+        label: '새 버전을 따로 열고 옛 버전은 당분간 살려 둔다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '파트너들이 자기 속도로 옮겨 왔어요. 아무도 깨지지 않았어요.', tone: 'skill', effects: { stamina: -6, stats: { design: 2 }, gradeBonus: 8 } },
+          { chance: 0.3, text: '두 버전을 같이 고치느라 일이 두 배가 됐어요. 옛 버전은 영원히 안 꺼질 것 같아요.', tone: 'unlucky', effects: { stamina: -10 } },
+        ],
+      },
+      {
+        label: '필드를 지우지 않고 새 필드만 추가한다',
+        outcomes: [
+          { chance: 0.75, text: '아무것도 안 깨졌어요. 응답에 비슷한 필드가 세 개씩 있지만요.', effects: { stamina: -3, gradeBonus: 3 } },
+          { chance: 0.25, text: '응답 크기 제한이 있는 파트너가 있었어요.', tone: 'unlucky', effects: { stamina: -8, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '공지만 하고 날짜에 맞춰 바꾼다',
+        outcomes: [
+          { chance: 0.3, text: '다들 공지를 읽었대요. 기적이에요.', tone: 'lucky', effects: { gradeBonus: 4 } },
+          { chance: 0.7, text: '아무도 공지를 안 읽었어요. 바꾼 날 아침 파트너 전화가 몰렸어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+
+  // 프론트엔드
+  {
+    id: 'fe_pixel_qa',
+    category: '일정',
+    emoji: '📏',
+    title: '디자인 QA {count}건',
+    text: '오픈 이틀 전, 디자이너가 "{issue}" 같은 QA를 {count}건 올렸어요.',
+    weight: 7,
+    conditions: { specialties: ['frontend'] },
+    vars: {
+      count: { min: 30, max: 120 },
+      issue: ['여백이 1px 달라요', '이 회색이 그 회색이 아니에요', '줄바꿈 위치가 시안이랑 달라요', '버튼 모서리가 덜 둥글어요'],
+    },
+    choices: [
+      {
+        label: '공통 컴포넌트로 정리해서 한 번에 고친다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '버튼·간격을 공통 컴포넌트로 묶었더니 QA 80건이 한꺼번에 닫혔어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 3 }, gradeBonus: 8 } },
+          { chance: 0.3, text: '공통 컴포넌트를 바꿨더니 다른 화면 50곳이 같이 바뀌었어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: '밤새 하나씩 다 맞춘다',
+        outcomes: [
+          { chance: 1, text: '120건을 다 닫았어요. 눈에서 회색과 회색의 차이가 보이기 시작했어요.', effects: { stamina: -15, stats: { coding: 1 }, gradeBonus: 5 } },
+        ],
+      },
+      {
+        label: '오픈에 꼭 필요한 것만 고르자고 디자이너와 앉는다',
+        check: { communication: 45 },
+        outcomes: [
+          { chance: 0.6, text: '20건만 오픈 전에, 나머지는 다음 주에. 디자이너도 웃으며 동의했어요.', tone: 'skill', effects: { stamina: -4, stats: { communication: 2 }, gradeBonus: 4 } },
+          { chance: 0.4, text: '"전부 다 중요해요." 회의 끝나고 오히려 3건이 늘었어요.', tone: 'unlucky', effects: { stamina: -8 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'fe_one_browser_bug',
+    category: '장애',
+    emoji: '🧭',
+    title: '{browser}에서만 안 돼요',
+    text: '{browser}에서만 {broken}. 내 컴퓨터에서는 멀쩡해요.',
+    weight: 7,
+    severity: true,
+    conditions: { specialties: ['frontend'] },
+    vars: {
+      browser: ['어느 휴대폰 기본 브라우저', '사내 구형 브라우저', '메신저 인앱 브라우저', '태블릿 브라우저'],
+      broken: ['결제 버튼이 안 눌려요', '화면 아래가 잘려요', '로그인이 계속 풀려요', '입력창에 한글이 두 번 쳐져요'],
+    },
+    choices: [
+      {
+        label: '실기기를 연결해 원격 디버깅한다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '그 브라우저만 다르게 처리하는 이벤트 하나를 찾았어요. 세 줄로 고쳤어요.', tone: 'skill', effects: { stamina: -8, stats: { coding: 3 }, gradeBonus: 10, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '실기기가 사무실에 없어요. 중고 폰을 사러 용산에 다녀왔어요.', tone: 'unlucky', effects: { stamina: -12, assets: -40, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '"다른 브라우저를 이용해 주세요" 안내를 띄운다',
+        outcomes: [
+          { chance: 0.4, text: '그 브라우저 사용자가 생각보다 적었어요. 조용히 넘어갔어요.', tone: 'lucky', effects: { stamina: -2, counters: { incidents: 1 } } },
+          { chance: 0.6, text: '그 브라우저 사용자가 전체의 30%였어요. 마케팅팀이 찾아왔어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'fe_new_framework',
+    category: '업계',
+    emoji: '✨',
+    title: '새 프레임워크가 떴어요',
+    text: '"{framework}" 같은 새 프론트엔드 프레임워크가 화제예요. 팀 채팅방에 "우리도 갈아탈까요?"가 올라왔어요.',
+    weight: 6,
+    conditions: { specialties: ['frontend'] },
+    vars: { framework: ['빠르기만 한 그것', '빌드가 필요 없는 그것', '서버에서 다 그리는 그것', '이름이 과일인 그것'] },
+    choices: [
+      {
+        label: '사이드 프로젝트로 먼저 써 보고 판단한다',
+        check: { coding: 45 },
+        outcomes: [
+          { chance: 0.7, text: '주말에 써 보니 장단점이 분명했어요. 팀에 정리해서 공유했더니 반응이 좋아요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 2, reputation: 1 } } },
+          { chance: 0.3, text: '써 보기도 전에 다음 프레임워크가 나왔어요.', tone: 'unlucky', effects: { stamina: -4 } },
+        ],
+      },
+      {
+        label: '전면 교체를 제안한다',
+        check: { design: 60 },
+        outcomes: [
+          { chance: 0.5, text: '설득에 성공했고 이사도 무사히 끝났어요. 이력서에 한 줄이 생겼어요.', tone: 'skill', effects: { stamina: -14, stats: { design: 3, reputation: 2 }, gradeBonus: 8 } },
+          { chance: 0.5, text: '반쯤 옮기다 멈췄어요. 이제 프레임워크가 두 개예요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -6 } },
+        ],
+      },
+      {
+        label: '"작년에도 그랬어요" 하고 넘긴다',
+        outcomes: [
+          { chance: 1, text: '하던 일을 계속했어요. 내년에도 비슷한 글이 올라올 거예요.', effects: { stamina: 3 } },
+        ],
+      },
+    ],
+  },
+
+  // 모바일
+  {
+    id: 'mo_review_reject',
+    category: '일정',
+    emoji: '🚫',
+    title: '앱 심사 거절',
+    text: '내일이 출시인데 앱 심사가 거절됐어요. 사유는 "{reason}"예요.',
+    weight: 7,
+    conditions: { specialties: ['mobile'] },
+    vars: { reason: ['로그인 없이 둘러볼 수 없음', '결제 방식이 정책 위반', '권한 요청 이유가 불충분함', '설명과 다른 기능이 있음'] },
+    choices: [
+      {
+        label: '거절 사유를 고쳐서 바로 다시 낸다',
+        check: { coding: 45 },
+        outcomes: [
+          { chance: 0.65, text: '밤새 고쳐서 다시 냈고 아침에 통과됐어요.', tone: 'skill', effects: { stamina: -12, stats: { coding: 2 }, gradeBonus: 8 } },
+          { chance: 0.35, text: '다시 냈더니 이번엔 다른 사유로 거절됐어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -4 } },
+        ],
+      },
+      {
+        label: '심사팀에 기능 설명을 정중히 보낸다',
+        check: { communication: 45 },
+        outcomes: [
+          { chance: 0.5, text: '"확인했습니다." 고친 것 없이 통과됐어요.', tone: 'skill', effects: { stamina: -2, stats: { communication: 2 }, gradeBonus: 6 } },
+          { chance: 0.5, text: '사흘 동안 답이 없어요. 출시일이 지나갔어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -6 } },
+        ],
+      },
+      {
+        label: '문제 된 기능만 원격 설정으로 숨기고 다시 낸다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '그 기능만 꺼서 통과시켰어요. 정책을 맞춘 뒤 다음 버전에서 켰어요.', tone: 'skill', effects: { stamina: -6, stats: { design: 2 }, gradeBonus: 6 } },
+          { chance: 0.3, text: '숨긴 기능이 심사 중에 켜졌어요. 이번엔 경고까지 받았어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -8 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'mo_device_crash',
+    category: '장애',
+    emoji: '📵',
+    title: '{device}에서만 앱이 꺼져요',
+    text: '{device}에서만 앱이 켜자마자 꺼진대요. 크래시 리포트가 {count}건 쌓였어요.',
+    weight: 7,
+    severity: true,
+    conditions: { specialties: ['mobile'] },
+    vars: {
+      device: ['특정 제조사 구형 폰', '접는 폰', '최신 OS 베타', '태블릿'],
+      count: { bySeverity: [{ min: 20, max: 80 }, { min: 300, max: 900 }, { min: 3000, max: 9000 }] },
+    },
+    choices: [
+      {
+        label: '크래시 로그의 스택 트레이스를 파고든다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.7, text: '그 기종에서만 빈 값이 오는 API 하나를 찾았어요. 긴급 업데이트로 막았어요.', tone: 'skill', effects: { stamina: -8, stats: { coding: 3 }, gradeBonus: 10, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '로그가 난독화돼 있어서 읽을 수가 없어요. 매핑 파일을 안 올렸어요.', tone: 'unlucky', effects: { stamina: -12, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '그 기종을 중고로 사서 직접 재현한다',
+        outcomes: [
+          { chance: 0.7, text: '손에 쥐니 바로 보였어요. 기종 하나가 서랍에 늘었어요.', effects: { stamina: -6, assets: -30, gradeBonus: 6, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '산 폰에서는 멀쩡해요. OS 버전이 달랐어요.', tone: 'unlucky', effects: { stamina: -8, assets: -30, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '그 기종에서는 문제 기능을 꺼 버린다',
+        outcomes: [
+          { chance: 1, text: '앱은 안 꺼져요. 그 기종 사용자만 기능 하나를 못 써요.', effects: { stamina: -3, gradeBonus: -2, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'mo_old_versions',
+    category: '레거시',
+    emoji: '🧓',
+    title: '구버전 앱 사용자 {percent}%',
+    text: '3년 전 버전 앱을 쓰는 사람이 아직 {percent}%예요. 그 버전 때문에 서버 API를 못 지워요.',
+    weight: 6,
+    conditions: { specialties: ['mobile'] },
+    vars: { percent: { min: 8, max: 35 } },
+    choices: [
+      {
+        label: '강제 업데이트 팝업을 띄운다',
+        outcomes: [
+          { chance: 0.6, text: '일주일 만에 다들 업데이트했어요. 옛 API를 드디어 지웠어요.', effects: { gradeBonus: 6, counters: { refactors: 1 } } },
+          { chance: 0.4, text: '"업데이트 강요 앱" 리뷰가 쏟아지고 별점이 떨어졌어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -5 } },
+        ],
+      },
+      {
+        label: '서버에 구버전 전용 변환 계층을 둔다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '구버전 요청은 변환 계층이 받아 줘요. 서버 본체는 깔끔해졌어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 3 }, gradeBonus: 8 } },
+          { chance: 0.3, text: '변환 계층이 또 하나의 레거시가 됐어요.', tone: 'unlucky', effects: { stamina: -8 } },
+        ],
+      },
+      {
+        label: '앱을 열 때마다 업데이트를 부드럽게 권한다',
+        outcomes: [
+          { chance: 1, text: '석 달 걸려 5%까지 줄였어요. 나머지 5%는 아마 영원할 거예요.', effects: { stamina: -2, gradeBonus: 3 } },
+        ],
+      },
+    ],
+  },
+
+  // 데이터·AI
+  {
+    id: 'da_number_mismatch',
+    category: '레거시',
+    emoji: '🔢',
+    title: '숫자가 안 맞아요',
+    text: '대시보드의 {metric}(이)가 재무팀 숫자보다 {gap}% 많아요. 임원 회의는 내일이에요.',
+    weight: 7,
+    conditions: { specialties: ['data_ai'] },
+    vars: {
+      metric: ['지난달 매출', '활성 사용자 수', '재구매율', '전환율'],
+      gap: { min: 3, max: 18 },
+    },
+    choices: [
+      {
+        label: '지표 정의부터 하나하나 맞춰 본다',
+        check: { domain: 50 },
+        outcomes: [
+          { chance: 0.7, text: '우리는 환불 전, 재무팀은 환불 후 기준이었어요. 정의서를 만들어 공유했어요.', tone: 'skill', effects: { stamina: -8, stats: { domain: 3 }, gradeBonus: 10 } },
+          { chance: 0.3, text: '정의를 맞췄는데도 2%가 안 맞아요. 이유는 아무도 몰라요.', tone: 'unlucky', effects: { stamina: -10 } },
+        ],
+      },
+      {
+        label: '재무팀 숫자에 맞게 보정 계수를 넣는다',
+        outcomes: [
+          { chance: 0.5, text: '숫자는 맞았어요. 다음 달에 또 안 맞을 거예요.', effects: { stamina: -2, gradeBonus: 2 } },
+          { chance: 0.5, text: '회의에서 "이 0.93은 뭐죠?"라는 질문이 나왔어요.', tone: 'unlucky', effects: { gradeBonus: -6 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'da_model_drift',
+    category: '장애',
+    emoji: '📉',
+    title: '추천 모델이 이상해요',
+    text: '어제부터 {model}의 클릭률이 {drop}% 떨어졌어요. 코드는 아무도 안 건드렸대요.',
+    weight: 6,
+    severity: true,
+    conditions: { specialties: ['data_ai'] },
+    vars: {
+      model: ['상품 추천 모델', '검색 순위 모델', '사기 탐지 모델', '푸시 발송 모델'],
+      drop: { bySeverity: [{ min: 5, max: 10 }, { min: 20, max: 35 }, { min: 50, max: 80 }] },
+    },
+    choices: [
+      {
+        label: '입력 데이터 분포부터 들여다본다',
+        check: { domain: 55 },
+        outcomes: [
+          { chance: 0.7, text: '앱 업데이트로 로그 필드 하나가 비어서 들어오고 있었어요. 원인을 정확히 짚었어요.', tone: 'skill', effects: { stamina: -8, stats: { domain: 3 }, gradeBonus: 12, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '분포는 멀쩡해요. 계절 탓인지 정말 모르겠어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '최신 데이터로 바로 다시 학습시킨다',
+        outcomes: [
+          { chance: 0.5, text: '다시 학습하니 돌아왔어요. 왜 나빠졌는지는 여전히 몰라요.', effects: { stamina: -6, gradeBonus: 4, counters: { incidents: 1 } } },
+          { chance: 0.5, text: '깨진 데이터로 다시 학습해서 더 나빠졌어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '지난주 모델로 되돌려 놓고 천천히 본다',
+        outcomes: [
+          { chance: 1, text: '클릭률은 돌아왔어요. 원인 찾기는 다음 주의 숙제가 됐어요.', effects: { stamina: -3, gradeBonus: 2, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'da_ab_test',
+    category: '커리어',
+    emoji: '🧪',
+    title: '원하는 결과가 나오게 해 주세요',
+    text: '{owner}(이)가 A/B 테스트 결과를 보더니 "B안이 이긴 걸로 정리해 주세요"래요. 차이는 {diff}%예요.',
+    weight: 6,
+    conditions: { specialties: ['data_ai'] },
+    vars: {
+      owner: ['신규 기능 담당 PM', '마케팅 팀장', '사업부 이사'],
+      diff: ['0.3', '0.8', '1.2'],
+    },
+    choices: [
+      {
+        label: '"통계적으로 차이가 없어요"라고 근거를 보여 준다',
+        check: { domain: 50, communication: 45 },
+        outcomes: [
+          { chance: 0.6, text: '신뢰 구간 그림 한 장에 다들 수긍했어요. "역시 데이터팀"이라는 말을 들었어요.', tone: 'skill', effects: { stats: { domain: 2, reputation: 1 }, gradeBonus: 6 } },
+          { chance: 0.4, text: '"그래서 B안이 좋다는 거예요, 아니라는 거예요?" 설명이 길어서 졌어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -4 } },
+        ],
+      },
+      {
+        label: '기간을 늘려서 다시 돌려 보자고 한다',
+        outcomes: [
+          { chance: 0.5, text: '2주 더 돌리니 정말 B안이 이겼어요. 모두가 행복해요.', tone: 'lucky', effects: { gradeBonus: 6 } },
+          { chance: 0.5, text: '2주 더 돌려도 차이가 없어요. 담당자 표정이 어두워졌어요.', effects: { stamina: -4 } },
+        ],
+      },
+      {
+        label: '원하는 대로 써 준다',
+        outcomes: [
+          { chance: 0.6, text: '보고서는 칭찬받았어요. 마음 한구석이 찜찜해요.', effects: { gradeBonus: 6, stamina: -4 } },
+          { chance: 0.4, text: 'B안을 전면 적용했더니 매출이 떨어졌어요. 그 보고서에 내 이름이 있어요.', tone: 'unlucky', effects: { gradeBonus: -10, stats: { reputation: -2 } } },
+        ],
+      },
+    ],
+  },
+
+  // 인프라·DevOps
+  {
+    id: 'in_container_move',
+    category: '레거시',
+    emoji: '📦',
+    title: '서버 {servers}대 이사',
+    text: '손으로 관리하던 서버 {servers}대를 컨테이너 환경으로 옮기기로 했어요. 그 일이 나한테 왔어요.',
+    weight: 6,
+    conditions: { specialties: ['infra'], minCareerYear: 2 },
+    vars: { servers: { min: 20, max: 200 } },
+    choices: [
+      {
+        label: '덜 중요한 서비스 하나로 시범부터 한다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '시범에서 터질 건 다 터졌어요. 본 이사는 조용히 끝났어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 3 }, gradeBonus: 10, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '시범 서비스가 알고 보니 결제 콜백을 받고 있었어요.', tone: 'unlucky', effects: { stamina: -12, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '주말에 한 번에 옮긴다',
+        outcomes: [
+          { chance: 0.4, text: '일요일 새벽에 마지막 서버를 옮겼어요. 월요일엔 아무 일도 없었어요.', tone: 'lucky', effects: { stamina: -15, gradeBonus: 10, counters: { refactors: 1 } } },
+          { chance: 0.6, text: '월요일 아침, 하드코딩된 서버 IP 열두 곳이 한꺼번에 터졌어요.', tone: 'unlucky', effects: { stamina: -15, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'in_wrong_server',
+    category: '장애',
+    emoji: '💥',
+    title: '운영에서 돌아간 스크립트',
+    text: '테스트 서버 정리용 스크립트가 운영 서버에서 돌았어요. {damage}.',
+    weight: 6,
+    severity: true,
+    conditions: { specialties: ['infra'] },
+    vars: { damage: { bySeverity: [['로그 폴더 하나가 지워졌어요'], ['캐시 서버 두 대가 초기화됐어요'], ['DB 서버 한 대가 통째로 지워졌어요']] } },
+    choices: [
+      {
+        label: '백업에서 바로 복구한다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '백업이 진짜로 복구되는 백업이었어요. 30분 만에 돌려놨어요.', tone: 'skill', effects: { stamina: -10, stats: { design: 2 }, gradeBonus: 8, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '백업은 있었는데 복구해 본 적이 없었어요. 복구에 하루가 걸렸어요.', tone: 'unlucky', effects: { stamina: -15, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '복구보다 먼저 상황을 투명하게 공유한다',
+        check: { communication: 45 },
+        outcomes: [
+          { chance: 0.6, text: '다들 무엇이 멈췄는지 알고 움직였어요. 사후 회의에서 대응이 좋았다는 말을 들었어요.', tone: 'skill', effects: { stamina: -8, stats: { communication: 2 }, gradeBonus: 6, counters: { incidents: 1 } } },
+          { chance: 0.4, text: '공유하는 사이 복구가 늦어졌다는 말도 들었어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '운영 서버에서는 위험한 명령이 안 돌게 막는 장치부터 만든다',
+        outcomes: [
+          { chance: 1, text: '복구는 동료가 하고, 나는 다시는 이런 일이 없게 했어요. 일주일 뒤에야 다들 고마워했어요.', effects: { stamina: -8, stats: { design: 2 }, gradeBonus: 3, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'in_zero_day',
+    category: '장애',
+    emoji: '🛡️',
+    title: '긴급 보안 취약점',
+    text: '{library}에서 원격 코드 실행 취약점이 발표됐어요. 우리 서버 {servers}대가 영향을 받아요.',
+    weight: 6,
+    conditions: { specialties: ['infra'] },
+    vars: {
+      library: ['로그 라이브러리', '웹 서버', 'SSH 서버', '압축 도구'],
+      servers: { min: 30, max: 400 },
+    },
+    choices: [
+      {
+        label: '자동화 도구로 전 서버를 한 번에 패치한다',
+        check: { design: 55 },
+        outcomes: [
+          { chance: 0.7, text: '두 시간 만에 전 서버 패치 끝. 보안팀이 놀라서 확인 전화를 했어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 3 }, gradeBonus: 12, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '패치가 설정 파일 형식을 바꿔서 서비스 몇 개가 안 떠요.', tone: 'unlucky', effects: { stamina: -14, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '외부에 열린 서버부터 손으로 막는다',
+        outcomes: [
+          { chance: 1, text: '중요한 곳부터 밤새 하나씩. 다 막기까지 사흘이 걸렸어요.', effects: { stamina: -14, gradeBonus: 5, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+
+  // 게임 클라이언트
+  {
+    id: 'gm_item_dupe',
+    category: '장애',
+    emoji: '💰',
+    title: '아이템 복사 버그',
+    text: '{trick} 아이템이 복사된대요. 커뮤니티에 방법이 다 퍼졌고, 복사된 아이템이 {count}개예요.',
+    weight: 7,
+    severity: true,
+    conditions: { specialties: ['game'] },
+    vars: {
+      trick: ['거래 창을 열고 접속을 끊으면', '우편함에서 빠르게 두 번 누르면', '인벤토리가 꽉 찬 상태로 상자를 열면'],
+      count: { bySeverity: [{ min: 50, max: 200 }, { min: 2000, max: 9000 }, { min: 50000, max: 200000 }] },
+    },
+    choices: [
+      {
+        label: '로그로 복사된 아이템만 추적해서 회수한다',
+        check: { domain: 50 },
+        outcomes: [
+          { chance: 0.7, text: '복사한 계정과 아이템을 정확히 찾아 회수했어요. 정직한 유저는 아무 피해가 없어요.', tone: 'skill', effects: { stamina: -10, stats: { domain: 3 }, gradeBonus: 12, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '복사 아이템이 거래로 여러 손을 거쳤어요. 산 사람까지 회수할지 회의만 길어졌어요.', tone: 'unlucky', effects: { stamina: -12, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '서버를 어제로 되돌리는 롤백 점검을 한다',
+        outcomes: [
+          { chance: 0.5, text: '깔끔하게 돌아갔어요. 보상으로 다이아를 뿌리니 여론도 괜찮아요.', effects: { stamina: -8, gradeBonus: 4, counters: { incidents: 1 } } },
+          { chance: 0.5, text: '어제 뽑기에서 전설 장비를 뽑은 사람들이 폭발했어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -8, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '구멍만 막고 복사된 건 못 본 척한다',
+        outcomes: [
+          { chance: 1, text: '경제가 조금 망가졌어요. 다음 달 시세표가 무서워요.', effects: { stamina: -3, gradeBonus: -4, counters: { incidents: 1 } } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'gm_frame_drop',
+    category: '레거시',
+    emoji: '🎞️',
+    title: '프레임 {fps}',
+    text: '새로 연 {zone}에서 프레임이 {fps}까지 떨어져요. 다음 주가 업데이트예요.',
+    weight: 7,
+    conditions: { specialties: ['game'] },
+    vars: {
+      zone: ['사막 마을', '보스 레이드 구역', '불꽃놀이 축제 맵', '거대 수중 도시'],
+      fps: { min: 12, max: 24 },
+    },
+    choices: [
+      {
+        label: '프로파일러로 병목부터 찾는다',
+        check: { coding: 55 },
+        outcomes: [
+          { chance: 0.7, text: '그림자를 그리는 오브젝트 하나가 범인이었어요. 그것만 고쳐서 60프레임이 됐어요.', tone: 'skill', effects: { stamina: -8, stats: { coding: 3 }, gradeBonus: 10 } },
+          { chance: 0.3, text: '병목이 여기저기 조금씩이에요. 하나씩 깎다가 업데이트 날이 왔어요.', tone: 'unlucky', effects: { stamina: -12, stats: { coding: 1 } } },
+        ],
+      },
+      {
+        label: '그 지역만 그래픽 기본값을 낮춘다',
+        outcomes: [
+          { chance: 0.6, text: '프레임은 지켰어요. 눈썰미 좋은 유저들만 "여기만 그래픽이 왜 이래" 했어요.', effects: { stamina: -3, gradeBonus: 3 } },
+          { chance: 0.4, text: '"그래픽 너프" 비교 영상이 올라왔어요. 조회수가 높아요.', tone: 'unlucky', effects: { stamina: -4, gradeBonus: -4 } },
+        ],
+      },
+      {
+        label: '아트팀과 오브젝트 수를 줄이는 방법을 찾는다',
+        check: { design: 45, communication: 40 },
+        outcomes: [
+          { chance: 0.65, text: '안 보이는 곳의 소품을 정리했어요. 아트팀도 성능 기준을 알게 됐어요.', tone: 'skill', effects: { stamina: -6, stats: { design: 2, communication: 1 }, gradeBonus: 8 } },
+          { chance: 0.35, text: '"그 소품이 이 맵의 감성이에요." 아트 디렉터가 양보하지 않았어요.', tone: 'unlucky', effects: { stamina: -6 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'gm_launch_crunch',
+    category: '일정',
+    emoji: '🕹️',
+    title: '출시 {weeks}주 전',
+    text: '출시가 {weeks}주 남았는데 아직 {missing}(이)가 덜 됐어요. 사무실에 야전 침대가 들어왔어요.',
+    weight: 7,
+    conditions: { specialties: ['game'] },
+    vars: {
+      weeks: { min: 2, max: 6 },
+      missing: ['튜토리얼', '마지막 보스', '결제 상점', '엔딩 컷신'],
+    },
+    choices: [
+      {
+        label: '핵심 재미만 다듬고 나머지는 업데이트로 미룬다',
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.65, text: '덜 만든 건 과감히 뺐어요. 출시 리뷰는 "짧지만 재밌다"였어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 3 }, gradeBonus: 10 } },
+          { chance: 0.35, text: '뺀 기능이 하필 예고 영상에 나왔던 거였어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -5 } },
+        ],
+      },
+      {
+        label: '다 같이 야전 침대에서 버틴다',
+        outcomes: [
+          { chance: 1, text: '전부 넣고 출시했어요. 출시 파티에서 다들 졸았어요.', effects: { stamina: -20, stats: { coding: 2 }, gradeBonus: 8 } },
+        ],
+      },
+      {
+        label: '출시를 미루자고 정식으로 제안한다',
+        check: { communication: 55 },
+        outcomes: [
+          { chance: 0.5, text: '한 달 연기가 받아들여졌어요. "미뤄서 다행"이라는 리뷰가 많았어요.', tone: 'skill', effects: { stamina: 5, stats: { communication: 2 }, gradeBonus: 6 } },
+          { chance: 0.5, text: '"퍼블리셔 계약 때문에 안 돼요." 제안한 사람이 눈치만 보게 됐어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -4 } },
+        ],
+      },
+    ],
+  },
+
   // ─── 실직 공백기를 보내고 다시 취업한 첫해 ─────────────────
   {
     id: 'gap_first_day',
@@ -2543,6 +3462,14 @@ export const events: GameEvent[] = [
           { chance: 0.4, text: '세 번째 질문부터 대답이 짧아졌어요.', tone: 'unlucky', effects: { stats: { coding: 1 }, gradeBonus: -3 } },
         ],
       },
+      {
+        label: '작은 연습 프로젝트를 하나 만들어 본다',
+        check: { coding: 45 },
+        outcomes: [
+          { chance: 0.7, text: '주말 프로젝트로 감을 잡았어요. 월요일에 PR을 올릴 수 있었어요.', tone: 'skill', effects: { stamina: -6, stats: { coding: 3 } } },
+          { chance: 0.3, text: '환경 설정만 하다 주말이 끝났어요.', tone: 'unlucky', effects: { stamina: -8, stats: { coding: 1 } } },
+        ],
+      },
     ],
   },
   {
@@ -2598,6 +3525,24 @@ export const events: GameEvent[] = [
           { chance: 1, text: '불은 껐어요. 1년 뒤 같은 날 알람이 울릴지는 아무도 몰라요.', effects: { stamina: -4, gradeBonus: 2, counters: { incidents: 1 } } },
         ],
       },
+      {
+        label: '인증서 자동 발급 도구로 전 서비스를 옮긴다',
+        specialties: ['infra'],
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.75, text: '모든 도메인 인증서가 알아서 갱신돼요. 이 이벤트는 다시 안 볼 거예요.', tone: 'skill', effects: { stamina: -6, stats: { design: 2 }, gradeBonus: 10, counters: { incidents: 1 } } },
+          { chance: 0.25, text: '옮기다가 사내 시스템 인증서 하나를 빠뜨렸어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '앱에 인증서 고정이 걸려 있는지부터 확인한다',
+        specialties: ['mobile'],
+        check: { coding: 45 },
+        outcomes: [
+          { chance: 0.7, text: '역시 걸려 있었어요. 새 인증서를 넣은 앱 업데이트를 긴급 심사로 넣었어요.', tone: 'skill', effects: { stamina: -8, stats: { coding: 2 }, gradeBonus: 8, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '구버전 앱 사용자는 업데이트 전까지 접속을 못 해요. 리뷰 별점이 1점대가 됐어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -4, counters: { incidents: 1 } } },
+        ],
+      },
     ],
   },
   {
@@ -2624,6 +3569,24 @@ export const events: GameEvent[] = [
         label: '조용히 서버만 끈다',
         outcomes: [
           { chance: 1, text: '요금은 멈췄어요. 청구서는 재무팀이 들고 왔어요.', effects: { gradeBonus: -4 } },
+        ],
+      },
+      {
+        label: '태그 정책과 예산 경보를 건다',
+        specialties: ['infra'],
+        check: { design: 45 },
+        outcomes: [
+          { chance: 0.75, text: '팀별 비용이 다 보여요. 비용이 줄었고 범인도 다 밝혀졌어요.', tone: 'skill', effects: { stamina: -6, stats: { design: 2 }, gradeBonus: 10 } },
+          { chance: 0.25, text: '태그 없는 자원을 자동 삭제했는데 그중에 운영 서버가 있었어요.', tone: 'unlucky', effects: { stamina: -12, gradeBonus: -6, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '학습 작업을 싼 시간대와 남는 서버로 몰아 돌린다',
+        specialties: ['data_ai'],
+        check: { domain: 45 },
+        outcomes: [
+          { chance: 0.7, text: 'GPU 비용이 60% 줄었어요. 학습은 조금 느려졌지만 아무도 신경 안 써요.', tone: 'skill', effects: { stamina: -4, stats: { domain: 2 }, gradeBonus: 8 } },
+          { chance: 0.3, text: '남는 서버가 학습 도중에 회수됐어요. 사흘 치 학습이 날아갔어요.', tone: 'unlucky', effects: { stamina: -8 } },
         ],
       },
     ],
@@ -2655,6 +3618,30 @@ export const events: GameEvent[] = [
           { chance: 0.3, text: '지운 파일 중에 결제 기록이 있었어요. 복구에 사흘이 걸렸어요.', tone: 'unlucky', effects: { stamina: -15, gradeBonus: -8, counters: { incidents: 1 } } },
         ],
       },
+      {
+        label: '디스크부터 넉넉히 늘려 놓고 본다',
+        outcomes: [
+          { chance: 0.7, text: '돈으로 시간을 샀어요. 원인은 다음 달의 내가 볼 거예요.', effects: { stamina: -3, gradeBonus: -1, counters: { incidents: 1 } } },
+          { chance: 0.3, text: '늘린 디스크도 일주일 만에 찼어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -4, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '로그를 중앙 수집으로 보내고 서버에는 남기지 않는다',
+        specialties: ['infra'],
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.75, text: '서버 디스크가 다시는 로그로 찰 일이 없어요. 검색도 빨라졌어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 2 }, gradeBonus: 8, counters: { incidents: 1 } } },
+          { chance: 0.25, text: '수집 서버가 로그를 못 받아서 장애 원인 로그가 통째로 사라졌어요.', tone: 'unlucky', effects: { stamina: -10, counters: { incidents: 1 } } },
+        ],
+      },
+      {
+        label: '디버그 로그 레벨을 정리한다',
+        specialties: ['backend'],
+        outcomes: [
+          { chance: 0.8, text: '요청마다 전체 응답을 찍던 디버그 로그를 껐어요. 로그가 90% 줄었어요.', tone: 'skill', effects: { stamina: -4, stats: { coding: 1 }, gradeBonus: 6, counters: { incidents: 1 } } },
+          { chance: 0.2, text: '그 디버그 로그로 매일 정산을 맞추던 팀이 있었어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -3, counters: { incidents: 1 } } },
+        ],
+      },
     ],
   },
   {
@@ -2681,6 +3668,22 @@ export const events: GameEvent[] = [
         label: '백업만 해 두고 모른 척한다',
         outcomes: [
           { chance: 1, text: '파일을 세 곳에 백업했어요. 마음 한구석이 계속 불안해요.', effects: {} },
+        ],
+      },
+      {
+        label: '매크로가 하는 일을 문서로 정리해 둔다',
+        outcomes: [
+          { chance: 0.7, text: '숨은 규칙 열두 개를 문서로 남겼어요. 담당자가 휴가를 가도 덜 무서워요.', effects: { stamina: -5, stats: { domain: 2 }, gradeBonus: 3 } },
+          { chance: 0.3, text: '정리하는 사이 담당자가 매크로를 또 고쳤어요. 문서가 이미 틀렸어요.', tone: 'unlucky', effects: { stamina: -5 } },
+        ],
+      },
+      {
+        label: '매크로 로직을 데이터 파이프라인으로 옮긴다',
+        specialties: ['data_ai'],
+        check: { domain: 50 },
+        outcomes: [
+          { chance: 0.7, text: '매일 아침 자동으로 결과가 나와요. 재무팀이 커피를 사 들고 왔어요.', tone: 'skill', effects: { stamina: -8, stats: { domain: 3 }, gradeBonus: 10, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '엑셀 반올림 방식까지 따라 하느라 일주일이 더 걸렸어요.', tone: 'unlucky', effects: { stamina: -12 } },
         ],
       },
     ],
@@ -2713,6 +3716,31 @@ export const events: GameEvent[] = [
           { chance: 1, text: '일단 미뤘어요. 내년에 같은 공지가 또 올 거예요.', effects: { gradeBonus: -2 } },
         ],
       },
+      {
+        label: '보안 패치만 받는 유료 연장 지원을 산다',
+        outcomes: [
+          { chance: 0.7, text: '돈으로 2년을 벌었어요. 그 2년 동안 아무도 업그레이드를 안 할 거예요.', effects: { gradeBonus: 2 } },
+          { chance: 0.3, text: '구매 결재가 석 달 걸렸어요. 그사이 지원이 끝났어요.', tone: 'unlucky', effects: { stamina: -6, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: '화면 단위로 쪼개서 조금씩 새 버전으로 옮긴다',
+        specialties: ['frontend'],
+        check: { design: 50 },
+        outcomes: [
+          { chance: 0.7, text: '한 번에 화면 하나씩. 반년 만에 조용히 다 옮겼어요.', tone: 'skill', effects: { stamina: -8, stats: { design: 2 }, gradeBonus: 8, counters: { refactors: 1 } } },
+          { chance: 0.3, text: '옛 버전과 새 버전이 한 화면에 섞여 스타일이 깨졌어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: '엔진 업그레이드를 다음 대형 패치에 묶는다',
+        specialties: ['game'],
+        check: { communication: 45 },
+        outcomes: [
+          { chance: 0.65, text: '대형 패치 일정에 맞춰 QA까지 한 번에 끝냈어요.', tone: 'skill', effects: { stamina: -8, stats: { coding: 2 }, gradeBonus: 8, counters: { refactors: 1 } } },
+          { chance: 0.35, text: '엔진 버전이 바뀌니 물리 판정이 미묘하게 달라졌어요. 고인물들이 바로 알아챘어요.', tone: 'unlucky', effects: { stamina: -10, gradeBonus: -4 } },
+        ],
+      },
     ],
   },
   {
@@ -2739,6 +3767,38 @@ export const events: GameEvent[] = [
         outcomes: [
           { chance: 0.6, text: '각본대로 매끄럽게 흘러갔어요. 아무도 다른 버튼을 누르지 않았어요.', tone: 'skill', effects: { stamina: -5, gradeBonus: 6 } },
           { chance: 0.4, text: '대표님이 "이건 뭐예요?" 하며 다른 버튼을 눌렀어요.', tone: 'unlucky', effects: { stamina: -5, gradeBonus: -8 } },
+        ],
+      },
+      {
+        label: '가짜 데이터로 화면을 완벽하게 꾸민다',
+        specialties: ['frontend'],
+        outcomes: [
+          { chance: 0.7, text: '대표님이 "벌써 다 됐네요?"라며 감탄했어요. 아직 아무것도 안 됐어요.', tone: 'lucky', effects: { stamina: -6, gradeBonus: 8 } },
+          { chance: 0.3, text: '"그럼 다음 주에 오픈하죠." 가짜였다고 말할 타이밍을 놓쳤어요.', tone: 'unlucky', effects: { stamina: -12 } },
+        ],
+      },
+      {
+        label: '테스트 빌드를 대표님 폰에 미리 깔아 둔다',
+        specialties: ['mobile'],
+        outcomes: [
+          { chance: 0.7, text: '대표님이 직접 눌러 보고 신나 하셨어요. 시연은 대표님이 했어요.', effects: { stamina: -6, gradeBonus: 8 } },
+          { chance: 0.3, text: '대표님 폰 OS가 너무 오래돼서 앱이 안 깔렸어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -4 } },
+        ],
+      },
+      {
+        label: '치트키로 보여 주고 싶은 장면부터 띄운다',
+        specialties: ['game'],
+        outcomes: [
+          { chance: 0.75, text: '보스전 클라이맥스만 보여 줬어요. 대표님이 직접 해 보겠다고 패드를 잡았어요.', tone: 'lucky', effects: { stamina: -5, gradeBonus: 8 } },
+          { chance: 0.25, text: '대표님이 치트키를 기억했다가 이사회에서도 썼어요. 거기서는 안 먹혔어요.', tone: 'unlucky', effects: { gradeBonus: -5 } },
+        ],
+      },
+      {
+        label: '시연용 결과를 미리 뽑아 두고 보여 준다',
+        specialties: ['data_ai'],
+        outcomes: [
+          { chance: 0.7, text: '추천 결과가 그럴듯하게 나왔어요. 미리 골라 둔 입력만 넣었으니까요.', tone: 'lucky', effects: { stamina: -5, gradeBonus: 7 } },
+          { chance: 0.3, text: '대표님이 자기 이름을 입력해 봤어요. 결과가 민망했어요.', tone: 'unlucky', effects: { gradeBonus: -6 } },
         ],
       },
     ],
@@ -2770,6 +3830,22 @@ export const events: GameEvent[] = [
           { chance: 0.5, text: '"마케팅이 이미 나갔어요." 일정은 그대로였어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -3 } },
         ],
       },
+      {
+        label: '연휴 동안 기능을 꺼 두고 연휴 뒤에 켠다',
+        check: { design: 45 },
+        outcomes: [
+          { chance: 0.7, text: '배포는 예정대로, 기능은 연휴 뒤에. 모두가 만족했어요.', tone: 'skill', effects: { stamina: 4, stats: { design: 1 }, gradeBonus: 4 } },
+          { chance: 0.3, text: '마케팅 문자가 이미 나갔어요. "어디 있어요?" 문의가 쏟아졌어요.', tone: 'unlucky', effects: { stamina: -8, gradeBonus: -3 } },
+        ],
+      },
+      {
+        label: '앱 심사 일정을 핑계로 연휴 뒤 출시를 제안한다',
+        specialties: ['mobile'],
+        outcomes: [
+          { chance: 0.75, text: '"심사가 연휴에 멈춰요"라는 말에 다들 고개를 끄덕였어요.', tone: 'lucky', effects: { stamina: 8 } },
+          { chance: 0.25, text: '하필 연휴 전에 심사가 통과됐어요. 핑계가 사라졌어요.', tone: 'unlucky', effects: { stamina: -6 } },
+        ],
+      },
     ],
   },
   {
@@ -2796,6 +3872,14 @@ export const events: GameEvent[] = [
         label: '말없이 다 쳐낸다',
         outcomes: [
           { chance: 1, text: '다 끝냈어요. 다음 스프린트에는 티켓이 더 많이 잡혔어요.', effects: { stamina: -14, gradeBonus: 8 } },
+        ],
+      },
+      {
+        label: '비슷한 티켓을 묶어 스크립트로 한 번에 처리한다',
+        check: { coding: 50 },
+        outcomes: [
+          { chance: 0.65, text: '티켓 9개를 스크립트 하나로 끝냈어요. 남은 시간에 진짜 일을 했어요.', tone: 'skill', effects: { stamina: -4, stats: { coding: 2 }, gradeBonus: 8 } },
+          { chance: 0.35, text: '스크립트를 만드는 데 티켓 9개 하는 시간이 걸렸어요.', tone: 'unlucky', effects: { stamina: -8 } },
         ],
       },
     ],

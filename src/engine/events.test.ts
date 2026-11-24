@@ -200,3 +200,45 @@ describe('이벤트 장면 (심각도·변수·변형)', () => {
     }
   })
 })
+
+describe('주력 분야', () => {
+  const SPECIALTIES = ['backend', 'frontend', 'mobile', 'data_ai', 'infra', 'game'] as const
+  const withSpecialty = (specialty: (typeof SPECIALTIES)[number]): GameState => {
+    const g = game()
+    return { ...g, profile: { ...g.profile, specialty } }
+  }
+  const instance = (id: string) => rollInstance(events.find((e) => e.id === id)!, game(), createRng(1))
+
+  it('분야 전용 선택지는 그 분야인 사람에게만 보인다', () => {
+    const labels = (specialty: (typeof SPECIALTIES)[number]) => resolveEvent(instance('dawn_db_lock'), withSpecialty(specialty)).choices.map((c) => c.label)
+    expect(labels('backend')).toContain('쿼리 실행 계획부터 뜯어본다')
+    expect(labels('frontend')).not.toContain('쿼리 실행 계획부터 뜯어본다')
+    expect(labels('data_ai')).toContain('새벽 배치 집계 쿼리가 범인인지 확인한다')
+  })
+
+  it('어느 분야로 보든 모든 이벤트에 선택지가 2개 이상 있다', () => {
+    for (const specialty of SPECIALTIES) {
+      for (const e of events) {
+        const visible = e.choices.filter((c) => !c.specialties || c.specialties.includes(specialty))
+        expect(visible.length, `${e.id} (${specialty})`).toBeGreaterThanOrEqual(2)
+      }
+    }
+  })
+
+  it('분야마다 전용 이벤트가 3개 이상, 전용 선택지가 4개 이상 있다', () => {
+    for (const specialty of SPECIALTIES) {
+      const ownEvents = events.filter((e) => e.conditions?.specialties?.includes(specialty))
+      const ownChoices = events.flatMap((e) => e.choices).filter((c) => c.specialties?.includes(specialty))
+      expect(ownEvents.length, specialty).toBeGreaterThanOrEqual(3)
+      expect(ownChoices.length, specialty).toBeGreaterThanOrEqual(4)
+    }
+  })
+
+  it('분야 전용 선택지를 고르면 그 선택지의 결과가 나온다 (걸러진 목록 기준 번호)', () => {
+    const s: GameState = { ...withSpecialty('backend'), phase: 'event', focus: 'study', pendingEvents: [instance('dawn_db_lock')] }
+    const resolved = resolveEvent(instance('dawn_db_lock'), s)
+    const index = resolved.choices.findIndex((c) => c.specialties)
+    const { outcome } = chooseEventOption(s, index)
+    expect(resolved.choices[index].outcomes.map((o) => o.text)).toContain(outcome.text)
+  })
+})

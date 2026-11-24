@@ -134,7 +134,8 @@ export function resolveEvent(instance: PendingEvent, s: GameState): ResolvedEven
     ...event,
     title: fill(scene.title),
     text: fill(scene.text),
-    choices: event.choices.map((c) => ({
+    // 주력 분야 전용 선택지는 그 분야인 사람에게만 보인다. 화면·선택 번호는 걸러진 목록 기준
+    choices: event.choices.filter((c) => !c.specialties || c.specialties.includes(s.profile.specialty)).map((c) => ({
       ...c,
       label: fill(c.label),
       outcomes: c.outcomes.map((o) => ({ ...o, text: fill(o.text), effects: scaleEffects(o.effects, severity) })),
