@@ -40,7 +40,7 @@
 | 화면 | React 19, TypeScript, Tailwind CSS, Vite |
 | 상태·저장 | Zustand, 브라우저 localStorage (로그인·DB 없음, 읽을 수 없는 저장 데이터는 걸러냄) |
 | 게임 규칙 | UI와 분리한 순수 TypeScript 함수, 시드 기반 난수 |
-| 테스트 | Vitest (단위 테스트 570개, 봇 자동 플레이 시뮬레이션), GitHub Actions |
+| 테스트 | Vitest (테스트 886개, 무작위 플레이 검사, 봇 자동 플레이 시뮬레이션), GitHub Actions |
 | 배포 | Cloudflare Workers (정적 자산 + 결과 공유 API, Workers KV) |
 
 게임 자체는 서버 없이 브라우저에서만 동작합니다. 서버 코드는 결과 공유 링크를 저장·조회하는 작은 API([src/worker.ts](src/worker.ts)) 하나뿐입니다.
